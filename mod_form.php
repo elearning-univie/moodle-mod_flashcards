@@ -21,31 +21,38 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/flashcards/lib.php');
 
+define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
+define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
+
 class mod_flashcards_mod_form extends moodleform_mod {
     
     function definition() {
-        
+
         $mform =& $this->_form;
         $courseid = required_param('course', PARAM_INT);
         $context = [];
         $context[] = context_course::instance($courseid);
+        
         $mform->addElement('text', 'name', get_string('flashcardname', 'flashcards'), array('size'=>'64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
         $options = array(
-            FLASHCARDS_EXISTING => get_string('existingcategory', 'flashcards'),
-            FLASHCARDS_NEW => get_string('newcategory', 'flashcards')
+            'new' => FLASHCARDS_NEW,
+            'existing' => FLASHCARDS_EXISTING
         );
         $mform->addElement('select', 'neworexistingcategory', get_string('newexistingcategory', 'flashcards'), $options);
+        $mform->setDefault('neworexistingcategory', 'new');
+        
+        $mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'), array('size'=>'64'));
+        $mform->addRule('newcategoryname', null, 'required', null, 'client');
+        $mform->hideIf('newcategoryname', 'neworexistingcategory', 'eq','existing');
+        
+        
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $context));
-        
-        //$mform->addElement('questioncategory', 'parent', get_string('parentcategory', 'question'),
-         //  array('context' => $context, 'top' => true, 'currentcat' => $currentcat, 'nochildrenof' => $currentcat));
-        
-        $mform->addElement('text', 'testtext', 'textitext', array('size'=>'64'));
-        $mform->hideIf('testtext', 'neworexistingcategory', 'eq', FLASHCARDS_EXISTING);
-        
+                
         $mform->addElement('checkbox', 'includesubcategories', 'include subcategories');
+        $mform->hideIf('includesubcategories', 'neworexistingcategory', 'eq', 'new');
+        
         
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
