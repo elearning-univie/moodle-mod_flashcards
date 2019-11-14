@@ -26,10 +26,9 @@ class mod_flashcards_mod_form extends moodleform_mod {
     function definition() {
         
         $mform =& $this->_form;
-
-        $contexts   = $this->_customdata['contexts'];
-       // $currentcat   = $this->_customdata['currentcat'];
-
+        $courseid = required_param('course', PARAM_INT);
+        $context = [];
+        $context[] = context_course::instance($courseid);
         $mform->addElement('text', 'name', get_string('flashcardname', 'flashcards'), array('size'=>'64'));
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
@@ -38,8 +37,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
             FLASHCARDS_NEW => get_string('newcategory', 'flashcards')
         );
         $mform->addElement('select', 'neworexistingcategory', get_string('newexistingcategory', 'flashcards'), $options);
-        print_object($contexts);
-       // $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $contexts));
+        $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $context));
         
         //$mform->addElement('questioncategory', 'parent', get_string('parentcategory', 'question'),
          //  array('context' => $context, 'top' => true, 'currentcat' => $currentcat, 'nochildrenof' => $currentcat));
