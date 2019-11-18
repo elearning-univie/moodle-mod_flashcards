@@ -16,6 +16,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot."/question/category_class.php");
+
 //define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
 //define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
 
@@ -34,17 +36,23 @@ function flashcards_add_instance($flashcards) {
     
     $catids = explode(",", $flashcards->category);
     
-    if ($flashcards -> neworexistingcategory == 'new') {
+    if ($flashcards->neworexistingcategory == 'new') {
         $newcat = new stdClass();
         $newcat -> name = $flashcards -> newcategoryname;
-        $newcat -> contextid = $catids[1];
-        $newcat -> info = 'Created via Flashcard Activity';
-        $qcid = $DB -> insert_record('question_categories', $newcat);
-        $flashcards -> categoryid = $qcid;
+        $newcat->contextid = $catids[1];
+        $newcat->info = 'Created via Flashcard Activity';
+        $qcid = $DB->insert_record('question_categories', $newcat);
+        $flashcards->categoryid = $qcid;
+
     } else {
         $flashcards -> categoryid = $catids[0];
     }
+    
+    if(isset($flashcards->includesubcategories)){
+        $flashcards->inclsubcats = $flashcards->includesubcategories;
+    } 
 
+    //print_object($flashcards);
     $id = $DB -> insert_record('flashcards', $flashcards);
     
     return $id;
