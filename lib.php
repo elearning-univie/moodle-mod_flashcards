@@ -28,18 +28,13 @@ function flashcards_add_instance($flashcards) {
     if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
         $object->intro = '';
         $object->name = $flashcards->name;
-       // print('nanananananana');
     } else {
         $object->intro = $flashcards;
-        //print('YAAAAYYYYYY');
-        
     }
-    print_object($flashcards);
-    //print('HALOOOOOOO');
 
-    
-    $object = $DB->insert_record('mod_flashcards', $flashcards);
-    return;
+    $id = $DB->insert_record('flashcards', $flashcards);
+    print($id);
+    return $id;
 }
 function flashcards_update_instance($flashcards) {
     

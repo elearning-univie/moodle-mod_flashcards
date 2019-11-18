@@ -40,14 +40,14 @@ class mod_flashcards_mod_form extends moodleform_mod {
             'new' => FLASHCARDS_NEW,
             'existing' => FLASHCARDS_EXISTING
         );
-        
+
         // Introduction.
         $this->standard_intro_elements();
-        
+
         $mform->addElement('select', 'neworexistingcategory', get_string('newexistingcategory', 'flashcards'), $options);
         $mform->setType('neworexistingcategory', PARAM_TEXT);
         $mform->setDefault('neworexistingcategory', 'new');
-        
+
         //$mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'), array('size'=>'64'));
         $mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'),  array('size'=>'64'));
         $mform->setType('newcategoryname', PARAM_TEXT);

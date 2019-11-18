@@ -10,5 +10,5 @@ $string['newcategoryname'] = 'New category name';
 $string['newexistingcategory']='New or existing category';
 $string['userpreferences'] = 'User preferences';
 $string['noquestion'] = 'No question could be found.';
+$string['pagetitle'] = 'Moodle Flashcard';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
-
