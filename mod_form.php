@@ -51,11 +51,12 @@ class mod_flashcards_mod_form extends moodleform_mod {
         //$mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'), array('size'=>'64'));
         $mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'),  array('size'=>'64'));
         $mform->setType('newcategoryname', PARAM_TEXT);
-        $mform->addRule('newcategoryname', null, 'required', null, 'client');
+        //$mform->addRule('newcategoryname', null, 'required', null, 'client');
         $mform->hideIf('newcategoryname', 'neworexistingcategory', 'eq','existing');
         
         
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $context));
+
                 
         $mform->addElement('checkbox', 'includesubcategories', 'include subcategories');
         $mform->hideIf('includesubcategories', 'neworexistingcategory', 'eq', 'new');

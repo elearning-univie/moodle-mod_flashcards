@@ -25,14 +25,28 @@ function flashcards_add_instance($flashcards) {
     $object->timecreated = time();
 
     
-    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
-        $object->intro = '';
-        $object->name = $flashcards->name;
+    if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
+        $flashcards -> intro = '';
+       // $object->name = $flashcards->name;
     } else {
-        $object->intro = $flashcards;
+        $flashcards -> intro = $flashcards;
+    }
+    
+    $catids = explode(",", $flashcards->category);
+    
+    if ($flashcards -> neworexistingcategory == 'new') {
+        $newcat = new stdClass();
+        $newcat -> name = $flashcards -> newcategoryname;
+        $newcat -> contextid = $catids[1];
+        $newcat -> info = 'Created via Flashcard Activity';
+        $qcid = $DB -> insert_record('question_categories', $newcat);
+        $flashcards -> categoryid = $qcid;
+    } else {
+        $flashcards -> categoryid = $catids[0];
     }
 
-    $id = $DB->insert_record('flashcards', $flashcards);
+    $id = $DB -> insert_record('flashcards', $flashcards);
+    
     return $id;
 }
 function flashcards_update_instance($flashcards) {
