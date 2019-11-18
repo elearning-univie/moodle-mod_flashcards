@@ -33,7 +33,6 @@ function flashcards_add_instance($flashcards) {
     }
 
     $id = $DB->insert_record('flashcards', $flashcards);
-    print($id);
     return $id;
 }
 function flashcards_update_instance($flashcards) {
