@@ -25,7 +25,7 @@ function flashcards_add_instance($flashcards) {
     global $DB;
     $object = new stdClass();
     $object->timecreated = time();
-<<<<<<< HEAD
+
     if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
         $flashcards -> intro = '';
     } else {
@@ -45,39 +45,6 @@ function flashcards_add_instance($flashcards) {
 
     $object = $DB->insert_record('mod_flashcards', $object);
     return;
-=======
-
-    
-    if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
-        $flashcards -> intro = '';
-       // $object->name = $flashcards->name;
-    } else {
-        $flashcards -> intro = $flashcards;
-    }
-    
-    $catids = explode(",", $flashcards->category);
-    
-    if ($flashcards->neworexistingcategory == 'new') {
-        $newcat = new stdClass();
-        $newcat -> name = $flashcards -> newcategoryname;
-        $newcat->contextid = $catids[1];
-        $newcat->info = 'Created via Flashcard Activity';
-        $qcid = $DB->insert_record('question_categories', $newcat);
-        $flashcards->categoryid = $qcid;
-
-    } else {
-        $flashcards -> categoryid = $catids[0];
-    }
-    
-    if(isset($flashcards->includesubcategories)){
-        $flashcards->inclsubcats = $flashcards->includesubcategories;
-    } 
-
-    //print_object($flashcards);
-    $id = $DB -> insert_record('flashcards', $flashcards);
-    
-    return $id;
->>>>>>> 101a3a91cab843c0b43e3bff8080f96c4cdf54f4
 }
 function flashcards_update_instance($flashcards) {
     
