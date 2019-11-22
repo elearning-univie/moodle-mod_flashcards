@@ -27,7 +27,8 @@ define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
 class mod_flashcards_mod_form extends moodleform_mod {
 
     function definition() {
-
+        global $CFG, $DB, $OUTPUT, $PAGE;
+        
         $mform =& $this->_form;
         $courseid = required_param('course', PARAM_INT);
         $context = [];
@@ -37,20 +38,21 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
+        // Introduction.
+        $this->standard_intro_elements();
+        
         $options = array(
             1 => FLASHCARDS_NEW,
             0 => FLASHCARDS_EXISTING
         );
 
-        // Introduction.
-        $this->standard_intro_elements();
-
-
         $mform->addElement('select', 'newcategory', get_string('newexistingcategory', 'flashcards'), $options);
         $mform->setType('newcategory', PARAM_INT);
         $mform->setDefault('newcategory', 1);
 
+        $fcstring = get_string('modulename', 'flashcards');
         $mform->addElement('text', 'newcategoryname', get_string('newcategoryname','flashcards'),  array('size'=>'64'));
+        $mform->setDefault('newcategoryname',get_string('modulenameplural', 'flashcards'));
         $mform->setType('newcategoryname', PARAM_TEXT);
         $mform->hideIf('newcategoryname', 'newcategory', 'eq', 0);
         
@@ -60,7 +62,10 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'includesubcategories', get_string('includesubcategories', 'flashcards'));
         $mform->hideIf('includesubcategories', 'newcategory', 'eq', 1);
 
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
+
+        $PAGE->requires->js_call_amd('mod_flashcards/autofillcatname', 'init', ['fcstring' => $fcstring]);
     }
 }

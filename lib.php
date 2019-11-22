@@ -16,31 +16,37 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot."/question/category_class.php");
-
 function flashcards_add_instance($flashcards) {
-    global $DB;
+    global $DB, $CFG;
+    require_once ('locallib.php');
+    
     $object = new stdClass();
     $object->timecreated = time();
-
+    $courseid = required_param('course', PARAM_INT);
+    $context = [];
+    $context[] = context_course::instance($courseid);
+    
+    print_object($context);
     if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
         $flashcards -> intro = '';
     } else {
         $flashcards -> intro = $flashcards;
     }
 
-    $catids = explode(",", $flashcards->category);
+    list($catid, $catcontextid) = explode(",", $flashcards->category);
 
     if ($flashcards->newcategory) {
-        $newcat = new stdClass();
-        $newcat -> name = $flashcards -> newcategoryname;
-        $newcat->contextid = $catids[1];
-        $newcat->info = 'Created via Flashcard Activity';
-        $qcid = $DB->insert_record('question_categories', $newcat);
-        $flashcards->categoryid = $qcid;
-        
+
+        $defaultcategoryobj = question_make_default_categories($context);
+        print_object($defaultcategoryobj);
+        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;        
+        $qcobject = new question_category_object(new moodle_page(), new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
+           $context, $defaultcategoryobj->id, $defaultcategory, null, null);
+
+        $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
+        $flashcards -> categoryid = $categoryid;        
     } else {
-        $flashcards -> categoryid = $catids[0];
+        $flashcards -> categoryid = $catid;
     }
 
     $id = $DB -> insert_record('flashcards', $flashcards);
