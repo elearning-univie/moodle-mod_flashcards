@@ -17,16 +17,18 @@
 defined('MOODLE_INTERNAL') || die();
 
 function flashcards_add_instance($flashcards) {
-    global $DB, $CFG;
+    global $DB, $CFG, $COURSE;
     require_once ('locallib.php');
     
     $object = new stdClass();
     $object->timecreated = time();
-    $courseid = required_param('course', PARAM_INT);
+    $courseid = $COURSE->id;
     $context = [];
     $context[] = context_course::instance($courseid);
     
-    print_object($context);
+    $coursecontext = context_course::instance($courseid);
+    $contexts = [$coursecontext->id => $coursecontext]; 
+
     if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
         $flashcards -> intro = '';
     } else {
@@ -37,8 +39,8 @@ function flashcards_add_instance($flashcards) {
 
     if ($flashcards->newcategory) {
 
-        $defaultcategoryobj = question_make_default_categories($context);
-        print_object($defaultcategoryobj);
+        $defaultcategoryobj = question_make_default_categories($contexts);
+        
         $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;        
         $qcobject = new question_category_object(new moodle_page(), new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
@@ -49,15 +51,23 @@ function flashcards_add_instance($flashcards) {
         $flashcards -> categoryid = $catid;
     }
 
-    $id = $DB -> insert_record('flashcards', $flashcards);
+     $id = $DB -> insert_record('flashcards', $flashcards);
     
     return $id;
 }
 function flashcards_update_instance($flashcards) {
-    
+    global $DB, $CFG;
+    require_once ('locallib.php');
+
+    $flashcards->id = $flashcards->instance;
+    $DB->update_record('flashcards', $flashcards);
+
+    return true;
 }
 function flashcards_delete_instance($id) {
     global $DB;
 
     $DB->delete_records('flashcards', ['id' => $id]);
+    
+    return true;
 }
