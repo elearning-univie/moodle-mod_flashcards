@@ -4,6 +4,7 @@ $string['flashcardname'] = 'Flash cards activity name';
 $string['iknewit'] = 'I knew it';
 $string['ididntknowit'] = 'I was wrong';
 $string['modulename'] = 'Flash cards';
+$string['modulename_help'] =  'The flash cards activity allows the teacher to create a set of flashcards for the student.';
 $string['modulenameplural'] = 'Flash Cards';
 $string['newcategory']='New';
 $string['newcategoryname'] = 'New category name';
