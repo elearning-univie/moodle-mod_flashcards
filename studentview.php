@@ -21,7 +21,7 @@ global $PAGE, $OUTPUT, $COURSE, $USER;
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
@@ -40,6 +40,9 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
-print("THIS IS STUDENT VIEW.");
+print("THIS IS STUDENT VIEW.2");
+$renderer = $PAGE->get_renderer('core');
+$templatestablecontext["wwwroot"] = $CFG->wwwroot;
+echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
 
 echo $OUTPUT->footer();
