@@ -41,8 +41,17 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
 print("THIS IS STUDENT VIEW.2");
+
 $renderer = $PAGE->get_renderer('core');
 $templatestablecontext["wwwroot"] = $CFG->wwwroot;
 echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
+
+$sql = "SELECT g.id, l.content, g.sticky FROM {tool_gnotify_tpl_ins} g, {tool_gnotify_tpl_lang} l " .
+  "WHERE :time between fromdate AND todate AND l.lang = 'en' AND l.tplid = g.tplid AND NOT EXISTS " .
+  "(SELECT 1 FROM {tool_gnotify_tpl_ins_ack} a WHERE g.id=a.insid AND a.userid = :userid)";
+
+$records = $DB->get_records_sql($sql, ['time' => time(), 'userid' => $USER->id]);
+$htmlcontent = format_text($record->content, FORMAT_HTML, $formatoptions);
+$htmlcontent = $renderer->render_direct($htmlcontent, $varray);
 
 echo $OUTPUT->footer();
