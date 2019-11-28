@@ -15,5 +15,5 @@ $string['pagetitle'] = 'Moodle Flashcard';
 $string['pluginadministration'] = 'Flashcard administration';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['includesubcategories'] = 'include subcategories';
-$string['box'] = 'Box';
-$string['opencardnumber'] = 'Open: X Cards';
+$string['box'] = 'Box {{currentbox}}';
+$string['opencardnumber'] = 'Open: {{count}} Cards';
