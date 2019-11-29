@@ -52,11 +52,38 @@ print("THIS IS STUDENT VIEW.");
 $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
 $records = $DB->get_recordset_sql($sql, ['userid' => 1]);
 
-$boxindex = 0;
+$boxarray=createboxvaluearray($records);
 
-foreach ($records as $record) {
+$renderer = $PAGE->get_renderer('core');
+$templatestablecontext['boxes'] = $boxarray;
+echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
 
-  while ($record->currentbox != $boxindex) {
+$PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init' );
+
+echo $OUTPUT->footer();
+
+function createboxvaluearray($records) {
+  $boxindex = 0;
+  foreach ($records as $record) {
+
+    while ($record->currentbox != $boxindex) {
+      $boxvalues['currentbox'] = $boxindex;
+      $boxvalues['count'] = 0;
+
+      $boxarray[$boxindex] = $boxvalues;
+      $boxindex++;
+    }
+
+    if ($record->currentbox = $boxindex) {
+      $boxvalues['currentbox'] = $boxindex;
+      $boxvalues['count'] = $record->count;
+
+      $boxarray[$boxindex] = $boxvalues;
+      $boxindex++;
+    }
+  }
+
+  while ($boxindex <= 5) {
     $boxvalues['currentbox'] = $boxindex;
     $boxvalues['count'] = 0;
 
@@ -64,25 +91,5 @@ foreach ($records as $record) {
     $boxindex++;
   }
 
-  if ($record->currentbox = $boxindex) {
-    $boxvalues['currentbox'] = $boxindex;
-    $boxvalues['count'] = $record->count;
-
-    $boxarray[$boxindex] = $boxvalues;
-    $boxindex++;
-  }
+  return $boxarray;
 }
-
-while ($boxindex <= 5) {
-  $boxvalues['currentbox'] = $boxindex;
-  $boxvalues['count'] = 0;
-
-  $boxarray[$boxindex] = $boxvalues;
-  $boxindex++;
-}
-
-$renderer = $PAGE->get_renderer('core');
-$templatestablecontext['boxes'] = $boxarray;
-echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
-
-echo $OUTPUT->footer();
