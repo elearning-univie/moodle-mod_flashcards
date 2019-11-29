@@ -1,4 +1,5 @@
 <?php
+$string['addflashcardbutton'] = 'Add flash card';
 $string['existingcategory']='Existing';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['iknewit'] = 'I knew it';

@@ -16,7 +16,7 @@
 
 require('../../config.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -26,8 +26,16 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 require_login($course, false, $cm);
 
 $flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
+$questionstemp = $DB->get_recordset('question', array('category'=> $flashcards->categoryid));
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
+$questions = array();
+foreach ($questionstemp as $question){
+    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid'=>$course->id ));
+    $questions[] = ['name' => $question->name,
+        'qurl' =>  html_entity_decode($qurl->__toString())
+    ];
+}
+$PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -40,6 +48,25 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
-print("THIS IS TEACHER VIEW.");
+$baseurl = $CFG->wwwroot.'/question/question.php';
+$returnurl = '/mod/flashcards/teacherview.php?id='.$id;
+
+$params = array(
+    'courseid' => $course->id,
+    'category' => $flashcards -> categoryid,
+    'sesskey' => sesskey(),
+    'qtype' => 'flashcard',
+    'returnurl'=> $returnurl,
+);
+
+$link =  new moodle_url($baseurl, $params);
+
+$templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
+    'btnlink' => html_entity_decode($link->__toString()),
+    'questions' => $questions];
+
+$renderer = $PAGE->get_renderer('core');
+echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 echo $OUTPUT->footer();
+

@@ -27,7 +27,7 @@ require_login($course, false, $cm);
 
 $flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
