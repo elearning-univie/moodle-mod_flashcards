@@ -25,7 +25,7 @@ before_script:
     - moodle-plugin-ci phpcpd
     - moodle-plugin-ci phpmd
     - moodle-plugin-ci codechecker
-    - moodle-plugin-ci validate
+#    - moodle-plugin-ci validate
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat
 
