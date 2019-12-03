@@ -1,4 +1,4 @@
-<?php 
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,8 +17,7 @@
 /**
  * Multiple choice question definition classes.
  *
- * @package    flashcards
- * @subpackage multichoice
+ * @package    mod_flashcards
  * @copyright  2019 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
