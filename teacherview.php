@@ -27,12 +27,19 @@ require_login($course, false, $cm);
 
 $flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
 $questionstemp = $DB->get_recordset('question', array('category'=> $flashcards->categoryid));
+$baseurl = $CFG->wwwroot.'/question/question.php';
+$returnurl = '/mod/flashcards/teacherview.php?id='.$id;
 
 $questions = array();
 foreach ($questionstemp as $question){
     $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid'=>$course->id ));
+    $editurl = new  moodle_url('/question/question.php', array('returnurl'=> $returnurl, 'courseid'=>$course->id, 'id' => $question->id ));
+    $deleteurl = new  moodle_url('/question/edit.php', array('returnurl'=> $returnurl, 'courseid'=>$course->id, 'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
+    
     $questions[] = ['name' => $question->name,
-        'qurl' =>  html_entity_decode($qurl->__toString())
+        'qurl' =>  html_entity_decode($qurl->__toString()),
+        'deleteurl' => html_entity_decode($deleteurl->__toString()),
+        'editurl' => html_entity_decode($editurl->__toString())
     ];
 }
 $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
@@ -48,9 +55,6 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
-$baseurl = $CFG->wwwroot.'/question/question.php';
-$returnurl = '/mod/flashcards/teacherview.php?id='.$id;
-
 $params = array(
     'courseid' => $course->id,
     'category' => $flashcards -> categoryid,
@@ -63,6 +67,7 @@ $link =  new moodle_url($baseurl, $params);
 
 $templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
     'btnlink' => html_entity_decode($link->__toString()),
+    'qlabel' => get_string('question', 'flashcards'),
     'questions' => $questions];
 
 $renderer = $PAGE->get_renderer('core');

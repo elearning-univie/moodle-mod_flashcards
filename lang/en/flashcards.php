@@ -15,4 +15,5 @@ $string['noquestion'] = 'No question could be found.';
 $string['pagetitle'] = 'Moodle Flashcard';
 $string['pluginadministration'] = 'Flashcard administration';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
+$string['question'] = 'Question';
 $string['includesubcategories'] = 'include subcategories';
