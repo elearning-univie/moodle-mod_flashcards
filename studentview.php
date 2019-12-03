@@ -47,12 +47,10 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
-print("THIS IS STUDENT VIEW.");
-
 $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
-$records = $DB->get_recordset_sql($sql, ['userid' => 1]);
+$records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
 
-$boxarray=createboxvaluearray($records);
+$boxarray=create_boxvalue_array($records, $id);
 
 $renderer = $PAGE->get_renderer('core');
 $templatestablecontext['boxes'] = $boxarray;
@@ -62,13 +60,14 @@ $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init' );
 
 echo $OUTPUT->footer();
 
-function createboxvaluearray($records) {
+function create_boxvalue_array($records, $id) {
   $boxindex = 0;
   foreach ($records as $record) {
 
     while ($record->currentbox != $boxindex) {
       $boxvalues['currentbox'] = $boxindex;
       $boxvalues['count'] = 0;
+      $boxvalues['redirecturl'] = null;
 
       $boxarray[$boxindex] = $boxvalues;
       $boxindex++;
@@ -77,6 +76,7 @@ function createboxvaluearray($records) {
     if ($record->currentbox = $boxindex) {
       $boxvalues['currentbox'] = $boxindex;
       $boxvalues['count'] = $record->count;
+      $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
 
       $boxarray[$boxindex] = $boxvalues;
       $boxindex++;
@@ -86,6 +86,7 @@ function createboxvaluearray($records) {
   while ($boxindex <= 5) {
     $boxvalues['currentbox'] = $boxindex;
     $boxvalues['count'] = 0;
+    $boxvalues['redirecturl'] = null;
 
     $boxarray[$boxindex] = $boxvalues;
     $boxindex++;

@@ -1,8 +1,10 @@
 <div id="mod-flashcards-boxes">
 {{#boxes}}
     <div class="span3">
-        <button class="mod-flashcards btn-box btn mr-3 mb-3" onclick="$.mod_flashcards_load_questions({{currentbox}})"> {{# str }} box, mod_flashcards {{/ str }}
+        <a href="{{{redirecturl}}}">
+            <button class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
             <br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>
+        </a>
     </div>
 {{/boxes}}
 </div>
