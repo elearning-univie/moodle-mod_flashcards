@@ -20,8 +20,8 @@
  * Setting the $plugin->version to 0 prevents the plugin from being installed.
  * See https://docs.moodle.org/dev/version.php for more info.
  *
- * @package   mod_moodleoverflow
- * @copyright 2017 Kennet Winter <k_wint10@uni-muenster.de>
+ * @package   mod_flashcards
+ * @copyright 2019 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

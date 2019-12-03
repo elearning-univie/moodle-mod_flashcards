@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * German lang strings
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['existingcategory']='Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
