@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  * flashcards_add_instance
  *
  * @param array $flashcards
- * @return bool 
+ * @return bool
  */
 function flashcards_add_instance($flashcards) {
     global $DB, $CFG, $COURSE;
@@ -53,8 +53,8 @@ function flashcards_add_instance($flashcards) {
     if ($flashcards->newcategory) {
 
         $defaultcategoryobj = question_make_default_categories($contexts);
-        
-        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;        
+
+        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
         $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
 
