@@ -31,21 +31,21 @@ defined('MOODLE_INTERNAL') || die();
  */
 function flashcards_add_instance($flashcards) {
     global $DB, $CFG, $COURSE;
-    require_once ('locallib.php');
-    
+    require_once('locallib.php');
+
     $object = new stdClass();
     $object->timecreated = time();
     $courseid = $COURSE->id;
     $context = [];
     $context[] = context_course::instance($courseid);
-    
-    $coursecontext = context_course::instance($courseid);
-    $contexts = [$coursecontext->id => $coursecontext]; 
 
-    if (property_exists($flashcards, 'intro') || $flashcards -> intro == null) {
-        $flashcards -> intro = '';
+    $coursecontext = context_course::instance($courseid);
+    $contexts = [$coursecontext->id => $coursecontext];
+
+    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
+        $flashcards->intro = '';
     } else {
-        $flashcards -> intro = $flashcards;
+        $flashcards->intro = $flashcards;
     }
 
     list($catid, $catcontextid) = explode(",", $flashcards->category);
@@ -59,13 +59,13 @@ function flashcards_add_instance($flashcards) {
            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
 
         $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
-        $flashcards -> categoryid = $categoryid;        
+        $flashcards->categoryid = $categoryid;
     } else {
-        $flashcards -> categoryid = $catid;
+        $flashcards->categoryid = $catid;
     }
 
-     $id = $DB -> insert_record('flashcards', $flashcards);
-    
+     $id = $DB->insert_record('flashcards', $flashcards);
+
     return $id;
 }
 /**
@@ -76,7 +76,7 @@ function flashcards_add_instance($flashcards) {
  */
 function flashcards_update_instance($flashcards) {
     global $DB, $CFG;
-    require_once ('locallib.php');
+    require_once('locallib.php');
 
     $flashcards->id = $flashcards->instance;
     $DB->update_record('flashcards', $flashcards);
@@ -93,6 +93,6 @@ function flashcards_delete_instance($id) {
     global $DB;
 
     $DB->delete_records('flashcards', ['id' => $id]);
-    
+
     return true;
 }

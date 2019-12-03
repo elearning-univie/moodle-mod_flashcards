@@ -23,16 +23,16 @@
  */
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
-$string['existingcategory']='Existiert';
+$string['existingcategory'] = 'Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['iknewit'] = 'Richtig';
 $string['ididntknowit'] = 'Falsch';
 $string['modulename'] = 'Lernkartei';
-$string['modulename_help'] =  'Die Lernkartei Aktivität ermöglicht dem Lehrenden eine LErnkartei für Studierende anzulegen.';
+$string['modulename_help'] = 'Die Lernkartei Aktivität ermöglicht dem Lehrenden eine LErnkartei für Studierende anzulegen.';
 $string['modulenameplural'] = 'Lernkartei';
-$string['newcategory']='Neu';
+$string['newcategory'] = 'Neu';
 $string['newcategoryname'] = 'Neuer Kategorie Name';
-$string['newexistingcategory']='Neue oder existierende Kategorie';
+$string['newexistingcategory'] = 'Neue oder existierende Kategorie';
 $string['userpreferences'] = 'Benutzereigenschaften';
 $string['noquestion'] = 'Es konnte keine Frage gefunden werden.';
 $string['pagetitle'] = 'Moodle Lernkartei';

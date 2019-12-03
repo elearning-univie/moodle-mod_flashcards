@@ -32,7 +32,7 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
 require_login($course, false, $cm);
 
-$flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
+$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);

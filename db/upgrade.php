@@ -41,14 +41,14 @@ function xmldb_flashcards_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2019111800) {
-        
+
         // Changing type of field inclsubcats on table flashcards to int.
         $table = new xmldb_table('flashcards');
         $field = new xmldb_field('inclsubcats', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'categoryid');
-        
+
         // Launch change of type for field inclsubcats.
         $dbman->change_field_type($table, $field);
-        
+
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2019111800, 'flashcards');
     }

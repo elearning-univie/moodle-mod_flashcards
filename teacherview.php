@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Flashcards Teacher view 
+ * Flashcards Teacher view
  *
  * @package    mod_flashcards
  * @copyright  2019 University of Vienna
@@ -32,19 +32,19 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
 require_login($course, false, $cm);
 
-$flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
-$questionstemp = $DB->get_recordset('question', array('category'=> $flashcards->categoryid));
+$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+$questionstemp = $DB->get_recordset('question', array('category' => $flashcards->categoryid));
 $baseurl = $CFG->wwwroot.'/question/question.php';
 $returnurl = '/mod/flashcards/teacherview.php?id='.$id;
 
 $questions = array();
-foreach ($questionstemp as $question){
-    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid'=>$course->id ));
-    $editurl = new  moodle_url('/question/question.php', array('returnurl'=> $returnurl, 'courseid'=>$course->id, 'id' => $question->id ));
-    $deleteurl = new  moodle_url('/question/edit.php', array('returnurl'=> $returnurl, 'courseid'=>$course->id, 'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
-    
+foreach ($questionstemp as $question) {
+    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
+    $editurl = new moodle_url('/question/question.php', array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
+    $deleteurl = new moodle_url('/question/edit.php', array('returnurl' => $returnurl, 'courseid' => $course->id, 'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
+
     $questions[] = ['name' => $question->name,
-        'qurl' =>  html_entity_decode($qurl->__toString()),
+        'qurl' => html_entity_decode($qurl->__toString()),
         'deleteurl' => html_entity_decode($deleteurl->__toString()),
         'editurl' => html_entity_decode($editurl->__toString())
     ];
@@ -64,13 +64,13 @@ echo $OUTPUT->heading($flashcards->name);
 
 $params = array(
     'courseid' => $course->id,
-    'category' => $flashcards -> categoryid,
+    'category' => $flashcards->categoryid,
     'sesskey' => sesskey(),
     'qtype' => 'flashcard',
-    'returnurl'=> $returnurl,
+    'returnurl' => $returnurl,
 );
 
-$link =  new moodle_url($baseurl, $params);
+$link = new moodle_url($baseurl, $params);
 
 $templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
     'btnlink' => html_entity_decode($link->__toString()),
@@ -81,4 +81,3 @@ $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 echo $OUTPUT->footer();
-
