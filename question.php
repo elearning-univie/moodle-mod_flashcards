@@ -1,4 +1,27 @@
 <?php 
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Multiple choice question definition classes.
+ *
+ * @package    flashcards
+ * @subpackage multichoice
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 global $DB, $PAGE, $OUTPUT;
@@ -13,7 +36,6 @@ $PAGE->set_context($context);
 //TODO heading;
 $PAGE->set_heading("heading");
 echo $OUTPUT->header();
-
 
 $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
 $quba->set_preferred_behaviour('adaptivenopenalty');
@@ -32,9 +54,7 @@ foreach($questionids as $questionid) {
     $quba->add_question($question, 1);
 }
 $quba->start_all_questions();
-// $id = question_engine::save_questions_usage_by_activity($quba);
-// question_engine::load_questions_usage_by_activity();
-// print_object($quba);
+
 $renderer = $PAGE->get_renderer('core');
 $params = [];
 
@@ -53,6 +73,5 @@ $options->numpartscorrect = question_display_options::HIDDEN;
 echo $question->questiontext;
 
 echo $quba->render_question(1, $options);
-
 
 echo $OUTPUT->footer();

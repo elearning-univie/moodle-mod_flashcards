@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Multiple choice question definition classes.
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    //  It must be included from a Moodle page
 }
@@ -24,8 +32,20 @@ require_once($CFG->dirroot.'/mod/flashcards/lib.php');
 define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
 define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
 
+/**
+ * mod_flashcards_mod_form
+ *
+ * mod_flashcards_mod_form...
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class mod_flashcards_mod_form extends moodleform_mod {
-
+    /**
+     * definition()
+     *
+     */
     function definition() {
         global $CFG, $DB, $OUTPUT, $PAGE, $COURSE;
         

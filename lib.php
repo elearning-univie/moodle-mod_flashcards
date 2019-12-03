@@ -14,8 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Flashcards lib
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
+defined('MOODLE_INTERNAL') || die();
+/**
+ * flashcards_add_instance
+ *
+ * @param array $flashcards
+ * @return bool 
+ */
 function flashcards_add_instance($flashcards) {
     global $DB, $CFG, $COURSE;
     require_once ('locallib.php');
@@ -55,6 +68,12 @@ function flashcards_add_instance($flashcards) {
     
     return $id;
 }
+/**
+ * flashcards_update_instance
+ *
+ * @param array $flashcards
+ * @return bool
+ */
 function flashcards_update_instance($flashcards) {
     global $DB, $CFG;
     require_once ('locallib.php');
@@ -64,6 +83,12 @@ function flashcards_update_instance($flashcards) {
 
     return true;
 }
+/**
+ * flashcards_delete_instance
+ *
+ * @param int $id
+ * @return bool
+ */
 function flashcards_delete_instance($id) {
     global $DB;
 

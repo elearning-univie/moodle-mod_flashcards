@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Flashcards Teacher view 
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 require('../../config.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
