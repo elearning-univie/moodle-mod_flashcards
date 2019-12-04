@@ -54,7 +54,7 @@ echo $OUTPUT->heading($flashcards->name);
 #echo '<form id="responseform" method="post" action="' . $PAGE->url .
 #        '" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
 $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
-echo '<form id="responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update()" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
+echo '<form id="responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' . $id . ',' . $questionid . ')" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
 
 $jsmodule = array(
         'name' => 'core_question_engine',
