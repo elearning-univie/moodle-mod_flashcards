@@ -28,7 +28,7 @@ require_login($course, false, $cm);
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/studentquiz.php", ['id' => $id, 'box' => $box]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 
 if ($node) {
@@ -39,9 +39,6 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
-
 $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
 $quba->set_preferred_behaviour('immediatefeedback');
 $questionid = get_question_for_student_course_box($USER->id, $box);
@@ -49,12 +46,15 @@ $question = question_bank::load_question($questionid);
 $quba->add_question($question, 1);
 $quba->start_all_questions();
 question_engine::save_questions_usage_by_activity($quba);
-
 #echo '<input type="hidden" name="slots" value="' . implode(',', 1) . "\" />\n";
 #echo '<input type="hidden" name="scrollpos" value="" />';
 
-echo '<form id="responseform" method="post" action="' .
-        '" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
+echo $OUTPUT->header();
+echo $OUTPUT->heading($flashcards->name);
+#echo '<form id="responseform" method="post" action="' . $PAGE->url .
+#        '" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
+$PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
+echo '<form id="responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update()" enctype="multipart/form-data" accept-charset="utf-8">', "\n<div>\n";
 
 $jsmodule = array(
         'name' => 'core_question_engine',
