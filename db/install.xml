@@ -26,7 +26,7 @@
         <FIELD NAME="flashcardsid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="active" TYPE="binary" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="currentbox" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="lastanswered" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="tries" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

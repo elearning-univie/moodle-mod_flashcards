@@ -63,7 +63,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         $table->add_field('flashcardsid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('active', XMLDB_TYPE_BINARY, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
         $table->add_field('currentbox', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         $table->add_field('lastanswered', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('tries', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
