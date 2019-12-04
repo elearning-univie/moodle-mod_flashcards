@@ -54,10 +54,8 @@ $boxarray=create_boxvalue_array($records, $id);
 
 $renderer = $PAGE->get_renderer('core');
 $templatestablecontext['boxes'] = $boxarray;
+
 echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
-
-$PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init' );
-
 echo $OUTPUT->footer();
 
 function create_boxvalue_array($records, $id) {
