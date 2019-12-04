@@ -1,0 +1,46 @@
+<section>
+    <table class="generaltable fullwidth">
+        <thead>
+        <tr>
+            <th style="width: 94%" class="header name">{{qlabel}}</th>
+            <th style="width: 2%" class="header iconcol editaction" scope="col">&#160;</th>
+            <th style="width: 2%" class="header iconcol previewaction" scope="col">&#160;</th>
+            <th style="width: 2%" class="header iconcol deleteaction" scope="col">&#160;</th>
+        </tr>
+        </thead>
+        <tbody class="table">
+        {{#questions}}
+            <tr class="table-row">
+                <td class="table-cell">
+                    {{name}}
+                </td>
+                <td class="iconcol editaction">
+                    <a title="Edit" href="{{editurl}}">
+                         <i class="icon fa fa-cog fa-fw " title="Edit" aria-label="Edit"></i>
+                    </a>
+                 </td>
+                <td class="iconcol previewaction">
+                    <a href="{{qurl}}" id="action_link5de0e9d32ce5523" class="" title="Preview">
+                        <i class="icon fa fa-search-plus fa-fw iconsmall" title="Preview" aria-label="Preview"></i>
+                     </a>
+                </td>
+                <td class="iconcol deleteaction">
+                    <a title="Delete" href="{{deleteurl}}">
+                       <i class="icon fa fa-trash fa-fw " title="Delete" aria-label="Delete"></i>
+                    </a>
+                </td>
+            </tr>
+        {{/questions}}
+
+        </tbody>
+    </table>
+    
+</section>
+<section>
+<div>
+<button onclick="window.location.href = '{{btnlink}}';"> {{btnlabel}} </button>
+</div>
+</section> 
+
+
+

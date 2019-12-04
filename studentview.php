@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Flashcards Student view
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 require('../../config.php');
 
 global $PAGE, $OUTPUT, $COURSE, $USER;
@@ -25,9 +32,9 @@ $context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
 require_login($course, false, $cm);
 
-$flashcards = $DB->get_record('flashcards', array('id'=> $cm->instance));
+$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
