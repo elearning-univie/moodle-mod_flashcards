@@ -15,13 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Flashcards Student view
+ * Multiple choice question definition classes.
  *
  * @package    mod_flashcards
  * @copyright  2019 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require('../../config.php');
+require_once('../../config.php');
+
+$id = required_param('id', PARAM_INT);           // Course ID
+
+// Ensure that the course specified is valid
+if (!$course = $DB->get_record('course', array('id'=> $id))) {
+    print_error('Course ID is incorrect');
+}
 
 global $PAGE, $OUTPUT, $COURSE, $USER;
 
@@ -34,7 +41,7 @@ require_login($course, false, $cm);
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -44,51 +51,10 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
+$redirecturl = new moodle_url('/mod/flashcards/view.php', array('id' => $id, ));
+redirect($redirecturl);
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
-$sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
-$records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
-
-$boxarray=create_boxvalue_array($records, $id);
-
-$renderer = $PAGE->get_renderer('core');
-$templatestablecontext['boxes'] = $boxarray;
-
-echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
 echo $OUTPUT->footer();
-
-function create_boxvalue_array($records, $id) {
-  $boxindex = 0;
-  foreach ($records as $record) {
-
-    while ($record->currentbox != $boxindex) {
-      $boxvalues['currentbox'] = $boxindex;
-      $boxvalues['count'] = 0;
-      $boxvalues['redirecturl'] = null;
-
-      $boxarray[$boxindex] = $boxvalues;
-      $boxindex++;
-    }
-
-    if ($record->currentbox = $boxindex) {
-      $boxvalues['currentbox'] = $boxindex;
-      $boxvalues['count'] = $record->count;
-      $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
-
-      $boxarray[$boxindex] = $boxvalues;
-      $boxindex++;
-    }
-  }
-
-  while ($boxindex <= 5) {
-    $boxvalues['currentbox'] = $boxindex;
-    $boxvalues['count'] = 0;
-    $boxvalues['redirecturl'] = null;
-
-    $boxarray[$boxindex] = $boxvalues;
-    $boxindex++;
-  }
-
-  return $boxarray;
-}
