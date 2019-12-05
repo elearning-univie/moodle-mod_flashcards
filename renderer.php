@@ -2,6 +2,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once('locallib.php');
+
 class renderer {
     var $userid;
     var $box;
@@ -40,7 +42,9 @@ class renderer {
     function render_question() {
         global $PAGE;
 
-        $this->context = $PAGE->context;
+        $cm = get_coursemodule_from_instance("flashcards", 1);
+        $context = context_module::instance($cm->id);
+        $PAGE->set_context($context);
 
         $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
         $jsmodule = array(
@@ -50,7 +54,7 @@ class renderer {
         $PAGE->requires->js_init_call('M.core_question_engine.init_form',
                 array('#mod-flashcards-responseform'), false, $jsmodule);
 
-        $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $this->context);
+        $quba = question_engine::make_questions_usage_by_activity('flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
         $questionid = $this->get_question_for_student_course_box($this->userid, $this->box);
         $question = question_bank::load_question($questionid);
