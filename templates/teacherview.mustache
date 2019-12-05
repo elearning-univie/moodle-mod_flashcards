@@ -1,11 +1,27 @@
+  {{!                                                                                                                                 
+    This file is part of Moodle - http://moodle.org/                                                                                
+                                                                                                                                    
+    Moodle is free software: you can redistribute it and/or modify                                                                  
+    it under the terms of the GNU General Public License as published by                                                            
+    the Free Software Foundation, either version 3 of the License, or                                                               
+    (at your option) any later version.                                                                                             
+                                                                                                                                    
+    Moodle is distributed in the hope that it will be useful,                                                                       
+    but WITHOUT ANY WARRANTY; without even the implied warranty of                                                                  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                                                   
+    GNU General Public License for more details.                                                                                    
+                                                                                                                                    
+    You should have received a copy of the GNU General Public License                                                               
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.                                                                 
+  }}      
 <section>
     <table class="generaltable fullwidth">
         <thead>
         <tr>
-            <th style="width: 94%" class="header name">{{qlabel}}</th>
-            <th style="width: 2%" class="header iconcol editaction" scope="col">&#160;</th>
-            <th style="width: 2%" class="header iconcol previewaction" scope="col">&#160;</th>
-            <th style="width: 2%" class="header iconcol deleteaction" scope="col">&#160;</th>
+            <th class="header name">{{qlabel}}</th>
+            <th class="flashcards_teacherview_ec header iconcol editaction" scope="col">&#160;</th>
+            <th  class="flashcards_teacherview_ec header iconcol previewaction" scope="col">&#160;</th>
+            <th  class="flashcards_teacherview_ec header iconcol deleteaction" scope="col">&#160;</th>
         </tr>
         </thead>
         <tbody class="table">
@@ -16,17 +32,17 @@
                 </td>
                 <td class="iconcol editaction">
                     <a title="Edit" href="{{editurl}}">
-                         <i class="icon fa fa-cog fa-fw " title="Edit" aria-label="Edit"></i>
+                         <i class="icon fa fa-cog fa-fw " title="{{# str }} edit, moodle {{/ str }}" aria-label="{{# str }} edit, moodle {{/ str }}"></i>
                     </a>
                  </td>
                 <td class="iconcol previewaction">
                     <a href="{{qurl}}" id="action_link5de0e9d32ce5523" class="" title="Preview">
-                        <i class="icon fa fa-search-plus fa-fw iconsmall" title="Preview" aria-label="Preview"></i>
+                        <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
                      </a>
                 </td>
                 <td class="iconcol deleteaction">
                     <a title="Delete" href="{{deleteurl}}">
-                       <i class="icon fa fa-trash fa-fw " title="Delete" aria-label="Delete"></i>
+                       <i class="icon fa fa-trash fa-fw " title="{{# str }} delete, moodle {{/ str }}" aria-label="{{# str }} delete, moodle {{/ str }}"></i>
                     </a>
                 </td>
             </tr>
@@ -37,9 +53,9 @@
     
 </section>
 <section>
-<div>
-<button onclick="window.location.href = '{{btnlink}}';"> {{btnlabel}} </button>
-</div>
+   <div>
+      <button onclick="window.location.href = '{{btnlink}}';"> {{btnlabel}} </button>
+   </div>
 </section> 
 
 
