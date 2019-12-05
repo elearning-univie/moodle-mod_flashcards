@@ -23,7 +23,7 @@ $id = required_param('id', PARAM_INT);
 $box = required_param('box', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 
-$context = context_module::instance($course->id);
+$context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
