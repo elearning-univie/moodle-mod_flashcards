@@ -28,9 +28,27 @@ global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
+
 
 require_login($course, false, $cm);
+
+if (!has_capability('mod/flashcards:teacherview', $context) ) {
+    $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
+    $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
+    if ($node) {
+        $node->make_active();
+    }
+    $pagetitle = get_string('pagetitle', 'flashcards');
+    $PAGE->set_title($pagetitle);
+    $PAGE->set_heading($course->fullname);
+    
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+   // print_error('errornotallowedonpage', 'flashcards');
+} else {
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 $questionstemp = $DB->get_recordset('question', array('category' => $flashcards->categoryid));
@@ -82,3 +100,4 @@ $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 echo $OUTPUT->footer();
+}

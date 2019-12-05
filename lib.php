@@ -89,7 +89,7 @@ function flashcards_update_instance($flashcards) {
  * @param int $id
  * @return bool
  */
-function flashcards_delete_instance($id) {
+function flashcards_delete_instance(int $id) {
     global $DB;
 
     $DB->delete_records('flashcards', ['id' => $id]);

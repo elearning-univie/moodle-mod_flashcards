@@ -24,9 +24,9 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['existingcategory'] = 'Existing';
+$string['errornotallowedonpage'] = 'Not Allowed';
 $string['flashcardname'] = 'Flash cards activity name';
-$string['iknewit'] = 'I knew it';
-$string['ididntknowit'] = 'I was wrong';
+$string['flashcards:addinstance'] = 'Add new flash cards';
 $string['modulename'] = 'Flash cards';
 $string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';
 $string['modulenameplural'] = 'Flash Cards';
@@ -39,4 +39,4 @@ $string['pagetitle'] = 'Moodle Flashcard';
 $string['pluginadministration'] = 'Flashcard administration';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['question'] = 'Question';
-$string['includesubcategories'] = 'include subcategories';
+$string['includesubcategories'] = 'Include subcategories';
