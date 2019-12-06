@@ -28,33 +28,5 @@ $id = required_param('id', PARAM_INT);           // Course ID
 // Ensure that the course specified is valid
 if (!$course = $DB->get_record('course', array('id'=> $id))) {
     print_error('Course ID is incorrect');
+
 }
-
-global $PAGE, $OUTPUT, $COURSE, $USER;
-
-$id = required_param('id', PARAM_INT);
-list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
-$context = context_module::instance($cm->id);
-
-require_login($course, false, $cm);
-
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-
-$PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
-$node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-if ($node) {
-    $node->make_active();
-}
-
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
-
-$redirecturl = new moodle_url('/mod/flashcards/view.php', array('id' => $id, ));
-redirect($redirecturl);
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
-
-echo $OUTPUT->footer();
