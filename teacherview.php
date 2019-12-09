@@ -40,12 +40,12 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
     $pagetitle = get_string('pagetitle', 'flashcards');
     $PAGE->set_title($pagetitle);
     $PAGE->set_heading($course->fullname);
-    
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
-} 
+}
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
@@ -58,7 +58,7 @@ if ($flashcards->inclsubcats) {
 
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
-$sql= "SELECT id, name
+$sql = "SELECT id, name
            FROM   {question}
            WHERE  $sqlwhere";
 $questionstemp = $DB->get_records_sql($sql, $qcategories);

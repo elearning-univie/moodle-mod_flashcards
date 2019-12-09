@@ -49,7 +49,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
      */
     public function definition() {
         global $CFG, $DB, $PAGE, $COURSE;
-        
+
         $mform =& $this->_form;
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
@@ -75,18 +75,18 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->setDefault('newcategoryname', get_string('modulenameplural', 'flashcards'));
         $mform->setType('newcategoryname', PARAM_TEXT);
         $mform->hideIf('newcategoryname', 'newcategory', 'eq', 0);
-        
+
         $contexts = [];
         $contexts[] = $context;
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $contexts));
 
-        if(optional_param('update', 0, PARAM_INT)) {
+        if (optional_param('update', 0, PARAM_INT)) {
             $mform->setDefault('newcategory', 0);
             $flashcards = $DB->get_record('flashcards', array('id' => $this->_instance));
             $catdefault = "$flashcards->categoryid,$context->id";
             $mform->setDefault('category', $catdefault);
         }
-        
+
         $mform->addElement('checkbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
         $mform->hideIf('inclsubcats', 'newcategory', 'eq', 1);
 
