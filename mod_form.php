@@ -70,7 +70,6 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->setType('newcategory', PARAM_INT);
         $fcstring = get_string('modulename', 'flashcards');
         $mform->addElement('text', 'newcategoryname', get_string('newcategoryname', 'flashcards'), array('size' => '64'));
-
         $mform->setDefault('newcategoryname', get_string('modulenameplural', 'flashcards'));
         $mform->setType('newcategoryname', PARAM_TEXT);
         $mform->hideIf('newcategoryname', 'newcategory', 'eq', 0);
