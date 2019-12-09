@@ -44,11 +44,25 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
-
-} else {
+    die();
+} 
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-$questionstemp = $DB->get_recordset('question', array('category' => $flashcards->categoryid));
+
+if ($flashcards->inclsubcats) {
+    require_once($CFG->dirroot."/lib/questionlib.php");
+    $qcategories = question_categorylist($flashcards->categoryid);
+} else {
+    $qcategories = $flashcards->categoryid;
+}
+
+list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
+$sqlwhere = "category $sqlwhere";
+$sql= "SELECT id, name
+           FROM   {question}
+           WHERE  $sqlwhere";
+$questionstemp = $DB->get_records_sql($sql, $qcategories);
+
 $baseurl = $CFG->wwwroot.'/question/question.php';
 $returnurl = '/mod/flashcards/teacherview.php?id='.$id;
 
@@ -97,4 +111,3 @@ $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 echo $OUTPUT->footer();
-}

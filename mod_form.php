@@ -28,6 +28,7 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/flashcards/lib.php');
+require('../../config.php');
 
 define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
 define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
@@ -47,8 +48,13 @@ class mod_flashcards_mod_form extends moodleform_mod {
      *
      */
     public function definition() {
-        global $CFG, $DB, $OUTPUT, $PAGE, $COURSE;
+        global $CFG, $DB, $PAGE, $COURSE;
 
+        $id = required_param('id', PARAM_INT);
+        list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
+        $context = context_module::instance($cm->id);
+        print_object($context);
+        
         $mform =& $this->_form;
         $courseid = $COURSE->id;
         $context = [];
@@ -78,8 +84,8 @@ class mod_flashcards_mod_form extends moodleform_mod {
 
         $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $context));
 
-        $mform->addElement('checkbox', 'includesubcategories', get_string('includesubcategories', 'flashcards'));
-        $mform->hideIf('includesubcategories', 'newcategory', 'eq', 1);
+        $mform->addElement('checkbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
+        $mform->hideIf('inclsubcats', 'newcategory', 'eq', 1);
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
