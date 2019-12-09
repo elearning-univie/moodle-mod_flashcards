@@ -10,6 +10,19 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
                     },
                     fail: notification.exception
                 }]);
-        };}
+            };
+
+            $(".testbtnbtw").click(function() {
+                ajax.call([{
+                    methodname: 'mod_flashcards_load_questions',
+                    args: {courseid: 2},
+                    done: function() {
+                        window.location.reload();
+                    },
+                    fail: notification.exception
+                }]);
+            });
+
+        }
     };
 });
