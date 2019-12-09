@@ -27,10 +27,7 @@ global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
-//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
 $context = context_module::instance($cm->id);
-
 
 require_login($course, false, $cm);
 
@@ -43,15 +40,29 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
     $pagetitle = get_string('pagetitle', 'flashcards');
     $PAGE->set_title($pagetitle);
     $PAGE->set_heading($course->fullname);
-    
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
-   // print_error('errornotallowedonpage', 'flashcards');
-} else {
+    die();
+}
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-$questionstemp = $DB->get_recordset('question', array('category' => $flashcards->categoryid));
+
+if ($flashcards->inclsubcats) {
+    require_once($CFG->dirroot."/lib/questionlib.php");
+    $qcategories = question_categorylist($flashcards->categoryid);
+} else {
+    $qcategories = $flashcards->categoryid;
+}
+
+list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
+$sqlwhere = "category $sqlwhere";
+$sql = "SELECT id, name
+           FROM   {question}
+           WHERE  $sqlwhere";
+$questionstemp = $DB->get_records_sql($sql, $qcategories);
+
 $baseurl = $CFG->wwwroot.'/question/question.php';
 $returnurl = '/mod/flashcards/teacherview.php?id='.$id;
 
@@ -100,4 +111,3 @@ $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 echo $OUTPUT->footer();
-}
