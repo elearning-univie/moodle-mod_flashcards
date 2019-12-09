@@ -1,10 +1,18 @@
 <div id="mod-flashcards-boxes">
 {{#boxes}}
     <div class="span3">
-        <a href="{{{redirecturl}}}">
-            <button class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
-            <br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>
-        </a>
+        {{#loadquestions}}
+            <div class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
+                <br> {{# str }} opencardnumber, mod_flashcards {{/ str }} <br>
+                <button class="testbtnbtw">{{# str }} loadquestions, mod_flashcards {{/str}}</button>
+            </div>
+        {{/loadquestions}}
+        {{^loadquestions}}
+            <a href="{{{redirecturl}}}">
+                <button class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
+                    <br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>
+            </a>
+        {{/loadquestions}}
     </div>
 {{/boxes}}
 </div>

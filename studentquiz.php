@@ -46,5 +46,9 @@ echo $OUTPUT->heading($flashcards->name);
 
 $questionrenderer = new renderer($USER->id, $box, $id, $course->id);
 
-echo $questionrenderer->render_question();
+$questionhtml = '<div id="mod-flashcards-question">';
+$questionhtml .= $questionrenderer->render_question();
+$questionhtml .= '</div>';
+
+echo $questionhtml;
 echo $OUTPUT->footer();

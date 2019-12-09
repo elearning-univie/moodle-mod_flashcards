@@ -62,9 +62,7 @@ class renderer {
         $quba->start_all_questions();
         question_engine::save_questions_usage_by_activity($quba);
 
-        $result = '<div id="mod-flashcards-question">';
-
-        $result .= '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' . $this->flashcardsid .
+        $result = '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' . $this->flashcardsid .
                 ',' . $questionid . ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
@@ -75,7 +73,7 @@ class renderer {
         $options->generalfeedback = question_display_options::HIDDEN;
 
         $result .= $quba->render_question(1, $options);
-        $result .= '</div>';
+
 
         return $result;
     }
