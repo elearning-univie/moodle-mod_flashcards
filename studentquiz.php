@@ -17,17 +17,14 @@
 require('../../config.php');
 require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $USER;
 
 $id = required_param('id', PARAM_INT);
 $box = required_param('box', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
-
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentquiz.php", ['id' => $id, 'box' => $box]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
@@ -39,16 +36,22 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
-
-
 echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
 
-$questionrenderer = new renderer($USER->id, $box, $id, $course->id);
+if (has_capability('mod/flashcards:studentview', $context) ) {
+    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    echo $OUTPUT->heading($flashcards->name);
 
-$questionhtml = '<div id="mod-flashcards-question">';
-$questionhtml .= $questionrenderer->render_question();
-$questionhtml .= '</div>';
+    $questionrenderer = new renderer($USER->id, $box, $id, $course->id);
 
-echo $questionhtml;
-echo $OUTPUT->footer();
+    $questionhtml = '<div id="mod-flashcards-question">';
+    $questionhtml .= $questionrenderer->render_question();
+    $questionhtml .= '</div>';
+
+    echo $questionhtml;
+    echo $OUTPUT->footer();
+} else {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}

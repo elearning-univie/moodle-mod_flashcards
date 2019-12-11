@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Flashcards Student view
+ * Flashcards Teacher view
  *
  * @package    mod_flashcards
  * @copyright  2019 University of Vienna
@@ -24,20 +24,17 @@
 require('../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $USER, $DB;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-$PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
+
 if ($node) {
     $node->make_active();
 }
@@ -45,28 +42,35 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
-
 echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
 
-$sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
-$records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
-$categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
+if (has_capability('mod/flashcards:studentview', $context) ) {
+    $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
 
-$categories = question_categorylist($categoryid->categoryid);
+    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    echo $OUTPUT->heading($flashcards->name);
 
-list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-$sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = 1)";
+    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
+    $records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
+    $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
 
-$questioncount = $DB->count_records_sql($sql, $categorieids);
+    $categories = question_categorylist($categoryid->categoryid);
 
-$boxarray=create_boxvalue_array($records, $id, $questioncount);
+    list($inids, $categorieids) = $DB->get_in_or_equal($categories);
+    $sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
 
-$renderer = $PAGE->get_renderer('core');
-$templatestablecontext['boxes'] = $boxarray;
+    $questioncount = $DB->count_records_sql($sql, $categorieids);
+    $boxarray=create_boxvalue_array($records, $id, $questioncount);
+    $templatestablecontext['boxes'] = $boxarray;
 
-echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
-echo $OUTPUT->footer();
+    $renderer = $PAGE->get_renderer('core');
+    echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
+    echo $OUTPUT->footer();
+} else {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
 
 function create_boxvalue_array($records, $id, $boxzerocount) {
   $boxindex = 0;
