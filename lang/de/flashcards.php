@@ -23,19 +23,23 @@
  */
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
+$string['box'] = 'Fach {{currentbox}}';
 $string['existingcategory'] = 'Existiert';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
 $string['includesubcategories'] = 'Unterkategorien einbeziehen';
+$string['loadquestions'] = 'Lade Fragen';
 $string['modulename'] = 'Lernkartei';
 $string['modulename_help'] = 'Die Lernkartei Aktivität ermöglicht dem Lehrenden eine LErnkartei für Studierende anzulegen.';
 $string['modulenameplural'] = 'Lernkartei';
+$string['newcardnumber'] = 'Neu: {{count}} Karten';
 $string['newcategory'] = 'Neu';
 $string['newcategoryname'] = 'Neuer Kategorie Name';
 $string['newexistingcategory'] = 'Neue oder existierende Kategorie';
 $string['userpreferences'] = 'Benutzereigenschaften';
 $string['noquestion'] = 'Es konnte keine Frage gefunden werden.';
+$string['opencardnumber'] = 'Offen: {{count}} Karten';
 $string['pagetitle'] = 'Moodle Lernkartei';
 $string['pluginadministration'] = 'Lernkartei Administration';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
