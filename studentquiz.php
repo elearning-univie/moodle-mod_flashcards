@@ -22,6 +22,7 @@ global $PAGE, $OUTPUT, $USER;
 $id = required_param('id', PARAM_INT);
 $box = required_param('box', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
+
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
@@ -36,6 +37,7 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
+
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:studentview', $context) ) {
