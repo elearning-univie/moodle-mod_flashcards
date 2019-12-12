@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Flashcards Teacher view
+ * Flashcards Student view
  *
  * @package    mod_flashcards
  * @copyright  2019 University of Vienna
