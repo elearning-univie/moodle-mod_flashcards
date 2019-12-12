@@ -22,20 +22,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
+require_once($CFG->libdir . '/questionlib.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $USER, $DB;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
-$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+$context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
+
 if ($node) {
     $node->make_active();
 }
@@ -43,10 +42,91 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
-
 echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
 
-print("THIS IS STUDENT VIEW.");
+if (has_capability('mod/flashcards:studentview', $context)) {
+    $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
 
-echo $OUTPUT->footer();
+    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    echo $OUTPUT->heading($flashcards->name);
+
+    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
+    $records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
+    $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
+
+    $categories = question_categorylist($categoryid->categoryid);
+
+    list($inids, $categorieids) = $DB->get_in_or_equal($categories);
+    $sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN " .
+            "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
+
+    $questioncount = $DB->count_records_sql($sql, $categorieids);
+    $boxarray = create_boxvalue_array($records, $id, $questioncount);
+    $templatestablecontext['boxes'] = $boxarray;
+
+    $renderer = $PAGE->get_renderer('core');
+    echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
+    echo $OUTPUT->footer();
+} else {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
+
+/**
+ * Creates an array containing the values for the box overview.
+ *
+ * @param array $records Contains the box number and the question count to display
+ * @param int $id Course id
+ * @param int $boxzerocount Number of new questions for box 0
+ * @return array
+ */
+function create_boxvalue_array($records, $id, $boxzerocount) {
+    $boxindex = 0;
+    $boxvalues['currentbox'] = $boxindex;
+    $boxvalues['count'] = $boxzerocount;
+    $boxvalues['redirecturl'] = null;
+
+    if ($boxzerocount != 0) {
+        $boxvalues['loadquestions'] = true;
+    } else {
+        $boxvalues['loadquestions'] = false;
+    }
+
+    $boxarray[] = $boxvalues;
+
+    $boxvalues['loadquestions'] = false;
+    $boxindex++;
+
+    foreach ($records as $record) {
+
+        while ($record->currentbox != $boxindex) {
+            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['count'] = 0;
+            $boxvalues['redirecturl'] = null;
+
+            $boxarray[] = $boxvalues;
+            $boxindex++;
+        }
+
+        if ($record->currentbox = $boxindex) {
+            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['count'] = $record->count;
+            $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
+
+            $boxarray[] = $boxvalues;
+            $boxindex++;
+        }
+    }
+
+    while ($boxindex <= 5) {
+        $boxvalues['currentbox'] = $boxindex;
+        $boxvalues['count'] = 0;
+        $boxvalues['redirecturl'] = null;
+
+        $boxarray[] = $boxvalues;
+        $boxindex++;
+    }
+
+    return $boxarray;
+}

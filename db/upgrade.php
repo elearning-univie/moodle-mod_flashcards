@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * xmldb_streamlti_upgrade is the function that upgrades
@@ -36,7 +36,7 @@
  * @return boolean
  */
 function xmldb_flashcards_upgrade($oldversion) {
-    global $CFG, $DB, $OUTPUT;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
@@ -51,6 +51,36 @@ function xmldb_flashcards_upgrade($oldversion) {
 
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2019111800, 'flashcards');
+    }
+    if ($oldversion < 2019112500) {
+
+        // Define table flashcards_q_stud_rel to be created.
+        $table = new xmldb_table('flashcards_q_stud_rel');
+
+        // Adding fields to table flashcards_q_stud_rel.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('flashcardsid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('currentbox', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('lastanswered', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('tries', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('wronganswercount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table flashcards_q_stud_rel.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table flashcards_q_stud_rel.
+        $table->add_index('uniqueidindex', XMLDB_INDEX_UNIQUE, ['flashcardsid', 'questionid', 'studentid']);
+
+        // Conditionally launch create table for flashcards_q_stud_rel.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2019112500, 'flashcards');
     }
 
     return true;

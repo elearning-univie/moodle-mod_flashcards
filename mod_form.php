@@ -48,7 +48,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
      *
      */
     public function definition() {
-        global $CFG, $DB, $PAGE, $COURSE;
+        global $DB, $PAGE, $COURSE;
 
         $mform =& $this->_form;
         $courseid = $COURSE->id;
