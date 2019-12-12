@@ -52,7 +52,6 @@ function xmldb_flashcards_upgrade($oldversion) {
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2019111800, 'flashcards');
     }
-    
     if ($oldversion < 2019112500) {
 
         // Define table flashcards_q_stud_rel to be created.
