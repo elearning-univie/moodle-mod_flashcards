@@ -44,23 +44,25 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context) ) {
-    $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller','init');
+if (has_capability('mod/flashcards:studentview', $context)) {
+    $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
 
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
-    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
+    $sql =
+            "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
     $records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
     $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
 
     $categories = question_categorylist($categoryid->categoryid);
 
     list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-    $sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
+    $sql =
+            "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
 
     $questioncount = $DB->count_records_sql($sql, $categorieids);
-    $boxarray=create_boxvalue_array($records, $id, $questioncount);
+    $boxarray = create_boxvalue_array($records, $id, $questioncount);
     $templatestablecontext['boxes'] = $boxarray;
 
     $renderer = $PAGE->get_renderer('core');
@@ -81,51 +83,51 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
  * @return array
  */
 function create_boxvalue_array($records, $id, $boxzerocount) {
-  $boxindex = 0;
-  $boxvalues['currentbox'] = $boxindex;
-  $boxvalues['count'] = $boxzerocount;
-  $boxvalues['redirecturl'] = null;
+    $boxindex = 0;
+    $boxvalues['currentbox'] = $boxindex;
+    $boxvalues['count'] = $boxzerocount;
+    $boxvalues['redirecturl'] = null;
 
-  if ($boxzerocount != 0) {
-      $boxvalues['loadquestions'] = true;
-  } else {
-      $boxvalues['loadquestions'] = false;
-  }
+    if ($boxzerocount != 0) {
+        $boxvalues['loadquestions'] = true;
+    } else {
+        $boxvalues['loadquestions'] = false;
+    }
 
     $boxarray[] = $boxvalues;
 
     $boxvalues['loadquestions'] = false;
     $boxindex++;
 
-  foreach ($records as $record) {
+    foreach ($records as $record) {
 
-    while ($record->currentbox != $boxindex) {
-      $boxvalues['currentbox'] = $boxindex;
-      $boxvalues['count'] = 0;
-      $boxvalues['redirecturl'] = null;
+        while ($record->currentbox != $boxindex) {
+            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['count'] = 0;
+            $boxvalues['redirecturl'] = null;
 
-      $boxarray[] = $boxvalues;
-      $boxindex++;
+            $boxarray[] = $boxvalues;
+            $boxindex++;
+        }
+
+        if ($record->currentbox = $boxindex) {
+            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['count'] = $record->count;
+            $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
+
+            $boxarray[] = $boxvalues;
+            $boxindex++;
+        }
     }
 
-    if ($record->currentbox = $boxindex) {
-      $boxvalues['currentbox'] = $boxindex;
-      $boxvalues['count'] = $record->count;
-      $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
+    while ($boxindex <= 5) {
+        $boxvalues['currentbox'] = $boxindex;
+        $boxvalues['count'] = 0;
+        $boxvalues['redirecturl'] = null;
 
-      $boxarray[] = $boxvalues;
-      $boxindex++;
+        $boxarray[] = $boxvalues;
+        $boxindex++;
     }
-  }
 
-  while ($boxindex <= 5) {
-    $boxvalues['currentbox'] = $boxindex;
-    $boxvalues['count'] = 0;
-    $boxvalues['redirecturl'] = null;
-
-    $boxarray[] = $boxvalues;
-    $boxindex++;
-  }
-
-  return $boxarray;
+    return $boxarray;
 }

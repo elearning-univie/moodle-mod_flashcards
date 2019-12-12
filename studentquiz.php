@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Question View
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 require('../../config.php');
 
 global $PAGE, $OUTPUT, $USER;
@@ -39,7 +46,7 @@ $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context) ) {
+if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
