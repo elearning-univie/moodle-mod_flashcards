@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * xmldb_streamlti_upgrade is the function that upgrades
@@ -36,7 +36,7 @@
  * @return boolean
  */
 function xmldb_flashcards_upgrade($oldversion) {
-    global $CFG, $DB, $OUTPUT;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
@@ -53,7 +53,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2019111800, 'flashcards');
     }
     
-        if ($oldversion < 2019112500) {
+    if ($oldversion < 2019112500) {
 
         // Define table flashcards_q_stud_rel to be created.
         $table = new xmldb_table('flashcards_q_stud_rel');
@@ -84,6 +84,5 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2019112500, 'flashcards');
     }
 
-    
     return true;
 }

@@ -50,16 +50,15 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
-    $sql =
-            "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
+    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
     $records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
     $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
 
     $categories = question_categorylist($categoryid->categoryid);
 
     list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-    $sql =
-            "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
+    $sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN " .
+            "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
 
     $questioncount = $DB->count_records_sql($sql, $categorieids);
     $boxarray = create_boxvalue_array($records, $id, $questioncount);

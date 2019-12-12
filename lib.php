@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function flashcards_add_instance($flashcards) {
-    global $DB, $CFG, $COURSE;
+    global $DB, $COURSE;
     require_once('locallib.php');
 
     $object = new stdClass();
@@ -75,7 +75,7 @@ function flashcards_add_instance($flashcards) {
  * @return bool
  */
 function flashcards_update_instance($flashcards) {
-    global $DB, $CFG;
+    global $DB;
     require_once('locallib.php');
 
     $flashcards->id = $flashcards->instance;
