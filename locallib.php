@@ -24,5 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+global $CFG;
+
 require_once($CFG->dirroot."/question/category_class.php");
 require_once($CFG->dirroot."/question/editlib.php");
