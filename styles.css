@@ -3,10 +3,20 @@
 #page-content .que .content {margin: 0;}
 th.flashcards_teacherview_ec {width: 2%;}
 
-.mod-flashcards.btn-box.btn {
+.mod-flashcards.btn-div {
+    display: inline-block;
+    margin-bottom: 1em;
+}
+
+.mod-flashcards.btn {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     border-radius: 0px;
     text-align: left;
-    min-width: 12em;
-    min-height: 7em;
+    min-width: 10em;
+    min-height: 8em;
+    width: 100%;
+}
+
+.mod-flashcards.btn-learn-now {
+    height: 100%;
 }
