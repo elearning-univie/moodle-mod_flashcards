@@ -29,6 +29,7 @@ $string['errornotallowedonpage'] = 'Not Allowed';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
 $string['includesubcategories'] = 'include subcategories';
+$string['learnnow'] = 'Learn now';
 $string['loadquestions'] = 'load questions';
 $string['modulename'] = 'Flash cards';
 $string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';

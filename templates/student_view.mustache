@@ -1,18 +1,27 @@
-<div id="mod-flashcards-boxes">
-    {{#boxes}}
-        <div class="span3">
-            {{#loadquestions}}
-                <div class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
-                    <br> {{# str }} newcardnumber, mod_flashcards {{/ str }} <br>
-                    <button class="md-flashcards-ld-q-btn">{{# str }} loadquestions, mod_flashcards {{/str}}</button>
-                </div>
-            {{/loadquestions}}
-            {{^loadquestions}}
-                <a href="{{{redirecturl}}}">
-                    <button class="mod-flashcards btn-box btn mr-3 mb-3"> {{# str }} box, mod_flashcards {{/ str }}
-                        <br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>
-                </a>
-            {{/loadquestions}}
+<div class="container m-0">
+    <div class="row">
+        <div class="col-md-9 col-sm-12 col-xs-12">
+            <div id="mod-flashcards-boxes">
+                {{#boxes}}{{!
+                    }}{{#loadquestions}}{{!
+                        }}<div class="mod-flashcards btn-box btn col-md-3 col-xs-12 "> {{# str }} box, mod_flashcards {{/ str }}<br> {{# str }} newcardnumber, mod_flashcards {{/ str }} <br>{{!
+                            }}<button class="md-flashcards-ld-q-btn">{{# str }} loadquestions, mod_flashcards {{/str}}</button>{{!
+                        }}</div>{{!
+                    }}{{/loadquestions}}{{!
+                    }}{{^loadquestions}}{{!
+                        }}<div class="mod-flashcards btn-div col-md-4 col-sm-12 col-xs-12"><a href="{{{redirecturl}}}">{{!
+                            }}<button class="mod-flashcards btn btn-secondary"> {{# str }} box, mod_flashcards {{/ str }}<br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>{{!
+                        }}</a></div>{{!
+                    }}{{/loadquestions}}{{!
+                }}{{/boxes}}
+            </div>
         </div>
-    {{/boxes}}
+        <div class="mod-flashcards btn-div col-md-3 col-sm-12 col-xs-12">
+            <div class="mod-flashcards btn-learn-now col-xs-12">
+                <a href="#">
+                    <button class="mod-flashcards btn-learn-now btn btn-secondary"> {{# str }} learnnow, mod_flashcards {{/ str }} </button>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
