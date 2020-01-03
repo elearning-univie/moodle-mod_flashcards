@@ -50,18 +50,10 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
-    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} WHERE studentid = :userid GROUP BY currentbox ORDER BY currentbox";
-    $records = $DB->get_recordset_sql($sql, ['userid' => $USER->id]);
-    $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} where course = :course', ['course' => $course->id]);
+    $boxrecords = get_box_count_records($USER->id, $flashcards->id);
+    $questioncount = get_box_zero_count_record($USER->id, $flashcards->id);
 
-    $categories = question_categorylist($categoryid->categoryid);
-
-    list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-    $sql = "SELECT count(q.id) FROM {question} q WHERE category $inids AND q.id NOT IN " .
-            "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $flashcards->id)";
-
-    $questioncount = $DB->count_records_sql($sql, $categorieids);
-    $boxarray = create_boxvalue_array($records, $id, $questioncount);
+    $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount);
     $templatestablecontext['boxes'] = $boxarray;
 
     $renderer = $PAGE->get_renderer('core');
@@ -71,6 +63,30 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
+}
+
+function get_box_zero_count_record($userid, $flashcardsid) {
+    global $DB;
+
+    $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} WHERE id = :flashcardsid', ['flashcardsid' => $flashcardsid]);
+    $categories = question_categorylist($categoryid->categoryid);
+    list($inids, $categorieids) = $DB->get_in_or_equal($categories);
+
+    $sql = "SELECT count(q.id) FROM {question} q " .
+                    "WHERE category $inids AND q.id NOT IN " .
+                    "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $userid and flashcardsid = $flashcardsid)";
+
+    return $DB->count_records_sql($sql, $categorieids);
+}
+
+function get_box_count_records($userid, $flashcardsid) {
+    global $DB;
+
+    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} " .
+            "WHERE studentid = :userid AND flashcardsid = :flashcardsid " .
+            "GROUP BY currentbox ORDER BY currentbox";
+
+    return $DB->get_recordset_sql($sql, ['userid' => $userid, 'flashcardsid' => $flashcardsid]);
 }
 
 /**

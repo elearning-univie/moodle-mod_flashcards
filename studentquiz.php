@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
+require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
 
 global $PAGE, $OUTPUT, $USER;
 
@@ -49,6 +50,14 @@ echo $OUTPUT->header();
 if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
+
+    $questionrenderer = new renderer($USER->id, $box, $id, $course->id);
+
+    $questionhtml = '<div id="mod-flashcards-question">';
+    $questionhtml .= $questionrenderer->render_question();
+    $questionhtml .= '</div>';
+
+    echo $questionhtml;
 
     echo $OUTPUT->footer();
 } else {

@@ -46,7 +46,7 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
 if (has_capability('mod/flashcards:studentview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id, ));
+    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
     redirect($redirecturl);
 }
 if (has_capability('mod/flashcards:teacherview', $context) ) {
