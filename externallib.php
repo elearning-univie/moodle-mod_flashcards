@@ -64,9 +64,9 @@ class mod_flashcards_external extends external_api {
 
     /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
-     * @param $courseid
-     * @param $questionid
-     * @param $qanswervalue
+     * @param int $courseid
+     * @param int $questionid
+     * @param int $qanswervalue
      * @return string|null
      * @throws dml_exception
      */
@@ -97,7 +97,7 @@ class mod_flashcards_external extends external_api {
     /**
      * Moves all questions from box 0 to box 1
      *
-     * @param $courseid
+     * @param int $courseid
      * @return int
      * @throws coding_exception
      * @throws dml_exception
