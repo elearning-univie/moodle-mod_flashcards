@@ -28,6 +28,7 @@ require_once($CFG->libdir . '/questionlib.php');
 
 /**
  * Class mod_flashcards_external
+ *
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -49,6 +50,8 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
      * @return external_function_parameters
      */
     public static function load_questions_parameters() {
@@ -60,6 +63,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Moves the question into the next box if the answer was correct, otherwise to box 1
      * @param $courseid
      * @param $questionid
      * @param $qanswervalue
@@ -69,7 +73,8 @@ class mod_flashcards_external extends external_api {
     public static function update_progress($courseid, $questionid, $qanswervalue) {
         global $DB, $USER;
 
-        $record = $DB->get_record('flashcards_q_stud_rel', ['studentid' => $USER->id, 'questionid' => $questionid], $fields = '*', $strictness = MUST_EXIST);
+        $record = $DB->get_record('flashcards_q_stud_rel', ['studentid' => $USER->id, 'questionid' => $questionid], $fields = '*',
+                $strictness = MUST_EXIST);
 
         $currentbox = $record->currentbox;
 
@@ -90,6 +95,8 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Moves all questions from box 0 to box 1
+     *
      * @param $courseid
      * @return int
      * @throws coding_exception
@@ -120,6 +127,8 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns return value description
+     *
      * @return external_value
      */
     public static function update_progress_returns() {
@@ -127,6 +136,8 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns return value description
+     *
      * @return external_value
      */
     public static function load_questions_returns() {
