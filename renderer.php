@@ -32,26 +32,10 @@ require_once('locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer {
-    /**
-     * @var userid
-     */
-    var $userid;
-    /**
-     * @var boxnumber
-     */
-    var $box;
-    /**
-     * @var context
-     */
-    var $context;
-    /**
-     * @var flashcard id
-     */
-    var $flashcardsid;
-    /**
-     * @var course id
-     */
-    var $courseid;
+    private $userid;
+    private $box;
+    private $flashcardsid;
+    private $courseid;
 
     /**
      * renderer constructor.
@@ -61,7 +45,7 @@ class renderer {
      * @param int $flashcardsid
      * @param int $courseid
      */
-    function __construct($userid, $box, $flashcardsid, $courseid) {
+    public function __construct($userid, $box, $flashcardsid, $courseid) {
         $this->userid = $userid;
         $this->box = $box;
         $this->courseid = $courseid;
@@ -76,11 +60,11 @@ class renderer {
      * @throws dml_exception
      * @throws moodle_exception
      */
-    function get_question_for_student_course_box($userid, $box) {
+    public function get_question_for_student_course_box($userid, $box) {
         global $DB;
         $i = 0;
 
-        #TODO active abfragen
+        // TODO active abfragen
         $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
                 "WHERE q.studentid = :userid AND q.currentbox = :box AND q.lastanswered = " .
                 "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active)";
@@ -106,7 +90,7 @@ class renderer {
      * @throws dml_exception
      * @throws moodle_exception
      */
-    function render_question() {
+    public function render_question() {
         global $PAGE;
 
         $cm = get_coursemodule_from_instance("flashcards", 1);

@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once("$CFG->libdir/externallib.php");
 require_once("$CFG->dirroot/mod/flashcards/renderer.php");
 require_once($CFG->libdir . '/questionlib.php');
@@ -108,8 +110,8 @@ class mod_flashcards_external extends external_api {
         $record = $DB->get_record('flashcards', ['course' => $courseid]);
         $categories = question_categorylist($record->categoryid);
         list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-        $sql =
-                "SELECT q.id FROM {question} q WHERE category $inids AND q.id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $record->id)";
+        $sql = "SELECT q.id FROM {question} q WHERE category $inids AND q.id NOT IN " .
+               "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $record->id)";
 
         $questionids = $DB->get_fieldset_sql($sql, $categorieids);
         $questionarray = [];

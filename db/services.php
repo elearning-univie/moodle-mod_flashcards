@@ -22,12 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $services = array(
         'flashcardsservice' => array(
-                'functions' => array ('mod_flashcards_update_progress', 'mod_flashcards_load_questions'),
+                'functions' => array('mod_flashcards_update_progress', 'mod_flashcards_load_questions'),
                 'requiredcapability' => 'mod/flashcards:studentview',
-                'restrictedusers' =>0,
-                'enabled'=>1,
+                'restrictedusers' => 0,
+                'enabled'=> 1,
         )
 );
 
