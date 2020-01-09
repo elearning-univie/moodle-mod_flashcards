@@ -1,9 +1,39 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Defines the version and other meta-info about the plugin
+ *
+ * Setting the $plugin->version to 0 prevents the plugin from being installed.
+ * See https://docs.moodle.org/dev/version.php for more info.
+ *
+ * @package   mod_flashcards
+ * @copyright 2019 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once('locallib.php');
 
+/**
+ * Class renderer
+ * @copyright 2019 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class renderer {
     var $userid;
     var $box;
@@ -11,6 +41,14 @@ class renderer {
     var $flashcardsid;
     var $courseid;
 
+    /**
+     * renderer constructor.
+     *
+     * @param $userid
+     * @param $box
+     * @param $flashcardsid
+     * @param $courseid
+     */
     function __construct($userid, $box, $flashcardsid, $courseid) {
         $this->userid = $userid;
         $this->box = $box;
@@ -18,6 +56,13 @@ class renderer {
         $this->flashcardsid = $flashcardsid;
     }
 
+    /**
+     * @param $userid
+     * @param $box
+     * @return mixed
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     function get_question_for_student_course_box($userid, $box) {
         global $DB;
         $i = 0;
@@ -41,6 +86,12 @@ class renderer {
         return $questionid;
     }
 
+    /**
+     * @return string|null
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     function render_question() {
         global $PAGE;
 
@@ -59,15 +110,20 @@ class renderer {
         $quba = question_engine::make_questions_usage_by_activity('flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
         $questionid = $this->get_question_for_student_course_box($this->userid, $this->box);
+
+        if ($questionid == null) {
+            return null;
+        }
+
         $question = question_bank::load_question($questionid);
         $quba->add_question($question, 1);
         $quba->start_all_questions();
         question_engine::save_questions_usage_by_activity($quba);
+        $qaid = $quba->get_question_attempt(1)->get_database_id();
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $this->flashcardsid .
-                ',' . $questionid . ')" enctype="multipart/form-data" accept-charset="utf-8">';
+                $this->courseid . ',' . $questionid . ',' . $qaid . ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
         $options = new question_display_options();
