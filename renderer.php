@@ -32,9 +32,21 @@ require_once('locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer {
+    /**
+     * @var int
+     */
     private $userid;
+    /**
+     * @var int
+     */
     private $box;
+    /**
+     * @var int
+     */
     private $flashcardsid;
+    /**
+     * @var int 
+     */
     private $courseid;
 
     /**
