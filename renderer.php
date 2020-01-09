@@ -15,13 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
- *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
+ * Calls the question engine to render a question
  *
  * @package   mod_flashcards
- * @copyright 2019 University of Vienna
+ * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,23 +28,38 @@ require_once('locallib.php');
 
 /**
  * Class renderer
- * @copyright 2019 University of Vienna
+ * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer {
+    /**
+     * @var userid
+     */
     var $userid;
+    /**
+     * @var boxnumber
+     */
     var $box;
+    /**
+     * @var context
+     */
     var $context;
+    /**
+     * @var flashcard id
+     */
     var $flashcardsid;
+    /**
+     * @var course id
+     */
     var $courseid;
 
     /**
      * renderer constructor.
      *
-     * @param $userid
-     * @param $box
-     * @param $flashcardsid
-     * @param $courseid
+     * @param int $userid
+     * @param int $box
+     * @param int $flashcardsid
+     * @param int $courseid
      */
     function __construct($userid, $box, $flashcardsid, $courseid) {
         $this->userid = $userid;
@@ -57,8 +69,9 @@ class renderer {
     }
 
     /**
-     * @param $userid
-     * @param $box
+     * Get the next question for the given student and box
+     * @param int $userid
+     * @param int $box
      * @return mixed
      * @throws dml_exception
      * @throws moodle_exception
@@ -87,6 +100,7 @@ class renderer {
     }
 
     /**
+     * renders the question
      * @return string|null
      * @throws coding_exception
      * @throws dml_exception

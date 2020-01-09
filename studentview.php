@@ -18,7 +18,7 @@
  * Flashcards Student view
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
@@ -65,6 +65,14 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     die();
 }
 
+/**
+ * Calculates the number of questions in box zero
+ * @param int $userid
+ * @param int $flashcardsid
+ * @return int
+ * @throws coding_exception
+ * @throws dml_exception
+ */
 function get_box_zero_count_record($userid, $flashcardsid) {
     global $DB;
 
@@ -79,6 +87,13 @@ function get_box_zero_count_record($userid, $flashcardsid) {
     return $DB->count_records_sql($sql, $categorieids);
 }
 
+/**
+ * Calculates the number of questions in each box
+ * @param int $userid
+ * @param int $flashcardsid
+ * @return moodle_recordset
+ * @throws dml_exception
+ */
 function get_box_count_records($userid, $flashcardsid) {
     global $DB;
 
