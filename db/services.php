@@ -29,7 +29,7 @@ $services = array(
                 'functions' => array('mod_flashcards_update_progress', 'mod_flashcards_load_questions'),
                 'requiredcapability' => 'mod/flashcards:studentview',
                 'restrictedusers' => 0,
-                'enabled'=> 1,
+                'enabled' => 1,
         )
 );
 

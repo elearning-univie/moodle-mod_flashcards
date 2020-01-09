@@ -45,7 +45,7 @@ class renderer {
      */
     private $flashcardsid;
     /**
-     * @var int 
+     * @var int
      */
     private $courseid;
 
