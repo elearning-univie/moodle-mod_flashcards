@@ -17,18 +17,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     fail: notification.exception
                 }]);
             };
-
-            $(".md-flashcards-ld-q-btn").click(function() {
+            $.mod_flashcards_load_questions = function ($flashcardsid) {
                 ajax.call([{
                     methodname: 'mod_flashcards_load_questions',
-                    args: {courseid: 2},
+                    args: {flashcardsid: $flashcardsid},
                     done: function() {
                         window.location.reload();
                     },
                     fail: notification.exception
                 }]);
-            });
-
+            };
         }
     };
 });
