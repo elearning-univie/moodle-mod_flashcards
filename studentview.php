@@ -97,7 +97,7 @@ function get_box_zero_count_record($userid, $flashcardsid) {
 function get_box_count_records($userid, $flashcardsid) {
     global $DB;
 
-    $sql = "SELECT currentbox, count(id) FROM {flashcards_q_stud_rel} " .
+    $sql = "SELECT currentbox, count(id) countid FROM {flashcards_q_stud_rel} " .
             "WHERE studentid = :userid AND flashcardsid = :flashcardsid " .
             "GROUP BY currentbox ORDER BY currentbox";
 
@@ -144,7 +144,7 @@ function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
 
         if ($record->currentbox = $boxindex) {
             $boxvalues['currentbox'] = $boxindex;
-            $boxvalues['count'] = $record->count;
+            $boxvalues['count'] = $record->countid;
             $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
 
             $boxarray[] = $boxvalues;
