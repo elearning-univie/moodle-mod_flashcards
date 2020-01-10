@@ -59,7 +59,7 @@ class mod_flashcards_external extends external_api {
     public static function load_questions_parameters() {
         return new external_function_parameters(
                 array(
-                        'courseid' => new external_value(PARAM_INT, 'id of course')
+                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity')
                 )
         );
     }
@@ -97,17 +97,17 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Moves all questions from box 0 to box 1
+     * Moves all questions from box 0 to box 1 for the activity
      *
-     * @param int $courseid
+     * @param int $flashcardsid
      * @return int
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function load_questions($courseid) {
+    public static function load_questions($flashcardsid) {
         global $DB, $USER;
 
-        $record = $DB->get_record('flashcards', ['course' => $courseid]);
+        $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
         $categories = question_categorylist($record->categoryid);
         list($inids, $categorieids) = $DB->get_in_or_equal($categories);
         $sql = "SELECT q.id FROM {question} q WHERE category $inids AND q.id NOT IN " .

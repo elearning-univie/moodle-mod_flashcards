@@ -53,7 +53,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $boxrecords = get_box_count_records($USER->id, $flashcards->id);
     $questioncount = get_box_zero_count_record($USER->id, $flashcards->id);
 
-    $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount);
+    $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount, $flashcards->id);
     $templatestablecontext['boxes'] = $boxarray;
 
     $renderer = $PAGE->get_renderer('core');
@@ -110,13 +110,15 @@ function get_box_count_records($userid, $flashcardsid) {
  * @param array $records Contains the box number and the question count to display
  * @param int $id Course id
  * @param int $boxzerocount Number of new questions for box 0
+ * @param int $flashcardsid activity number
  * @return array
  */
-function create_boxvalue_array($records, $id, $boxzerocount) {
+function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
     $boxindex = 0;
     $boxvalues['currentbox'] = $boxindex;
     $boxvalues['count'] = $boxzerocount;
     $boxvalues['redirecturl'] = null;
+    $boxvalues['flashcardsid'] = $flashcardsid;
 
     if ($boxzerocount != 0) {
         $boxvalues['loadquestions'] = true;
