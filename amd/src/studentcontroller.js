@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification/*, templates*/, url){
     return {
         init: function() {
-            $.mod_flashcards_call_update = function ($courseid, $questionid, $qaid) {
+            $.mod_flashcards_call_update = function ($courseid, $questionid, $qaid, $cmid) {
                 var $qanswervalue = document.getElementById('qflashcard-question-answer-'.concat($qaid)).value;
 
                 ajax.call([{
@@ -11,7 +11,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                         if (result !== null) {
                             $("#mod-flashcards-question").html(result);
                         } else {
-                            window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + $courseid);
+                            window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + $cmid);
                         }
                     },
                     fail: notification.exception
