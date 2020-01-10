@@ -119,7 +119,7 @@ class mod_flashcards_external extends external_api {
         foreach ($questionids as $question) {
 
             $questionentry =
-                    array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 't',
+                    array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
                             'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
 
             $questionarray[] = $questionentry;
