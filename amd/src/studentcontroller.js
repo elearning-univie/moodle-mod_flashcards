@@ -18,7 +18,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                 }]);
             };
 
-            $(".testbtnbtw").click(function() {
+            $(".md-flashcards-ld-q-btn").click(function() {
                 ajax.call([{
                     methodname: 'mod_flashcards_load_questions',
                     args: {courseid: 2},
