@@ -110,6 +110,7 @@ function get_box_count_records($userid, $flashcardsid) {
  * @param array $records Contains the box number and the question count to display
  * @param int $id Course id
  * @param int $boxzerocount Number of new questions for box 0
+ * @param int $flashcardsid activity number
  * @return array
  */
 function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
