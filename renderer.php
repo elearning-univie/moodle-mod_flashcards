@@ -105,7 +105,7 @@ class renderer {
     public function render_question() {
         global $PAGE;
 
-        $cm = get_coursemodule_from_instance("flashcards", 1);
+        $cm = get_coursemodule_from_instance("flashcards", $this->flashcardsid);
         $context = context_module::instance($cm->id);
         $PAGE->set_context($context);
 
