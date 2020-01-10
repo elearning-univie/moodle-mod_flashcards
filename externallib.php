@@ -84,7 +84,9 @@ class mod_flashcards_external extends external_api {
         $record->tries++;
 
         if ($qanswervalue == 1) {
-            $record->currentbox++;
+            if ($currentbox < 5) {
+                $record->currentbox++;
+            }
         } else {
             $record->currentbox = 1;
             $record->wronganswercount++;
