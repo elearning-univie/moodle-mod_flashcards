@@ -76,7 +76,7 @@ class renderer {
 
         // TODO active abfragen
         $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
-                "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid q.lastanswered = " .
+                "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid AND q.lastanswered = " .
                 "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
                 "WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active AND subq.flashcardsid = q.flashcardsid)";
 
