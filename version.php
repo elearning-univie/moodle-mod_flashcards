@@ -21,14 +21,14 @@
  * See https://docs.moodle.org/dev/version.php for more info.
  *
  * @package   mod_flashcards
- * @copyright 2019 University of Vienna
+ * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_flashcards';
-$plugin->version = 2019121600;
+$plugin->version = 2020010900;
 $plugin->release = 'v0.0.1';
 $plugin->requires = 2019052000;
 $plugin->maturity = MATURITY_ALPHA;
