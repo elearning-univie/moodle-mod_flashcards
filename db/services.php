@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * short name for the service.
+ */
 const MOD_FLASHCARDS_SERVICE_SHORTNAME = 'flashcards';
 
 $services = array(
