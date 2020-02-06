@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification/*, templates*/, url){
     return {
         init: function() {
-            $.mod_flashcards_call_update = function ($courseid, $questionid, $qaid, $cmid) {
+            $.mod_flashcards_load_questions = function ($courseid, $questionid, $qaid, $cmid) {
                 var $qanswervalue = document.getElementById('qflashcard-question-answer-'.concat($qaid)).value;
 
                 ajax.call([{
@@ -16,6 +16,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     },
                     fail: notification.exception
                 }]);
+            };
+            $.mod_flashcards_select_all = function ($selected) {
+                $('input:checkbox').not($selected).prop('checked', $selected.checked);
             };
         }
     };
