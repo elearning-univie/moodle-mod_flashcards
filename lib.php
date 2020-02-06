@@ -41,14 +41,8 @@ function flashcards_add_instance($flashcards) {
 /**
  * 
  * @param stdClass $flashcards
- * @param int $courseid
- * @return number
+ * @return stdClass
  */
-
-/**
- * @param flashcards
- */
-
 function flashcards_get_database_object($flashcards) {
     global $COURSE;
     require_once('locallib.php');
@@ -84,6 +78,12 @@ function flashcards_get_database_object($flashcards) {
     return $flashcardsdb;
 }
 
+/**
+ * 
+ * @param stdClass $flashcards
+ * @param int $courseid
+ * @return number
+ */
 function flashcards_check_category($flashcards,$courseid)
 {
 
