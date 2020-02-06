@@ -20,3 +20,7 @@ th.flashcards_teacherview_ec {width: 2%;}
 .mod-flashcards.btn-learn-now {
     height: 100%;
 }
+
+.mod-flashcards.label {
+    margin: 0px;
+}
