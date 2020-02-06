@@ -59,13 +59,17 @@ class mod_flashcards_external extends external_api {
     public static function load_questions_parameters() {
         return new external_function_parameters(
                 array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity')
+                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                        'qids' => new external_multiple_structure(
+                                new external_value(PARAM_INT, 'test')
+                        ),
                 )
         );
     }
 
     /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
+     *
      * @param int $courseid
      * @param int $questionid
      * @param int $qanswervalue
@@ -99,27 +103,28 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Moves all questions from box 0 to box 1 for the activity
+     * Moves all selected questions from box 0 to box 1 for the activity
      *
      * @param int $flashcardsid
+     * @param array $questionids
      * @return int
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function load_questions($flashcardsid) {
+    public static function load_questions($flashcardsid, $qids) {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
-        $categories = question_categorylist($record->categoryid);
-        list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-        $sql = "SELECT q.id FROM {question} q WHERE category $inids AND q.id NOT IN " .
-               "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $record->id)";
+        list($inids, $questionids) = $DB->get_in_or_equal($qids);
 
-        $questionids = $DB->get_fieldset_sql($sql, $categorieids);
+        $sql = "SELECT id 
+                  FROM {question} 
+                 WHERE id $inids";
+
+        $questionids = $DB->get_fieldset_sql($sql, $questionids);
         $questionarray = [];
 
         foreach ($questionids as $question) {
-
             $questionentry =
                     array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
                             'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
@@ -127,7 +132,7 @@ class mod_flashcards_external extends external_api {
             $questionarray[] = $questionentry;
         }
         $DB->insert_records('flashcards_q_stud_rel', $questionarray);
-        return 1;
+        return implode(", ", $qids);
     }
 
     /**
@@ -145,6 +150,6 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function load_questions_returns() {
-        return new external_value(PARAM_INT, 'new question');
+        return new external_value(PARAM_RAW, 'new question');
     }
 }

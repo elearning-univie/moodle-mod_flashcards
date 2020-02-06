@@ -27,7 +27,7 @@
         {{#questions}}
             <tr class="table-row">
                 <td class="iconcol previewaction">
-                    <input class="mod-flashcards-checkbox" type="checkbox">
+                    <input class="mod-flashcards-checkbox" data-value="{{qid}}" type="checkbox">
                 </td>
                 <td class="table-cell">
                     {{name}}
@@ -45,6 +45,6 @@
 
 <section>
     <div>
-        <button onclick="$.mod_flashcards_load_questions()"> {{# str }} addflashcardbutton, mod_flashcards {{/ str }} </button>
+        <button onclick="$.mod_flashcards_load_questions({{aid}})"> {{# str }} addflashcardbutton, mod_flashcards {{/ str }} </button>
     </div>
 </section>

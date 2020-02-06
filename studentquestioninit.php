@@ -23,7 +23,7 @@
  */
 require('../../config.php');
 
-global $PAGE, $OUTPUT, $DB, $CFG;
+global $PAGE, $OUTPUT, $DB, $CFG, $USER;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -61,9 +61,10 @@ if ($flashcards->inclsubcats) {
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
 $sql = "SELECT id, name
-          FROM {question}
+          FROM {question} q
          WHERE $sqlwhere
-           AND qtype = 'flashcard'";
+           AND qtype = 'flashcard'
+           AND id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id)";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
 $questions = array();
@@ -72,11 +73,12 @@ foreach ($questionstemp as $question) {
     $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
 
     $questions[] = ['name' => $question->name,
-            'qurl' => html_entity_decode($qurl->__toString())
+            'qurl' => html_entity_decode($qurl->__toString()),
+            'qid' => $question->id
     ];
 }
 
-$templateinfo = ['questions' => $questions];
+$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id];
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
