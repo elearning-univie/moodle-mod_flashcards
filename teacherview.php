@@ -60,7 +60,9 @@ list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
 $sql = "SELECT id, name
            FROM   {question}
-           WHERE  $sqlwhere";
+           WHERE  $sqlwhere
+           AND qtype = 'flashcard'";
+
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
 
 $baseurl = $CFG->wwwroot.'/question/question.php';
