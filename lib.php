@@ -39,9 +39,9 @@ function flashcards_add_instance($flashcards) {
 }
 
 /**
- * 
+ *
  * flashcards_get_database_object
- * 
+ *
  * @param stdClass $flashcards
  * @return stdClass
  */
@@ -53,7 +53,7 @@ function flashcards_get_database_object($flashcards) {
 
     $flashcardsdb = new stdClass();
 
-    $flashcardsdb->course=$courseid;
+    $flashcardsdb->course = $courseid;
     $flashcardsdb->name = $flashcards->name;
 
     $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
@@ -81,15 +81,14 @@ function flashcards_get_database_object($flashcards) {
 }
 
 /**
- * 
+ *
  * flashcards_check_category
- * 
+ *
  * @param stdClass $flashcards
  * @param int $courseid
  * @return number
  */
-function flashcards_check_category($flashcards,$courseid)
-{
+function flashcards_check_category($flashcards, $courseid) {
 
     $context = [];
     $context[] = context_course::instance($courseid);
@@ -100,7 +99,7 @@ function flashcards_check_category($flashcards,$courseid)
     $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
 
     $categorylist = [];
-    
+
     foreach ($coursecategorylist as $category) {
         list($catid, $catcontextid) = explode(",", $category);
         $categorylist = array_merge(question_categorylist($catid), $categorylist);
