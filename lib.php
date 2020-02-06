@@ -40,6 +40,8 @@ function flashcards_add_instance($flashcards) {
 
 /**
  * 
+ * flashcards_get_database_object
+ * 
  * @param stdClass $flashcards
  * @return stdClass
  */
@@ -79,6 +81,8 @@ function flashcards_get_database_object($flashcards) {
 }
 
 /**
+ * 
+ * flashcards_check_category
  * 
  * @param stdClass $flashcards
  * @param int $courseid
