@@ -30,44 +30,99 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function flashcards_add_instance($flashcards) {
-    global $DB, $COURSE;
+    global $DB;
+
+    $flashcardsdb = flashcards_get_database_object($flashcards);
+    $id = $DB->insert_record('flashcards', $flashcardsdb);
+
+    return $id;
+}
+
+/**
+ *
+ * flashcards_get_database_object
+ *
+ * @param stdClass $flashcards
+ * @return stdClass
+ */
+function flashcards_get_database_object($flashcards) {
+    global $COURSE;
     require_once('locallib.php');
 
-    $object = new stdClass();
-    $object->timecreated = time();
     $courseid = $COURSE->id;
+
+    $flashcardsdb = new stdClass();
+
+    $flashcardsdb->course = $courseid;
+    $flashcardsdb->name = $flashcards->name;
+
+    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
+
+    if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
+        $flashcardsdb->inclsubcats = 0;
+    } else {
+        $flashcardsdb->inclsubcats = 1;
+    }
+
+    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
+        $flashcardsdb->intro = '';
+    } else {
+        $flashcardsdb->intro = $flashcards->intro;
+    }
+
+    if (property_exists($flashcards, 'introformat') || is_integer($flashcards->introformat)) {
+        $flashcardsdb->introformat = 1;
+    } else {
+        $flashcardsdb->introformat = $flashcards->introformat;
+    }
+    $flashcardsdb->timemodified = time();
+
+    return $flashcardsdb;
+}
+
+/**
+ *
+ * flashcards_check_category
+ *
+ * @param stdClass $flashcards
+ * @param int $courseid
+ * @return number
+ */
+function flashcards_check_category($flashcards, $courseid) {
+
     $context = [];
     $context[] = context_course::instance($courseid);
-
     $coursecontext = context_course::instance($courseid);
     $contexts = [$coursecontext->id => $coursecontext];
 
-    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
-        $flashcards->intro = '';
-    } else {
-        $flashcards->intro = $flashcards;
+    $defaultcategoryobj = question_make_default_categories($contexts);
+    $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
+
+    $categorylist = [];
+
+    foreach ($coursecategorylist as $category) {
+        list($catid, $catcontextid) = explode(",", $category);
+        $categorylist = array_merge(question_categorylist($catid), $categorylist);
     }
 
     list($catid, $catcontextid) = explode(",", $flashcards->category);
 
-    if ($flashcards->newcategory) {
-
-        $defaultcategoryobj = question_make_default_categories($contexts);
-
-        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
-        $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-           $context, $defaultcategoryobj->id, $defaultcategory, null, null);
-
-        $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
-        $flashcards->categoryid = $categoryid;
-    } else {
-        $flashcards->categoryid = $catid;
+    if (!in_array($catid, $categorylist)) {
+        print_error('invalidcategoryid');
+        return;
     }
 
-     $id = $DB->insert_record('flashcards', $flashcards);
-
-    return $id;
+    if ($flashcards->newcategory) {
+        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
+        $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
+            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
+        $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
+        return $categoryid;
+    } else {
+        return $catid;
+    }
 }
+
 /**
  * flashcards_update_instance
  *
@@ -78,8 +133,9 @@ function flashcards_update_instance($flashcards) {
     global $DB;
     require_once('locallib.php');
 
-    $flashcards->id = $flashcards->instance;
-    $DB->update_record('flashcards', $flashcards);
+    $flashcardsdb = flashcards_get_database_object($flashcards);
+    $flashcardsdb->id = $flashcards->instance;
+    $DB->update_record('flashcards', $flashcardsdb);
 
     return true;
 }
