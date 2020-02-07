@@ -1,9 +1,21 @@
 /*TODO richtiger Context*/
-#page-content .que .info {visibility: hidden; width: 0; padding: 0;}
-#page-content .que .content {margin: 0;}
-th.flashcards_teacherview_ec {width: 2%;}
-th.flashcards_studentview_ec {width: 2%;}
-th.flashcards_studentview_all {width: 9em;}
+#page-content .que .info {
+    visibility: hidden;
+    width: 0;
+    padding: 0;
+}
+
+#page-content .que .content {
+    margin: 0;
+}
+
+th.flashcards_studentview_ec, th.flashcards_teacherview_ec {
+    width: 2%;
+}
+
+th.flashcards_studentview_all {
+    width: 9em;
+}
 
 .mod-flashcards.btn-div {
     display: inline-block;
