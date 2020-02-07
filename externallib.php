@@ -117,12 +117,12 @@ class mod_flashcards_external extends external_api {
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
         list($inids, $questionids) = $DB->get_in_or_equal($qids);
 
-        $sql = "SELECT id 
-                  FROM {question} 
+        $sql = "SELECT id
+                  FROM {question}
                  WHERE id $inids
-                   AND id NOT IN (SELECT questionid 
-                                    FROM {flashcards_q_stud_rel} 
-                                   WHERE studentid = $USER->id 
+                   AND id NOT IN (SELECT questionid
+                                    FROM {flashcards_q_stud_rel}
+                                   WHERE studentid = $USER->id
                                      AND flashcardsid = $flashcardsid)";
 
         $questionids = $DB->get_fieldset_sql($sql, $questionids);
