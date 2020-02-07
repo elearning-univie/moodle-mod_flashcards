@@ -45,3 +45,4 @@ $string['pagetitle'] = 'Moodle Lernkartei';
 $string['pluginadministration'] = 'Lernkartei Administration';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Frage';
+$string['selectall'] = 'Alle';

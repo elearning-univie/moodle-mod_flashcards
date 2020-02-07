@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/externallib.php");
-require_once("$CFG->dirroot/mod/flashcards/renderer.php");
+require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
 
 /**
  * Class mod_flashcards_external
@@ -61,7 +61,7 @@ class mod_flashcards_external extends external_api {
                 array(
                         'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
                         'qids' => new external_multiple_structure(
-                                new external_value(PARAM_INT, 'test')
+                                new external_value(PARAM_INT, 'id array of questions')
                         ),
                 )
         );
@@ -106,7 +106,7 @@ class mod_flashcards_external extends external_api {
      * Moves all selected questions from box 0 to box 1 for the activity
      *
      * @param int $flashcardsid
-     * @param array $questionids
+     * @param array $qids
      * @return int
      * @throws coding_exception
      * @throws dml_exception
@@ -119,7 +119,11 @@ class mod_flashcards_external extends external_api {
 
         $sql = "SELECT id 
                   FROM {question} 
-                 WHERE id $inids";
+                 WHERE id $inids
+                   AND id NOT IN (SELECT questionid 
+                                    FROM {flashcards_q_stud_rel} 
+                                   WHERE studentid = $USER->id 
+                                     AND flashcardsid = $flashcardsid)";
 
         $questionids = $DB->get_fieldset_sql($sql, $questionids);
         $questionarray = [];
@@ -132,7 +136,6 @@ class mod_flashcards_external extends external_api {
             $questionarray[] = $questionentry;
         }
         $DB->insert_records('flashcards_q_stud_rel', $questionarray);
-        return implode(", ", $qids);
     }
 
     /**
@@ -150,6 +153,6 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function load_questions_returns() {
-        return new external_value(PARAM_RAW, 'new question');
+        return null;
     }
 }

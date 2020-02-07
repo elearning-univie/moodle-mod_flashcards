@@ -1,7 +1,7 @@
-define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification, url) {
     return {
         init: function () {
-            $.mod_flashcards_load_questions = function (aid) {
+            $.mod_flashcards_load_questions = function (aid, cmid) {
                 let data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = {};
                 for (let i = 0; i < data.length; i++) {
@@ -13,7 +13,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     methodname: 'mod_flashcards_load_questions',
                     args: {flashcardsid: aid, qids: qids},
                     done: function () {
-                        location.reload();
+                        window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + cmid);
                     },
                     fail: notification.exception
                 }]);

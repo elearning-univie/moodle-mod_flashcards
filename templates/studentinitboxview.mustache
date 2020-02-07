@@ -18,21 +18,21 @@
     <table class="generaltable fullwidth">
         <thead>
         <tr>
-            <th class="header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)" />{{# str }} selectall, mod_flashcards {{/ str }}</th>
+            <th class="flashcards_studentview_all header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)" /> {{# str }} selectall, mod_flashcards {{/ str }}</th>
             <th class="header name">{{# str }} question, mod_flashcards {{/ str }}</th>
-            <th class="header iconcol previewaction" scope="col">{{# str }} preview, moodle {{/ str }}</th>
+            <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
         </tr>
         </thead>
         <tbody class="table">
         {{#questions}}
             <tr class="table-row">
-                <td class="iconcol previewaction">
+                <td>
                     <input class="mod-flashcards-checkbox" data-value="{{qid}}" type="checkbox">
                 </td>
-                <td class="table-cell">
+                <td>
                     {{name}}
                 </td>
-                <td class="iconcol previewaction">
+                <td>
                     <a href="{{qurl}}" class="" title="Preview">
                         <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
                     </a>
@@ -45,6 +45,6 @@
 
 <section>
     <div>
-        <button onclick="$.mod_flashcards_load_questions({{aid}})"> {{# str }} addflashcardbutton, mod_flashcards {{/ str }} </button>
+        <button onclick="$.mod_flashcards_load_questions({{aid}}, {{cmid}})">{{# str }} addflashcardbutton, mod_flashcards {{/ str }}</button>
     </div>
 </section>

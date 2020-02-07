@@ -78,7 +78,7 @@ foreach ($questionstemp as $question) {
     ];
 }
 
-$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id];
+$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
