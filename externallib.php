@@ -115,17 +115,20 @@ class mod_flashcards_external extends external_api {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
-        list($inids, $questionids) = $DB->get_in_or_equal($qids);
+        $categories = question_categorylist($record->categoryid);
+        list($inids, $questionids) = $DB->get_in_or_equal($qids, SQL_PARAMS_NAMED);
+        list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
 
         $sql = "SELECT id
                   FROM {question}
                  WHERE id $inids
+                   AND category $inids2
                    AND id NOT IN (SELECT questionid
                                     FROM {flashcards_q_stud_rel}
-                                   WHERE studentid = $USER->id
-                                     AND flashcardsid = $flashcardsid)";
+                                   WHERE studentid = :userid
+                                     AND flashcardsid = :fid)";
 
-        $questionids = $DB->get_fieldset_sql($sql, $questionids);
+        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids + ['userid' => $USER->id, 'fid' => $flashcardsid]);
         $questionarray = [];
 
         foreach ($questionids as $question) {

@@ -41,45 +41,44 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-if (!has_capability('mod/flashcards:studentview', $context) ) {
+if (has_capability('mod/flashcards:studentview', $context) ) {
+    $PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
+    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    echo $OUTPUT->heading($flashcards->name);
+
+    if ($flashcards->inclsubcats) {
+        require_once($CFG->dirroot."/lib/questionlib.php");
+        $qcategories = question_categorylist($flashcards->categoryid);
+    } else {
+        $qcategories = $flashcards->categoryid;
+    }
+
+    list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
+    $sql = "SELECT id, name
+          FROM {question} q
+         WHERE category $sqlwhere
+           AND qtype = 'flashcard'
+           AND id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = :userid)";
+
+    $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id]);
+    $questions = array();
+
+    foreach ($questionstemp as $question) {
+        $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
+
+        $questions[] = ['name' => $question->name,
+                'qurl' => html_entity_decode($qurl->__toString()),
+                'qid' => $question->id
+        ];
+    }
+
+    $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
+    $renderer = $PAGE->get_renderer('core');
+
+    echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
+    echo $OUTPUT->footer();
+} else {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
 }
-
-$PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-echo $OUTPUT->heading($flashcards->name);
-
-if ($flashcards->inclsubcats) {
-    require_once($CFG->dirroot."/lib/questionlib.php");
-    $qcategories = question_categorylist($flashcards->categoryid);
-} else {
-    $qcategories = $flashcards->categoryid;
-}
-
-list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
-$sqlwhere = "category $sqlwhere";
-$sql = "SELECT id, name
-          FROM {question} q
-         WHERE $sqlwhere
-           AND qtype = 'flashcard'
-           AND id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id)";
-
-$questionstemp = $DB->get_records_sql($sql, $qcategories);
-$questions = array();
-
-foreach ($questionstemp as $question) {
-    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
-
-    $questions[] = ['name' => $question->name,
-            'qurl' => html_entity_decode($qurl->__toString()),
-            'qid' => $question->id
-    ];
-}
-
-$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
-$renderer = $PAGE->get_renderer('core');
-
-echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
-echo $OUTPUT->footer();
