@@ -58,8 +58,8 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
               FROM {question} q
              WHERE category $sqlwhere
                AND qtype = 'flashcard'
-               AND id NOT IN (SELECT questionid 
-                                FROM {flashcards_q_stud_rel} 
+               AND id NOT IN (SELECT questionid
+                                FROM {flashcards_q_stud_rel}
                                WHERE studentid = :userid
                                  AND flashcardsid = :fid)";
 
