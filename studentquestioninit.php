@@ -55,12 +55,15 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
 
     list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
     $sql = "SELECT id, name
-          FROM {question} q
-         WHERE category $sqlwhere
-           AND qtype = 'flashcard'
-           AND id NOT IN (SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = :userid)";
+              FROM {question} q
+             WHERE category $sqlwhere
+               AND qtype = 'flashcard'
+               AND id NOT IN (SELECT questionid 
+                                FROM {flashcards_q_stud_rel} 
+                               WHERE studentid = :userid
+                                 AND flashcardsid = :fid)";
 
-    $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id]);
+    $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
     $questions = array();
 
     foreach ($questionstemp as $question) {

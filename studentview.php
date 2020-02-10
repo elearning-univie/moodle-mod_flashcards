@@ -51,7 +51,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading($flashcards->name);
 
     $boxrecords = get_box_count_records($USER->id, $flashcards->id);
-    $questioncount = get_box_zero_count_record($USER->id, $flashcards->id);
+    $questioncount = get_box_zero_count_record($USER->id, $flashcards);
 
     $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount, $flashcards->id);
     $templatestablecontext['boxes'] = $boxarray;
@@ -68,23 +68,32 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 /**
  * Calculates the number of questions in box zero
  * @param int $userid
- * @param int $flashcardsid
+ * @param object $categoryid
  * @return int
  * @throws coding_exception
  * @throws dml_exception
  */
-function get_box_zero_count_record($userid, $flashcardsid) {
+function get_box_zero_count_record($userid, $flashcards) {
     global $DB;
 
-    $categoryid = $DB->get_record_sql('SELECT categoryid FROM {flashcards} WHERE id = :flashcardsid', ['flashcardsid' => $flashcardsid]);
-    $categories = question_categorylist($categoryid->categoryid);
-    list($inids, $categorieids) = $DB->get_in_or_equal($categories);
+    if ($flashcards->inclsubcats) {
+        $qcategories = question_categorylist($flashcards->categoryid);
+    } else {
+        $qcategories = $flashcards->categoryid;
+    }
 
-    $sql = "SELECT count(q.id) FROM {question} q " .
-                    "WHERE category $inids AND q.id NOT IN " .
-                    "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $userid and flashcardsid = $flashcardsid)";
+    list($inids, $categorieids) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
 
-    return $DB->count_records_sql($sql, $categorieids);
+    $sql = "SELECT count(id)
+              FROM {question}
+             WHERE category $inids
+               AND qtype = 'flashcard'
+               AND id NOT IN (SELECT questionid
+                                FROM {flashcards_q_stud_rel}
+                               WHERE studentid = :userid
+                                 AND flashcardsid = :fid)";
+
+    return $DB->count_records_sql($sql, $categorieids + ['userid' => $userid, 'fid' => $flashcards->id]);
 }
 
 /**
