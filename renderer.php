@@ -143,6 +143,28 @@ class renderer {
 
         $result .= $quba->render_question(1, $options);
 
-        return $result;
+        return $this->removeTagByClass($result, 'im-controls');
     }
+
+    /**
+     * Removes a node from a html text
+     *
+     * @param string $html
+     * @param string $className
+     * @return string
+     */
+    public function removeTagByClass($html, $className) {
+        $dom = new DOMDocument();
+        $dom->loadHTML($html);
+        $finder = new DOMXPath($dom);
+
+        $nodes = $finder->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' {$className} ')]");
+
+        foreach ($nodes as $node) {
+            $node->parentNode->removeChild($node);
+        }
+
+        return $dom->saveHTML();
+    }
+
 }
