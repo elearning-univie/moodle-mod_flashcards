@@ -68,7 +68,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 /**
  * Calculates the number of questions in box zero
  * @param int $userid
- * @param object $categoryid
+ * @param object $flashcards
  * @return int
  * @throws coding_exception
  * @throws dml_exception
