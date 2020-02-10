@@ -57,7 +57,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $templatestablecontext['boxes'] = $boxarray;
 
     $renderer = $PAGE->get_renderer('core');
-    echo $renderer->render_from_template('mod_flashcards/student_view', $templatestablecontext);
+    echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
     echo $OUTPUT->footer();
 } else {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
@@ -117,18 +117,10 @@ function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
     $boxindex = 0;
     $boxvalues['currentbox'] = $boxindex;
     $boxvalues['count'] = $boxzerocount;
-    $boxvalues['redirecturl'] = null;
+    $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
     $boxvalues['flashcardsid'] = $flashcardsid;
 
-    if ($boxzerocount != 0) {
-        $boxvalues['loadquestions'] = true;
-    } else {
-        $boxvalues['loadquestions'] = false;
-    }
-
     $boxarray[] = $boxvalues;
-
-    $boxvalues['loadquestions'] = false;
     $boxindex++;
 
     foreach ($records as $record) {

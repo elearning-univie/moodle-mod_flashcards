@@ -1,4 +1,4 @@
-define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification/*, templates*/, url){
+define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification, url){
     return {
         init: function() {
             $.mod_flashcards_call_update = function ($courseid, $questionid, $qaid, $cmid) {
@@ -13,16 +13,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                         } else {
                             window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + $cmid);
                         }
-                    },
-                    fail: notification.exception
-                }]);
-            };
-            $.mod_flashcards_load_questions = function ($flashcardsid) {
-                ajax.call([{
-                    methodname: 'mod_flashcards_load_questions',
-                    args: {flashcardsid: $flashcardsid},
-                    done: function() {
-                        window.location.reload();
                     },
                     fail: notification.exception
                 }]);

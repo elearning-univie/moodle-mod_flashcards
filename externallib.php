@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/externallib.php");
-require_once("$CFG->dirroot/mod/flashcards/renderer.php");
+require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
 
 /**
  * Class mod_flashcards_external
@@ -59,13 +59,17 @@ class mod_flashcards_external extends external_api {
     public static function load_questions_parameters() {
         return new external_function_parameters(
                 array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity')
+                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                        'qids' => new external_multiple_structure(
+                                new external_value(PARAM_INT, 'id array of questions')
+                        ),
                 )
         );
     }
 
     /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
+     *
      * @param int $courseid
      * @param int $questionid
      * @param int $qanswervalue
@@ -99,27 +103,35 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Moves all questions from box 0 to box 1 for the activity
+     * Moves all selected questions from box 0 to box 1 for the activity
      *
      * @param int $flashcardsid
+     * @param array $qids
      * @return int
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function load_questions($flashcardsid) {
+    public static function load_questions($flashcardsid, $qids) {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
         $categories = question_categorylist($record->categoryid);
-        list($inids, $categorieids) = $DB->get_in_or_equal($categories);
-        $sql = "SELECT q.id FROM {question} q WHERE category $inids AND q.id NOT IN " .
-               "(SELECT questionid FROM {flashcards_q_stud_rel} WHERE studentid = $USER->id and flashcardsid = $record->id)";
+        list($inids, $questionids) = $DB->get_in_or_equal($qids, SQL_PARAMS_NAMED);
+        list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
 
-        $questionids = $DB->get_fieldset_sql($sql, $categorieids);
+        $sql = "SELECT id
+                  FROM {question}
+                 WHERE id $inids
+                   AND category $inids2
+                   AND id NOT IN (SELECT questionid
+                                    FROM {flashcards_q_stud_rel}
+                                   WHERE studentid = :userid
+                                     AND flashcardsid = :fid)";
+
+        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids + ['userid' => $USER->id, 'fid' => $flashcardsid]);
         $questionarray = [];
 
         foreach ($questionids as $question) {
-
             $questionentry =
                     array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
                             'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
@@ -127,7 +139,6 @@ class mod_flashcards_external extends external_api {
             $questionarray[] = $questionentry;
         }
         $DB->insert_records('flashcards_q_stud_rel', $questionarray);
-        return 1;
     }
 
     /**
@@ -145,6 +156,6 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function load_questions_returns() {
-        return new external_value(PARAM_INT, 'new question');
+        return null;
     }
 }
