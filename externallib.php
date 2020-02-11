@@ -71,9 +71,9 @@ class mod_flashcards_external extends external_api {
     /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
-     * @param int $questionid
      * @param int $courseid
      * @param int $fid
+     * @param int $questionid
      * @param int $qanswervalue
      * @return string|null
      * @throws dml_exception
