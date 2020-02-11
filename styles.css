@@ -34,3 +34,7 @@ th.flashcards_studentview_all {
 .mod-flashcards.btn-learn-now {
     height: 100%;
 }
+
+#mod-flashcards-question .im-controls {
+    display: none;
+}
