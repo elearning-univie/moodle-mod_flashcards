@@ -44,8 +44,9 @@ class mod_flashcards_external extends external_api {
     public static function update_progress_parameters() {
         return new external_function_parameters(
                 array(
-                        'questionid' => new external_value(PARAM_INT, 'id of course'),
-                        'cmid' => new external_value(PARAM_INT, 'course module id'),
+                        'courseid' => new external_value(PARAM_INT, 'id of course'),
+                        'fid' => new external_value(PARAM_INT, 'if of flashcard activity'),
+                        'questionid' => new external_value(PARAM_INT, 'question id'),
                         'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer')
                 )
         );
@@ -71,17 +72,17 @@ class mod_flashcards_external extends external_api {
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
      * @param int $questionid
-     * @param int $cmid
+     * @param int $courseid
+     * @param int $fid
      * @param int $qanswervalue
      * @return string|null
      * @throws dml_exception
      */
-    public static function update_progress($questionid, $cmid, $qanswervalue) {
+    public static function update_progress($courseid, $fid, $questionid, $qanswervalue) {
         global $DB, $USER;
 
-        $cm = $DB->get_record('course_modules', ['id' => $cmid], $fields = 'course,instance');
         $record = $DB->get_record('flashcards_q_stud_rel',
-                ['studentid' => $USER->id, 'flashcardsid' => $cm->instance, 'questionid' => $questionid], $fields = '*',
+                ['studentid' => $USER->id, 'flashcardsid' => $fid, 'questionid' => $questionid], $fields = '*',
                 $strictness = MUST_EXIST);
 
         $currentbox = $record->currentbox;
@@ -99,7 +100,7 @@ class mod_flashcards_external extends external_api {
         }
 
         $DB->update_record('flashcards_q_stud_rel', $record);
-        $questionrenderer = new renderer($USER->id, $currentbox, $cm->instance, $cm->course);
+        $questionrenderer = new renderer($USER->id, $currentbox, $fid, $courseid);
 
         return $questionrenderer->render_question();
     }

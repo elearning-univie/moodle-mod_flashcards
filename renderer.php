@@ -28,6 +28,7 @@ require_once('locallib.php');
 
 /**
  * Class renderer
+ *
  * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -66,6 +67,7 @@ class renderer {
 
     /**
      * Get the next question for the given student and box
+     *
      * @return mixed
      * @throws dml_exception
      * @throws moodle_exception
@@ -80,7 +82,8 @@ class renderer {
                 "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
                 "WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active AND subq.flashcardsid = q.flashcardsid)";
 
-        $records = $DB->get_recordset_sql($sql, ['userid' => $this->userid, 'box' => $this->box, 'flashcardsid' => $this->flashcardsid]);
+        $records = $DB->get_recordset_sql($sql,
+                ['userid' => $this->userid, 'box' => $this->box, 'flashcardsid' => $this->flashcardsid]);
 
         foreach ($records as $record) {
             $questionid = $record->questionid;
@@ -96,6 +99,7 @@ class renderer {
 
     /**
      * renders the question
+     *
      * @return string|null
      * @throws coding_exception
      * @throws dml_exception
@@ -132,7 +136,8 @@ class renderer {
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $questionid . ',' . $qaid . ',' . $cm->id . ')" enctype="multipart/form-data" accept-charset="utf-8">';
+                $this->courseid . ',' . $this->flashcardsid . ',' . $questionid . ',' . $qaid . ',' . $cm->id .
+                ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
         $options = new question_display_options();
