@@ -132,7 +132,7 @@ class renderer {
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $this->courseid . ',' . $questionid . ',' . $qaid . ',' . $cm->id . ')" enctype="multipart/form-data" accept-charset="utf-8">';
+                $questionid . ',' . $qaid . ',' . $cm->id . ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
         $options = new question_display_options();
