@@ -54,7 +54,7 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
     }
 
     list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-    $sql = "SELECT id, name
+    $sql = "SELECT id, questiontext
               FROM {question} q
              WHERE category $sqlwhere
                AND qtype = 'flashcard'
@@ -67,9 +67,15 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
     $questions = array();
 
     foreach ($questionstemp as $question) {
-        $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
+        //
+        $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', array('id' => $question->id, 'courseid' => $course->id ));
+        $questiontext = substr($question->questiontext, 0, 30);
 
-        $questions[] = ['name' => $question->name,
+        if (strlen($questiontext) == 30) {
+            $questiontext = $questiontext . '...';
+        }
+
+        $questions[] = ['text' => $questiontext,
                 'qurl' => html_entity_decode($qurl->__toString()),
                 'qid' => $question->id
         ];
