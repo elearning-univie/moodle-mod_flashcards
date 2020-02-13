@@ -165,7 +165,7 @@ $event->trigger();
 
 $PAGE->requires->js_module('core_question_engine');
 $PAGE->requires->strings_for_js(array(
-        'closepreview',
+        'closepreview'
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 echo $OUTPUT->footer();
