@@ -44,18 +44,7 @@ $maxvariant = 1;
 $options = new question_preview_options($question);
 $options->load_user_defaults();
 $options->set_from_request();
-
-$params = array(
-        'id' => $question->id,
-);
-
-if ($previewid) {
-    $params['previewid'] = $previewid;
-}
-
-$params['courseid'] = $context->instanceid;
-$prevurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
-
+$prevurl = q_prev_form_url($question->id, $context);
 $PAGE->set_url($prevurl);
 
 // Get and validate existing preview, or start a new one.
@@ -117,7 +106,6 @@ if (data_submitted() && confirm_sesskey()) {
 
     try {
         $quba->process_all_actions();
-
         $transaction = $DB->start_delegated_transaction();
         question_engine::save_questions_usage_by_activity($quba);
         $transaction->allow_commit();
@@ -180,3 +168,27 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 echo $OUTPUT->footer();
+
+/**
+ * Creates a moodle preview url for the question
+ *
+ * @param int $questionid
+ * @param object $context
+ * @param null $previewid
+ * @return moodle_url
+ * @throws moodle_exception
+ */
+function q_prev_form_url($questionid, $context, $previewid = null) {
+    $params = array(
+            'id' => $questionid,
+    );
+    if ($context->contextlevel == CONTEXT_MODULE) {
+        $params['cmid'] = $context->instanceid;
+    } else if ($context->contextlevel == CONTEXT_COURSE) {
+        $params['courseid'] = $context->instanceid;
+    }
+    if ($previewid) {
+        $params['previewid'] = $previewid;
+    }
+    return new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
+}
