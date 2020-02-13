@@ -67,7 +67,6 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
     $questions = array();
 
     foreach ($questionstemp as $question) {
-        //
         $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', array('id' => $question->id, 'courseid' => $course->id ));
         $questiontext = substr($question->questiontext, 0, 30);
 
