@@ -44,7 +44,18 @@ $maxvariant = 1;
 $options = new question_preview_options($question);
 $options->load_user_defaults();
 $options->set_from_request();
-$prevurl = q_prev_form_url($question->id, $context);
+
+$params = array(
+        'id' => $question->id,
+);
+
+if ($previewid) {
+    $params['previewid'] = $previewid;
+}
+
+$params['courseid'] = $context->instanceid;
+$prevurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
+
 $PAGE->set_url($prevurl);
 
 // Get and validate existing preview, or start a new one.
@@ -169,18 +180,3 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 echo $OUTPUT->footer();
-
-function q_prev_form_url($questionid, $context, $previewid = null) {
-    $params = array(
-            'id' => $questionid,
-    );
-    if ($context->contextlevel == CONTEXT_MODULE) {
-        $params['cmid'] = $context->instanceid;
-    } else if ($context->contextlevel == CONTEXT_COURSE) {
-        $params['courseid'] = $context->instanceid;
-    }
-    if ($previewid) {
-        $params['previewid'] = $previewid;
-    }
-    return new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
-}
