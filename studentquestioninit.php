@@ -68,11 +68,16 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
 
     foreach ($questionstemp as $question) {
         $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', array('id' => $question->id, 'courseid' => $course->id ));
-        $questiontext = substr($question->questiontext, 0, 30);
 
+        print_object($question->questiontext);
+
+        $questiontext = file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext', $question->id);
+        $questiontext = format_text($questiontext, FORMAT_MOODLE);
+
+        /*$questiontext = substr($questiontext, 0, 30);
         if (strlen($questiontext) == 30) {
             $questiontext = $questiontext . '...';
-        }
+        }*/
 
         $questions[] = ['text' => $questiontext,
                 'qurl' => html_entity_decode($qurl->__toString()),
