@@ -81,9 +81,10 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
             }
         }
 
-        $questiontext = substr(html_to_text($questiontext, 0), 0, 30);
-        
-        if (strlen($questiontext) >= 29) {
+        $questiontext = html_to_text($questiontext, 0);
+
+        if (strlen($questiontext) > 30) {
+            $questiontext = substr($questiontext, 0, 30);
             $questiontext = $questiontext . '...';
         }
 
