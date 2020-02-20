@@ -77,7 +77,11 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
         if (!empty($images)) {
             foreach ($images[0] as $image) {
                 preg_match('/alt="(.*?)"/', $image, $imagealt);
-                $questiontext = str_replace($image, $imagealt[1], $questiontext);
+                if (!empty($imagealt[1])) {
+                    $questiontext = str_replace($image, $imagealt[1], $questiontext);
+                } else {
+                    $questiontext = str_replace($image, get_string('noimagetext','mod_flashcards'), $questiontext);
+                }
             }
         }
 
