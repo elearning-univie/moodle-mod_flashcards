@@ -41,13 +41,13 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context) ) {
+if (has_capability('mod/flashcards:studentview', $context)) {
     $PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
     if ($flashcards->inclsubcats) {
-        require_once($CFG->dirroot."/lib/questionlib.php");
+        require_once($CFG->dirroot . "/lib/questionlib.php");
         $qcategories = question_categorylist($flashcards->categoryid);
     } else {
         $qcategories = $flashcards->categoryid;
@@ -67,9 +67,12 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
     $questions = array();
 
     foreach ($questionstemp as $question) {
-        $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', array('id' => $question->id, 'courseid' => $course->id ));
+        $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php',
+                array('id' => $question->id, 'courseid' => $course->id));
 
-        $questiontext = file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext', $question->id);
+        $questiontext =
+                file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+                        $question->id);
         $questiontext = format_text($questiontext, FORMAT_HTML);
 
         preg_match_all('/<img[^>]+>/i', $questiontext, $images);
@@ -80,7 +83,7 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
                 if (!empty($imagealt[1])) {
                     $questiontext = str_replace($image, $imagealt[1], $questiontext);
                 } else {
-                    $questiontext = str_replace($image, get_string('noimagetext','mod_flashcards'), $questiontext);
+                    $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
                 }
             }
         }
