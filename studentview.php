@@ -55,6 +55,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount, $flashcards->id);
     $templatestablecontext['boxes'] = $boxarray;
+    $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
 
     $renderer = $PAGE->get_renderer('core');
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
