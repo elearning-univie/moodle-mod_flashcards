@@ -53,10 +53,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $qcount = $DB->count_records_sql($sql, ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
     if ($qcount > 0) {
-        echo html_writer::start_tag('div', array('class' => 'slidecontainer'));
-        echo html_writer::empty_tag('input', array('type' => 'range', 'class' => 'slider', 'id' => 'myRange', 'min' => '1', 'max' => $qcount));
-        echo html_writer::span('', '', array('id' => 'demo'));
-        echo html_writer::end_tag('div');
+        $renderer = $PAGE->get_renderer('core');
+        echo $renderer->render_from_template('mod_flashcards/studentlearnnow', ['qcount' => $qcount]);
         $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     } else {
         echo 'Fragen importieren!';

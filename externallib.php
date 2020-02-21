@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 
 /**
  * Class mod_flashcards_external
@@ -65,6 +66,20 @@ class mod_flashcards_external extends external_api {
                                 new external_value(PARAM_INT, 'id array of questions')
                         ),
                 )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function start_learn_now_parameters() {
+        return new external_function_parameters(
+            array(
+                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'qcount' => new external_value(PARAM_INT, 'number of questions to learn')
+            )
         );
     }
 
@@ -145,6 +160,32 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Moves all selected questions from box 0 to box 1 for the activity
+     *
+     * @param int $flashcardsid
+     * @param int $qcount
+     * @return url
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function start_learn_now($flashcardsid, $qcount) {
+        global $DB, $USER, $_SESSION;
+        mod_flashcards_check_student_rights($flashcardsid);
+
+        $sql = "SELECT questionid
+                  FROM {flashcards_q_stud_rel}
+                 WHERE studentid = :userid
+                   AND flashcardsid = :fid
+              ORDER BY currentbox, lastanswered";
+
+        $questionids = $DB->get_fieldset_sql($sql, ['userid' => $USER->id, 'fid' => $flashcardsid]);
+
+        $_SESSION["mod_flashcards_ln_$flashcardsid"] = array_slice($questionids, 0, $qcount);
+
+        return new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $flashcardsid, 'box' => '-1']);
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
@@ -160,5 +201,14 @@ class mod_flashcards_external extends external_api {
      */
     public static function load_questions_returns() {
         return null;
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function start_learn_now_returns() {
+        return new external_value(PARAM_RAW, 'learn now url');
     }
 }

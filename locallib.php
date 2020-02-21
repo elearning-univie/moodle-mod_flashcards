@@ -24,7 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-global $CFG;
+/**
+ * @param $flashcardsid
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
+function mod_flashcards_check_student_rights($flashcardsid) {
+    list ($course, $cm) = get_course_and_cm_from_cmid($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
 
-require_once($CFG->dirroot."/question/category_class.php");
-require_once($CFG->dirroot."/question/editlib.php");
+    if (!$course->visible || !$cm->visible) {
+        //TODO richtige exception werfen
+        throw new require_login_exception();
+    }
+
+    require_login($course, false, $cm);
+    return $context;
+}

@@ -24,6 +24,7 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['box'] = 'Box {{currentbox}}';
+$string['buttonstartlearnnow'] = 'Learn now';
 $string['existingcategory'] = 'Existing';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['flashcardname'] = 'Flash cards activity name';
