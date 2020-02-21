@@ -23,6 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
+define('FLASHCARDS_LN', 'mod_flashcards_ln_');
 
 /**
  * @param $flashcardsid
@@ -31,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
  * @throws require_login_exception
  */
 function mod_flashcards_check_student_rights($flashcardsid) {
-    list ($course, $cm) = get_course_and_cm_from_cmid($flashcardsid, 'flashcards');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
 
     if (!$course->visible || !$cm->visible) {
@@ -40,5 +41,5 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     }
 
     require_login($course, false, $cm);
-    return $context;
+    return array($context, $course, $cm);
 }

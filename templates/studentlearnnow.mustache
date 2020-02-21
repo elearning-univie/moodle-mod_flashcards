@@ -18,6 +18,6 @@
     <div>
         <input type="range" class="slider" id="mod-flashcards-range-slider" min="1" max="{{qcount}}">
         <span id="mod-flashcards-range-slider-value"></span>
-        <button class="btn btn-primary">{{# str }} buttonstartlearnnow, mod_flashcards {{/ str }}</button>
+        <button class="btn btn-primary" onclick="$.mod_flashcards_start_learn_now({{flashcardsid}})">{{# str }} buttonstartlearnnow, mod_flashcards {{/ str }}</button>
     </div>
 </section>

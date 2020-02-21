@@ -170,7 +170,7 @@ class mod_flashcards_external extends external_api {
      */
     public static function start_learn_now($flashcardsid, $qcount) {
         global $DB, $USER, $_SESSION;
-        mod_flashcards_check_student_rights($flashcardsid);
+        list($context, $course, $cm) = mod_flashcards_check_student_rights($flashcardsid);
 
         $sql = "SELECT questionid
                   FROM {flashcards_q_stud_rel}
@@ -180,9 +180,11 @@ class mod_flashcards_external extends external_api {
 
         $questionids = $DB->get_fieldset_sql($sql, ['userid' => $USER->id, 'fid' => $flashcardsid]);
 
-        $_SESSION["mod_flashcards_ln_$flashcardsid"] = array_slice($questionids, 0, $qcount);
+        $_SESSION[FLASHCARDS_LN . $flashcardsid] = array_slice($questionids, 0, $qcount);
 
-        return new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $flashcardsid, 'box' => '-1']);
+        $newmoodleurl = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $cm->id, 'box' => '-1']);
+
+        return html_entity_decode($newmoodleurl->__toString());
     }
 
     /**
