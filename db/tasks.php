@@ -13,9 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Task to cleanup old question previews.
  *
@@ -23,6 +20,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2013 onwards Martin Dougiamas  http://dougiamas.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 $tasks = [
     [
         'classname' => 'mod_flashcards\task\delete_old_qubas',
