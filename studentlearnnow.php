@@ -54,7 +54,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     if ($qcount > 0) {
         $renderer = $PAGE->get_renderer('core');
-        echo $renderer->render_from_template('mod_flashcards/studentlearnnow', ['qcount' => $qcount, 'flashcardsid' => $flashcards->id]);
+        echo $renderer->render_from_template('mod_flashcards/studentlearnnow',
+            ['qcount' => $qcount, 'flashcardsid' => $flashcards->id]);
         $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     } else {
         echo 'Fragen importieren!';

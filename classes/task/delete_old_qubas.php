@@ -23,6 +23,8 @@
  */
 namespace mod_flashcards\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * A task to cleanup old unused qubas.
  *
@@ -39,7 +41,7 @@ class delete_old_qubas extends \core\task\scheduled_task {
     public function get_name() {
         return get_string('taskqubadelete', 'flashcards');
     }
-    
+
     /**
      * Do the job.
      * Throw exceptions on errors (the job will be retried).
@@ -47,10 +49,10 @@ class delete_old_qubas extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/question/engine/lib.php');
-        
+
         // We delete previews that have not been touched for 24 hours.
         $lastmodifiedcutoff = time() - DAYSECS;
-        
+
         mtrace("\n  Cleaning up old question attempts...", '');
         $oldpreviews = new \qubaid_join('{question_usages} quba', 'quba.id',
             'quba.component = :qubacomponent
@@ -67,7 +69,7 @@ class delete_old_qubas extends \core\task\scheduled_task {
             ',
             ['qubacomponent' => 'flashcards', 'qubacomponent2' => 'flashcards',
                 'qamodifiedcutoff' => $lastmodifiedcutoff, 'stepcreatedcutoff' => $lastmodifiedcutoff]);
-            
+
             \question_engine::delete_questions_usage_by_activities($oldpreviews);
             mtrace('done.');
     }
