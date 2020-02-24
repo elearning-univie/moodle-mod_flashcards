@@ -73,5 +73,5 @@ class delete_old_qubas extends \core\task\scheduled_task {
             \question_engine::delete_questions_usage_by_activities($oldpreviews);
             mtrace('done.');
     }
-    
+
 }
