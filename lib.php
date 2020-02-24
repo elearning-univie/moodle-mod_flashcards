@@ -142,12 +142,14 @@ function flashcards_get_database_object($flashcards) {
  *
  * @package  mod_flashcards
  * @category files
- * @param stdClass $course course object
- * @param stdClass $cm course module object
+ * @param stdClass $course course settings object
  * @param stdClass $context context object
- * @param string $filearea file area
- * @param array $args extra arguments
- * @param bool $forcedownload whether or not force download
+ * @param string $component the name of the component we are serving files for.
+ * @param string $filearea the name of the file area.
+ * @param int $qubaid the attempt usage id.
+ * @param int $slot the id of a question in this quiz attempt.
+ * @param array $args the remaining bits of the file path.
+ * @param bool $forcedownload whether the user must be forced to download the file.
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - justsend the file
  */
