@@ -39,7 +39,7 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     $context = context_module::instance($cm->id);
 
     if (!$course->visible || !$cm->visible) {
-        // TODO richtige exception werfen
+        // TODO Richtige exception werfen.
         throw new require_login_exception();
     }
 
@@ -58,17 +58,25 @@ function mod_flashcards_get_next_question($fid, $boxid) {
     global $DB, $USER;
 
     if ($boxid > 0) {
-        $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
-            "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid AND q.lastanswered = " .
-            "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
-            "WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active AND subq.flashcardsid = q.flashcardsid)";
+        $sql = "SELECT min(questionid) AS questionid
+                 FROM {flashcards_q_stud_rel} q
+                WHERE q.studentid = :userid
+                  AND q.currentbox = :box
+                  AND q.flashcardsid = :flashcardsid
+                  AND q.lastanswered =
+                      (SELECT min(lastanswered)
+                        FROM {flashcards_q_stud_rel} subq
+                       WHERE subq.studentid = q.studentid
+                         AND subq.currentbox = q.currentbox
+                         AND subq.active = q.active
+                         AND subq.flashcardsid = q.flashcardsid)";
 
         $questionid = $DB->get_field_sql($sql,
             ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $fid]);
 
         return $questionid;
     } else {
-        // return first element of array and remove it from the session array
+        // Return first element of array and remove it from the session array.
         return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
     }
 }

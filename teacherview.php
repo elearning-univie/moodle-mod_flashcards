@@ -71,7 +71,8 @@ $returnurl = '/mod/flashcards/teacherview.php?id='.$id;
 $questions = array();
 foreach ($questionstemp as $question) {
     $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
-    $editurl = new moodle_url('/question/question.php', array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
+    $editurl = new moodle_url('/question/question.php',
+        array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
     $deleteurl = new moodle_url('/question/edit.php', array('returnurl' => $returnurl, 'courseid' => $course->id,
         'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
 

@@ -48,4 +48,5 @@ $string['pluginadministration'] = 'Lernkartei Administration';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Frage';
 $string['selectall'] = 'Alle';
+$string['taskqubadelete'] = 'Alte Versuche aus der Fragendatenbank löschen';
 $string['userpreferences'] = 'Benutzereigenschaften';

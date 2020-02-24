@@ -31,7 +31,9 @@ const MOD_FLASHCARDS_SERVICE_SHORTNAME = 'flashcards';
 
 $services = array(
         'flashcardsservice' => array(
-                'functions' => array('mod_flashcards_update_progress', 'mod_flashcards_load_next_question', 'mod_flashcards_init_questions', 'mod_flashcards_start_learn_now'),
+                'functions' => array('mod_flashcards_update_progress',
+                    'mod_flashcards_load_next_question', 'mod_flashcards_init_questions',
+                    'mod_flashcards_start_learn_now'),
                 'shortname' => MOD_FLASHCARDS_SERVICE_SHORTNAME,
                 'requiredcapability' => 'mod/flashcards:webservice',
                 'restrictedusers' => 0,

@@ -13,20 +13,24 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * Multiple choice question definition classes.
+ * Task to cleanup old question previews.
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2013 onwards Martin Dougiamas  http://dougiamas.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once('../../config.php');
 
-$id = required_param('id', PARAM_INT);           // Course ID
+defined('MOODLE_INTERNAL') || die();
 
-// Ensure that the course specified is valid
-if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('Course ID is incorrect');
-
-}
+$tasks = [
+    [
+        'classname' => 'mod_flashcards\task\delete_old_qubas',
+        'blocking' => 0,
+        'minute' => '*/10',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+];
