@@ -31,6 +31,7 @@ $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
 $string['includesubcategories'] = 'include subcategories';
 $string['learnnow'] = 'Learn now';
+$string['learnnowrangeslider'] = 'Please select how many question you want to learn.';
 $string['loadquestions'] = 'load questions';
 $string['modulename'] = 'Flash cards';
 $string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';

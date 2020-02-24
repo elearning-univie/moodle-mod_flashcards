@@ -31,6 +31,7 @@ $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
 $string['includesubcategories'] = 'Unterkategorien einbeziehen';
 $string['learnnow'] = 'Jetzt lernen';
+$string['learnnowrangeslider'] = 'Bitte wählen Sie die Anzahl der Fragen aus, die Sie lernen möchten.';
 $string['loadquestions'] = 'Lade Fragen';
 $string['modulename'] = 'Lernkartei';
 $string['modulename_help'] = 'Die Lernkartei Aktivität ermöglicht dem Lehrenden eine LErnkartei für Studierende anzulegen.';

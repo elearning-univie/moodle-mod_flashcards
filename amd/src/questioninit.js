@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification, url) {
     return {
         init: function () {
-            $.mod_flashcards_load_questions = function (aid, cmid) {
+            $.mod_flashcards_init_questions = function (aid, cmid) {
                 var data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = [];
                 for (var i = 0; i < data.length; i++) {
@@ -11,7 +11,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                 }
                 if (qids && qids.length) {
                     ajax.call([{
-                        methodname: 'mod_flashcards_load_questions',
+                        methodname: 'mod_flashcards_init_questions',
                         args: {flashcardsid: aid, qids: qids},
                         done: function () {
                             window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + cmid);

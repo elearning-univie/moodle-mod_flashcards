@@ -71,7 +71,7 @@ class mod_flashcards_external extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function load_questions_parameters() {
+    public static function init_questions_parameters() {
         return new external_function_parameters(
                 array(
                         'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
@@ -154,7 +154,7 @@ class mod_flashcards_external extends external_api {
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function load_questions($flashcardsid, $qids) {
+    public static function init_questions($flashcardsid, $qids) {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
@@ -235,7 +235,7 @@ class mod_flashcards_external extends external_api {
      *
      * @return external_value
      */
-    public static function load_questions_returns() {
+    public static function init_questions_returns() {
         return null;
     }
 

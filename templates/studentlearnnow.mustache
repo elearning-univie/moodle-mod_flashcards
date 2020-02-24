@@ -16,8 +16,9 @@
 }}
 <section>
     <div>
+        <p>{{# str }} learnnowrangeslider, mod_flashcards {{/ str }}</p>
         <input type="range" class="slider" id="mod-flashcards-range-slider" min="1" max="{{qcount}}">
-        <span id="mod-flashcards-range-slider-value"></span>
-        <button class="btn btn-primary" onclick="$.mod_flashcards_start_learn_now({{flashcardsid}})">{{# str }} buttonstartlearnnow, mod_flashcards {{/ str }}</button>
+        <span id="mod-flashcards-range-slider-value"></span><br>
+        <button class="mod_flashcards_learn_now_button btn btn-primary" onclick="$.mod_flashcards_start_learn_now({{flashcardsid}})">{{# str }} buttonstartlearnnow, mod_flashcards {{/ str }}</button>
     </div>
 </section>
