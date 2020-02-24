@@ -18,7 +18,7 @@
  * Privacy Subsystem implementation for mod_flashcards.
  *
  * @package    mod_flashcards
- * @copyright  2018 Zig Tan <zig@moodle.com>
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\privacy;
