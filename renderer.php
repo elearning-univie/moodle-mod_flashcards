@@ -88,7 +88,7 @@ class renderer {
         $PAGE->requires->js_init_call('M.core_question_engine.init_form',
                 array('#mod-flashcards-responseform'), false, $jsmodule);
 
-        $quba = question_engine::make_questions_usage_by_activity('flashcards', $context);
+        $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
 
         if ($this->questionid == null) {
