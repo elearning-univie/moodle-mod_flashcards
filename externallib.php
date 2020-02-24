@@ -136,9 +136,6 @@ class mod_flashcards_external extends external_api {
      * @param $fid
      * @param $boxid
      * @return string|null
-     * @throws coding_exception
-     * @throws dml_exception
-     * @throws moodle_exception
      */
     public static function load_next_question($fid, $boxid) {
         global $USER;

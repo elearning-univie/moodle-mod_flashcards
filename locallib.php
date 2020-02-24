@@ -29,6 +29,7 @@ define('FLASHCARDS_LN', 'mod_flashcards_ln_');
  * Checks if the user has the right to view the course
  *
  * @param $flashcardsid
+ * @return array
  * @throws coding_exception
  * @throws moodle_exception
  * @throws require_login_exception
