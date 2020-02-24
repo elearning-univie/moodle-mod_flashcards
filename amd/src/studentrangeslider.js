@@ -12,8 +12,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     methodname: 'mod_flashcards_start_learn_now',
                     args: {flashcardsid: flashcardsid, qcount: output.innerHTML},
                     done: function(result) {
-                        window.console.log(result);
-                        //window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + $cmid);
+                        window.location = result;
                     },
                     fail: notification.exception
                 }]);

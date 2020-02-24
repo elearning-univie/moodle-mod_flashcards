@@ -48,7 +48,7 @@ class renderer {
     /**
      * @var int
      */
-    private $courseid;
+    private $questionid;
 
     /**
      * renderer constructor.
@@ -58,43 +58,11 @@ class renderer {
      * @param int $flashcardsid
      * @param int $courseid
      */
-    public function __construct($userid, $box, $flashcardsid, $courseid) {
+    public function __construct($userid, $box, $flashcardsid, $questionid) {
         $this->userid = $userid;
         $this->box = $box;
-        $this->courseid = $courseid;
         $this->flashcardsid = $flashcardsid;
-    }
-
-    /**
-     * Get the next question for the given student and box
-     *
-     * @return mixed
-     * @throws dml_exception
-     * @throws moodle_exception
-     */
-    public function get_question_for_student_course_box() {
-        global $DB;
-        $i = 0;
-
-        // TODO active abfragen
-        $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
-                "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid AND q.lastanswered = " .
-                "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
-                "WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active AND subq.flashcardsid = q.flashcardsid)";
-
-        $records = $DB->get_recordset_sql($sql,
-                ['userid' => $this->userid, 'box' => $this->box, 'flashcardsid' => $this->flashcardsid]);
-
-        foreach ($records as $record) {
-            $questionid = $record->questionid;
-            $i++;
-        }
-
-        if ($i != 1) {
-            print_error('noquestion', 'mod_flashcards');
-        };
-
-        return $questionid;
+        $this->questionid = $questionid;
     }
 
     /**
@@ -123,13 +91,12 @@ class renderer {
 
         $quba = question_engine::make_questions_usage_by_activity('flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
-        $questionid = $this->get_question_for_student_course_box();
 
-        if ($questionid == null) {
+        if ($this->questionid == null) {
             return null;
         }
 
-        $question = question_bank::load_question($questionid);
+        $question = question_bank::load_question($this->questionid);
         $quba->add_question($question, 1);
         $quba->start_all_questions();
         question_engine::save_questions_usage_by_activity($quba);
@@ -137,7 +104,7 @@ class renderer {
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post" action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $this->courseid . ',' . $this->flashcardsid . ',' . $questionid . ',' . $qaid . ',' . $cm->id .
+                $this->flashcardsid . ',' . $this->questionid . ',' . $qaid . ',' . $cm->id .
                 ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 

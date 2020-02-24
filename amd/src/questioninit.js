@@ -2,9 +2,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
     return {
         init: function () {
             $.mod_flashcards_load_questions = function (aid, cmid) {
-                let data = document.querySelectorAll(".mod-flashcards-checkbox");
+                var data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = [];
-                for (let i = 0; i < data.length; i++) {
+                for (var i = 0; i < data.length; i++) {
                     if (data[i].checked == true) {
                         qids[i] = data[i].dataset.value;
                     }

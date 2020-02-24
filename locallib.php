@@ -43,3 +43,29 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     require_login($course, false, $cm);
     return array($context, $course, $cm);
 }
+
+/**
+ * Get the next question for the given student and box
+ *
+ * @return mixed
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function mod_flashcards_get_next_question($fid, $boxid) {
+    global $DB, $USER;
+
+    if ($boxid > 0) {
+        // TODO active abfragen
+        $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
+            "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid AND q.lastanswered = " .
+            "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
+            "WHERE subq.studentid = q.studentid AND subq.currentbox = q.currentbox AND subq.active = q.active AND subq.flashcardsid = q.flashcardsid)";
+
+        $questionid = $DB->get_field_sql($sql,
+            ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $fid]);
+
+        return $questionid;
+    } else {
+        return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
+    }
+}

@@ -53,11 +53,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
-    if ($box != -1) {
-        $questionrenderer = new renderer($USER->id, $box, $flashcards->id, $course->id);
-    } else {
-        $qids = $_SESSION[FLASHCARDS_LN . $flashcards->id];
-    }
+    $qid = mod_flashcards_get_next_question($flashcards->id, $box);
+    $questionrenderer = new renderer($USER->id, $box, $flashcards->id, $qid);
 
     $questionhtml = '<div id="mod-flashcards-question">';
     $questionhtml .= $questionrenderer->render_question();
