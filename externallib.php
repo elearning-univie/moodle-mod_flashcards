@@ -133,8 +133,8 @@ class mod_flashcards_external extends external_api {
     /**
      * Get the next question
      *
-     * @param $fid
-     * @param $boxid
+     * @param int $fid
+     * @param int $boxid
      * @return string|null
      */
     public static function load_next_question($fid, $boxid) {
