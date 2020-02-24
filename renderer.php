@@ -56,7 +56,7 @@ class renderer {
      * @param int $userid
      * @param int $box
      * @param int $flashcardsid
-     * @param int $courseid
+     * @param int $questionid
      */
     public function __construct($userid, $box, $flashcardsid, $questionid) {
         $this->userid = $userid;

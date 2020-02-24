@@ -99,7 +99,6 @@ class mod_flashcards_external extends external_api {
     /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
-     * @param int $courseid
      * @param int $fid
      * @param int $questionid
      * @param int $qanswervalue
@@ -131,6 +130,16 @@ class mod_flashcards_external extends external_api {
         return 1;
     }
 
+    /**
+     * Get the next question
+     *
+     * @param $fid
+     * @param $boxid
+     * @return string|null
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public static function load_next_question($fid, $boxid) {
         global $USER;
 
@@ -179,7 +188,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Moves all selected questions from box 0 to box 1 for the activity
+     * Load questions for learn now into the session
      *
      * @param int $flashcardsid
      * @param int $qcount
@@ -212,7 +221,7 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function update_progress_returns() {
-        return new external_value(PARAM_INT, 'new question');
+        return new external_value(PARAM_INT, '1 if update was successful');
     }
 
     /**

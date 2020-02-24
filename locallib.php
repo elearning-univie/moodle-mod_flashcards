@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die;
 define('FLASHCARDS_LN', 'mod_flashcards_ln_');
 
 /**
+ * Checks if the user has the right to view the course
+ *
  * @param $flashcardsid
  * @throws coding_exception
  * @throws moodle_exception
@@ -47,15 +49,14 @@ function mod_flashcards_check_student_rights($flashcardsid) {
 /**
  * Get the next question for the given student and box
  *
- * @return mixed
- * @throws dml_exception
- * @throws moodle_exception
+ * @param int $fid
+ * @param int $boxid
+ * @return int
  */
 function mod_flashcards_get_next_question($fid, $boxid) {
     global $DB, $USER;
 
     if ($boxid > 0) {
-        // TODO active abfragen
         $sql = "SELECT min(questionid) AS questionid FROM {flashcards_q_stud_rel} q " .
             "WHERE q.studentid = :userid AND q.currentbox = :box AND q.flashcardsid = :flashcardsid AND q.lastanswered = " .
             "(SELECT min(lastanswered) FROM {flashcards_q_stud_rel} subq " .
