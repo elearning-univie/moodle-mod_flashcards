@@ -61,7 +61,7 @@ if ($previewid) {
                 $prevurl, null, $e);
     }
 
-    if ($quba->get_owning_context()->instanceid != $USER->id) {
+    if ($quba->get_owning_context()->instanceid != $context->instanceid) {
         print_error('notyourpreview', 'question');
     }
 
@@ -75,7 +75,7 @@ if ($previewid) {
 
 } else {
     $quba = question_engine::make_questions_usage_by_activity(
-            'core_question_preview', context_user::instance($USER->id));
+            'mod_flashcards', $context);
     $quba->set_preferred_behaviour($options->behaviour);
     $slot = $quba->add_question($question, $options->maxmark);
 
