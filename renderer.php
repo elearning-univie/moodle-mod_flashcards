@@ -75,7 +75,6 @@ class renderer {
      */
     public function render_question() {
         global $PAGE;
-        //TODO Logik nicht im renderer -> nur rendern OIDA!
 
         $cm = get_coursemodule_from_instance("flashcards", $this->flashcardsid);
         $context = context_module::instance($cm->id);

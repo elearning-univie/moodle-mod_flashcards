@@ -39,7 +39,7 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     $context = context_module::instance($cm->id);
 
     if (!$course->visible || !$cm->visible) {
-        //TODO richtige exception werfen
+        // TODO richtige exception werfen
         throw new require_login_exception();
     }
 
@@ -68,6 +68,7 @@ function mod_flashcards_get_next_question($fid, $boxid) {
 
         return $questionid;
     } else {
+        // return first element of array and remove it from the session array
         return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
     }
 }
