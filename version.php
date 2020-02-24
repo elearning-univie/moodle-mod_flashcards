@@ -32,4 +32,4 @@ $plugin->version = 2020022400.02;
 $plugin->release = 'v0.0.1';
 $plugin->requires = 2019052000;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array();
+$plugin->dependencies = array('qtype_flashcard' => 2020010200);
