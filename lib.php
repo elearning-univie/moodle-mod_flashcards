@@ -40,48 +40,6 @@ function flashcards_add_instance($flashcards) {
 
 /**
  *
- * flashcards_get_database_object
- *
- * @param stdClass $flashcards
- * @return stdClass
- */
-function flashcards_get_database_object($flashcards) {
-    global $COURSE;
-    require_once('locallib.php');
-
-    $courseid = $COURSE->id;
-
-    $flashcardsdb = new stdClass();
-
-    $flashcardsdb->course = $courseid;
-    $flashcardsdb->name = $flashcards->name;
-
-    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
-
-    if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
-        $flashcardsdb->inclsubcats = 0;
-    } else {
-        $flashcardsdb->inclsubcats = 1;
-    }
-
-    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
-        $flashcardsdb->intro = '';
-    } else {
-        $flashcardsdb->intro = $flashcards->intro;
-    }
-
-    if (property_exists($flashcards, 'introformat') || is_integer($flashcards->introformat)) {
-        $flashcardsdb->introformat = 1;
-    } else {
-        $flashcardsdb->introformat = $flashcards->introformat;
-    }
-    $flashcardsdb->timemodified = time();
-
-    return $flashcardsdb;
-}
-
-/**
- *
  * flashcards_check_category
  *
  * @param stdClass $flashcards
@@ -124,6 +82,94 @@ function flashcards_check_category($flashcards, $courseid) {
 }
 
 /**
+ * flashcards_delete_instance
+ *
+ * @param int $id
+ * @return bool
+ */
+function flashcards_delete_instance(int $id) {
+    global $DB;
+
+    $DB->delete_records('flashcards', ['id' => $id]);
+
+    return true;
+}
+
+/**
+ *
+ * flashcards_get_database_object
+ *
+ * @param stdClass $flashcards
+ * @return stdClass
+ */
+function flashcards_get_database_object($flashcards) {
+    global $COURSE;
+    require_once('locallib.php');
+
+    $courseid = $COURSE->id;
+
+    $flashcardsdb = new stdClass();
+
+    $flashcardsdb->course = $courseid;
+    $flashcardsdb->name = $flashcards->name;
+
+    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
+
+    if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
+        $flashcardsdb->inclsubcats = 0;
+    } else {
+        $flashcardsdb->inclsubcats = 1;
+    }
+
+    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
+        $flashcardsdb->intro = '';
+    } else {
+        $flashcardsdb->intro = $flashcards->intro;
+    }
+
+    if (property_exists($flashcards, 'introformat') || is_integer($flashcards->introformat)) {
+        $flashcardsdb->introformat = 1;
+    } else {
+        $flashcardsdb->introformat = $flashcards->introformat;
+    }
+    $flashcardsdb->timemodified = time();
+
+    return $flashcardsdb;
+}
+
+/**
+ * Serves the flashcards files.
+ *
+ * @package  mod_flashcards
+ * @category files
+ * @param stdClass $course course settings object
+ * @param stdClass $context context object
+ * @param string $component the name of the component we are serving files for.
+ * @param string $filearea the name of the file area.
+ * @param int $qubaid the attempt usage id.
+ * @param int $slot the id of a question in this quiz attempt.
+ * @param array $args the remaining bits of the file path.
+ * @param bool $forcedownload whether the user must be forced to download the file.
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - justsend the file
+ */
+function flashcards_question_pluginfile($course, $context, $component,
+        $filearea, $qubaid, $slot, $args, $forcedownload, array $options=array()) {
+
+    list($context, $course, $cm) = get_context_info_array($context->id);
+    require_login($course, false, $cm);
+
+    $fs = get_file_storage();
+    $relativepath = implode('/', $args);
+    $fullpath = "/$context->id/$component/$filearea/$relativepath";
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        send_file_not_found();
+    }
+
+    send_stored_file($file, 0, 0, $forcedownload, $options);
+}
+
+/**
  * flashcards_update_instance
  *
  * @param array $flashcards
@@ -136,19 +182,6 @@ function flashcards_update_instance($flashcards) {
     $flashcardsdb = flashcards_get_database_object($flashcards);
     $flashcardsdb->id = $flashcards->instance;
     $DB->update_record('flashcards', $flashcardsdb);
-
-    return true;
-}
-/**
- * flashcards_delete_instance
- *
- * @param int $id
- * @return bool
- */
-function flashcards_delete_instance(int $id) {
-    global $DB;
-
-    $DB->delete_records('flashcards', ['id' => $id]);
 
     return true;
 }

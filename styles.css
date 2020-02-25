@@ -38,3 +38,24 @@ th.flashcards_studentview_all {
 #mod-flashcards-question .im-controls {
     display: none;
 }
+
+#mod-flashcards-range-slider-value {
+    padding: 0 1em 0 1em;
+    border: 1px solid;
+}
+
+.mod_flashcards_learn_now_button.btn.btn-primary {
+    margin-top: 3em;
+}
+
+#mod-flashcards-range-slider {
+    width: 50%;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+#mod-flashcards-range-slider:hover {
+    opacity: 1;
+}

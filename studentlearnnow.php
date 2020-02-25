@@ -15,52 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Question View
+ * Initial load of questions for flashcards
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require($CFG->dirroot . '/mod/flashcards/locallib.php');
-require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
 
-global $PAGE, $OUTPUT, $USER, $_SESSION;
+global $PAGE, $OUTPUT, $USER;
 
 $id = required_param('id', PARAM_INT);
-$box = required_param('box', PARAM_INT);
-
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/studentquiz.php", ['id' => $id, 'box' => $box]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/studentquestioninit.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-
 if ($node) {
     $node->make_active();
 }
-
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
-
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:studentview', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
-    $qid = mod_flashcards_get_next_question($flashcards->id, $box);
-    $questionrenderer = new renderer($USER->id, $box, $flashcards->id, $qid);
+    $sql = "SELECT count(id)
+              FROM {flashcards_q_stud_rel}
+             WHERE studentid = :userid
+               AND flashcardsid = :fid";
 
-    $questionhtml = '<div id="mod-flashcards-question">';
-    $questionhtml .= $questionrenderer->render_question();
-    $questionhtml .= '</div>';
+    $qcount = $DB->count_records_sql($sql, ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
-    echo $questionhtml;
+    if ($qcount > 0) {
+        $renderer = $PAGE->get_renderer('core');
+        echo $renderer->render_from_template('mod_flashcards/studentlearnnow',
+            ['qcount' => $qcount, 'flashcardsid' => $flashcards->id]);
+        $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
+    } else {
+        echo 'Fragen importieren!';
+    }
 
     echo $OUTPUT->footer();
 } else {

@@ -31,7 +31,9 @@ const MOD_FLASHCARDS_SERVICE_SHORTNAME = 'flashcards';
 
 $services = array(
         'flashcardsservice' => array(
-                'functions' => array('mod_flashcards_update_progress', 'mod_flashcards_load_questions'),
+                'functions' => array('mod_flashcards_update_progress',
+                    'mod_flashcards_load_next_question', 'mod_flashcards_init_questions',
+                    'mod_flashcards_start_learn_now'),
                 'shortname' => MOD_FLASHCARDS_SERVICE_SHORTNAME,
                 'requiredcapability' => 'mod/flashcards:webservice',
                 'restrictedusers' => 0,
@@ -49,11 +51,29 @@ $functions = array(
                 'ajax' => true,
                 'loginrequired' => true
         ),
-        'mod_flashcards_load_questions' => array(
+        'mod_flashcards_load_next_question' => array(
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'load_next_question',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Update question progress of a student',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        ),
+        'mod_flashcards_init_questions' => array(
                 'classname' => 'mod_flashcards_external',
-                'methodname' => 'load_questions',
+                'methodname' => 'init_questions',
                 'classpath' => 'mod/flashcards/externallib.php',
                 'description' => 'Load questions for a student',
+                'type' => 'write',
+                'ajax' => true,
+                'loginrequired' => true
+        ),
+        'mod_flashcards_start_learn_now' => array(
+                'classname' => 'mod_flashcards_external',
+                'methodname' => 'start_learn_now',
+                'classpath' => 'mod/flashcards/externallib.php',
+                'description' => 'Initializes the learn now session',
                 'type' => 'write',
                 'ajax' => true,
                 'loginrequired' => true

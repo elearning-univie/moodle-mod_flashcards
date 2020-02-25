@@ -23,8 +23,60 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
+define('FLASHCARDS_LN', 'mod_flashcards_ln_');
 
-global $CFG;
+/**
+ * Checks if the user has the right to view the course
+ *
+ * @param int $flashcardsid
+ * @return array
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ */
+function mod_flashcards_check_student_rights($flashcardsid) {
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
 
-require_once($CFG->dirroot."/question/category_class.php");
-require_once($CFG->dirroot."/question/editlib.php");
+    if (!$course->visible || !$cm->visible) {
+        // TODO Richtige exception werfen.
+        throw new require_login_exception();
+    }
+
+    require_login($course, false, $cm);
+    return array($context, $course, $cm);
+}
+
+/**
+ * Get the next question for the given student and box
+ *
+ * @param int $fid
+ * @param int $boxid
+ * @return int
+ */
+function mod_flashcards_get_next_question($fid, $boxid) {
+    global $DB, $USER;
+
+    if ($boxid > 0) {
+        $sql = "SELECT min(questionid) AS questionid
+                 FROM {flashcards_q_stud_rel} q
+                WHERE q.studentid = :userid
+                  AND q.currentbox = :box
+                  AND q.flashcardsid = :flashcardsid
+                  AND q.lastanswered =
+                      (SELECT min(lastanswered)
+                        FROM {flashcards_q_stud_rel} subq
+                       WHERE subq.studentid = q.studentid
+                         AND subq.currentbox = q.currentbox
+                         AND subq.active = q.active
+                         AND subq.flashcardsid = q.flashcardsid)";
+
+        $questionid = $DB->get_field_sql($sql,
+            ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $fid]);
+
+        return $questionid;
+    } else {
+        // Return first element of array and remove it from the session array.
+        return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
+    }
+}

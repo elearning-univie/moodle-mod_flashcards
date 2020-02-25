@@ -1,17 +1,17 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification, url) {
     return {
         init: function () {
-            $.mod_flashcards_load_questions = function (aid, cmid) {
-                let data = document.querySelectorAll(".mod-flashcards-checkbox");
+            $.mod_flashcards_init_questions = function (aid, cmid) {
+                var data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = [];
-                for (let i = 0; i < data.length; i++) {
+                for (var i = 0; i < data.length; i++) {
                     if (data[i].checked == true) {
                         qids[i] = data[i].dataset.value;
                     }
                 }
                 if (qids && qids.length) {
                     ajax.call([{
-                        methodname: 'mod_flashcards_load_questions',
+                        methodname: 'mod_flashcards_init_questions',
                         args: {flashcardsid: aid, qids: qids},
                         done: function () {
                             window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + cmid);

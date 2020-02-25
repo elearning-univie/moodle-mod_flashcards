@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 
 /**
  * Class mod_flashcards_external
@@ -44,8 +45,7 @@ class mod_flashcards_external extends external_api {
     public static function update_progress_parameters() {
         return new external_function_parameters(
                 array(
-                        'courseid' => new external_value(PARAM_INT, 'id of course'),
-                        'fid' => new external_value(PARAM_INT, 'if of flashcard activity'),
+                        'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
                         'questionid' => new external_value(PARAM_INT, 'question id'),
                         'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer')
                 )
@@ -57,7 +57,21 @@ class mod_flashcards_external extends external_api {
      *
      * @return external_function_parameters
      */
-    public static function load_questions_parameters() {
+    public static function load_next_question_parameters() {
+        return new external_function_parameters(
+            array(
+                'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
+                'boxid' => new external_value(PARAM_INT, 'id of current box')
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function init_questions_parameters() {
         return new external_function_parameters(
                 array(
                         'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
@@ -69,16 +83,29 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function start_learn_now_parameters() {
+        return new external_function_parameters(
+            array(
+                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'qcount' => new external_value(PARAM_INT, 'number of questions to learn')
+            )
+        );
+    }
+
+    /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
-     * @param int $courseid
      * @param int $fid
      * @param int $questionid
      * @param int $qanswervalue
      * @return string|null
      * @throws dml_exception
      */
-    public static function update_progress($courseid, $fid, $questionid, $qanswervalue) {
+    public static function update_progress($fid, $questionid, $qanswervalue) {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards_q_stud_rel',
@@ -100,8 +127,21 @@ class mod_flashcards_external extends external_api {
         }
 
         $DB->update_record('flashcards_q_stud_rel', $record);
-        $questionrenderer = new renderer($USER->id, $currentbox, $fid, $courseid);
+        return 1;
+    }
 
+    /**
+     * Get the next question
+     *
+     * @param int $fid
+     * @param int $boxid
+     * @return string|null
+     */
+    public static function load_next_question($fid, $boxid) {
+        global $USER;
+
+        $qid = mod_flashcards_get_next_question($fid, $boxid);
+        $questionrenderer = new renderer($USER->id, $boxid, $fid, $qid);
         return $questionrenderer->render_question();
     }
 
@@ -114,7 +154,7 @@ class mod_flashcards_external extends external_api {
      * @throws coding_exception
      * @throws dml_exception
      */
-    public static function load_questions($flashcardsid, $qids) {
+    public static function init_questions($flashcardsid, $qids) {
         global $DB, $USER;
 
         $record = $DB->get_record('flashcards', ['id' => $flashcardsid]);
@@ -145,11 +185,48 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Load questions for learn now into the session
+     *
+     * @param int $flashcardsid
+     * @param int $qcount
+     * @return url
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function start_learn_now($flashcardsid, $qcount) {
+        global $DB, $USER, $_SESSION;
+        list($context, $course, $cm) = mod_flashcards_check_student_rights($flashcardsid);
+
+        $sql = "SELECT questionid
+                  FROM {flashcards_q_stud_rel}
+                 WHERE studentid = :userid
+                   AND flashcardsid = :fid
+              ORDER BY currentbox, lastanswered";
+
+        $questionids = $DB->get_fieldset_sql($sql, ['userid' => $USER->id, 'fid' => $flashcardsid]);
+
+        $_SESSION[FLASHCARDS_LN . $flashcardsid] = array_slice($questionids, 0, $qcount);
+
+        $newmoodleurl = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $cm->id, 'box' => '-1']);
+
+        return html_entity_decode($newmoodleurl->__toString());
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
      */
     public static function update_progress_returns() {
+        return new external_value(PARAM_INT, '1 if update was successful');
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function load_next_question_returns() {
         return new external_value(PARAM_RAW, 'new question');
     }
 
@@ -158,7 +235,16 @@ class mod_flashcards_external extends external_api {
      *
      * @return external_value
      */
-    public static function load_questions_returns() {
+    public static function init_questions_returns() {
         return null;
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function start_learn_now_returns() {
+        return new external_value(PARAM_RAW, 'learn now url');
     }
 }

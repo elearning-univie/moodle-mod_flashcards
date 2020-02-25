@@ -24,12 +24,14 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['box'] = 'Box {{currentbox}}';
+$string['buttonstartlearnnow'] = 'Learn now';
 $string['existingcategory'] = 'Existing';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
 $string['includesubcategories'] = 'include subcategories';
 $string['learnnow'] = 'Learn now';
+$string['learnnowrangeslider'] = 'Please select how many question you want to learn.';
 $string['loadquestions'] = 'load questions';
 $string['modulename'] = 'Flash cards';
 $string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';
@@ -46,4 +48,5 @@ $string['pluginadministration'] = 'Flashcard administration';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['question'] = 'Question';
 $string['selectall'] = 'Select all';
+$string['taskqubadelete'] = 'Delete old Question usages';
 $string['userpreferences'] = 'User preferences';
