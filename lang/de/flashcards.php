@@ -45,6 +45,7 @@ $string['noquestion'] = 'Es konnte keine Frage gefunden werden.';
 $string['opencardnumber'] = 'Offen: {{count}} Karten';
 $string['pagetitle'] = 'Moodle Lernkartei';
 $string['pluginadministration'] = 'Lernkartei Administration';
+$string['pluginname'] = 'Lernkartei';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Frage';
 $string['selectall'] = 'Alle';
