@@ -4,16 +4,22 @@
             <div id="mod-flashcards-boxes">
                 {{#boxes}}{{!
                     }}<div class="mod-flashcards btn-div col-md-4 col-sm-12 col-xs-12"><a href="{{{redirecturl}}}">{{!
-                        }}<button class="mod-flashcards btn btn-secondary"> {{# str }} box, mod_flashcards {{/ str }}<br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>{{!
+                        }}<button class="mod-flashcards btn-box btn btn-secondary"> {{# str }} box, mod_flashcards {{/ str }}<br> {{# str }} opencardnumber, mod_flashcards {{/ str }} </button>{{!
                     }}</a></div>{{!
                 }}{{/boxes}}
             </div>
         </div>
         <div class="mod-flashcards btn-div col-md-3 col-sm-12 col-xs-12">
             <div class="mod-flashcards btn-learn-now col-xs-12">
-                <a href="{{{learnnowurl}}}">
-                    <button class="mod-flashcards btn-learn-now btn btn-secondary"> {{# str }} learnnow, mod_flashcards {{/ str }} </button>
-                </a>
+                {{#enablelearnnow}}
+                    <p class="mod-flashcards center">{{# str }} learnnowrangeslider, mod_flashcards {{/ str }}</p><br>
+                    <input type="range" class="mod-flashcards center" id="mod-flashcards-range-slider" min="1" max="{{learnnowqcount}}"><br>
+                    <span class="mod-flashcards slider" id="mod-flashcards-range-slider-value"></span><br>
+                    <button class="mod-flashcards center btn btn-primary" onclick="$.mod_flashcards_start_learn_now({{flashcardsid}})">{{# str }} learnnowbuttonstart, mod_flashcards {{/ str }}</button>
+                {{/enablelearnnow}}
+                {{^enablelearnnow}}
+                    <p class="mod-flashcards center">{{# str }} learnnownoquestions, mod_flashcards {{/ str }}</p><br>
+                {{/enablelearnnow}}
             </div>
         </div>
     </div>

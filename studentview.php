@@ -48,6 +48,7 @@ echo $OUTPUT->header();
 if (has_capability('mod/flashcards:studentview', $context)) {
     mod_flashcards_check_for_orphan_or_hidden_questions();
     $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
+    $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
@@ -57,14 +58,43 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $boxarray = create_boxvalue_array($boxrecords, $id, $questioncount, $flashcards->id);
     $templatestablecontext['boxes'] = $boxarray;
     $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
+    $templatestablecontext['flashcardsid'] = $flashcards->id;
 
     $renderer = $PAGE->get_renderer('core');
+
+    $qcount = get_learn_now_question_count($USER->id, $flashcards->id);
+
+    if ($qcount > 0) {
+        $templatestablecontext['learnnowqcount'] = $qcount;
+        $templatestablecontext['enablelearnnow'] = true;
+    } else {
+        $templatestablecontext['enablelearnnow'] = false;
+    }
+
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
     echo $OUTPUT->footer();
 } else {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
+}
+
+/**
+ * Returns the number of questions available to be learned
+ * @param int $userid
+ * @param int $flashcardsid
+ * @return int
+ * @throws dml_exception
+ */
+function get_learn_now_question_count($userid, $flashcardsid) {
+    global $DB;
+
+    $sql = "SELECT count(id)
+              FROM {flashcards_q_stud_rel}
+             WHERE studentid = :userid
+               AND flashcardsid = :fid";
+
+    return $DB->count_records_sql($sql, ['userid' => $userid, 'fid' => $flashcardsid]);
 }
 
 /**

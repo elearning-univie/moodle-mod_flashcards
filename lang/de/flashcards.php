@@ -24,14 +24,14 @@
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['box'] = 'Fach {{currentbox}}';
-$string['buttonstartlearnnow'] = 'Jetzt lernen';
-$string['existingcategory'] = 'Existiert';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
+$string['existingcategory'] = 'Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
 $string['includesubcategories'] = 'Unterkategorien einbeziehen';
-$string['learnnow'] = 'Jetzt lernen';
-$string['learnnowrangeslider'] = 'Bitte wählen Sie die Anzahl der Fragen aus, die Sie lernen möchten.';
+$string['learnnowbuttonstart'] = 'Los';
+$string['learnnownoquestions'] = 'Bitte fürgen sie Fragen vom Fach 0 hinzu um zufällige Fragen freizuschalten.';
+$string['learnnowrangeslider'] = 'Zufällige Fragen';
 $string['loadquestions'] = 'Lade Fragen';
 $string['modulename'] = 'Lernkartei';
 $string['modulename_help'] = 'Die Lernkartei Aktivität ermöglicht dem Lehrenden eine LErnkartei für Studierende anzulegen.';
