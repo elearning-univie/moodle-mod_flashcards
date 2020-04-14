@@ -62,7 +62,7 @@ function mod_flashcards_get_next_question($fid, $boxid) {
             $unused = mod_flashcards_check_student_rights($fid);
         } catch (require_login_exception $e) {
             return false;
-        } 
+        }
 
         $sql = "SELECT min(questionid) AS questionid
                  FROM {flashcards_q_stud_rel} q
