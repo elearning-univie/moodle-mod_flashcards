@@ -58,8 +58,15 @@ function mod_flashcards_get_next_question($fid, $boxid) {
     global $DB, $USER;
 
     if ($boxid > 0) {
+        try {
+            $unused = mod_flashcards_check_student_rights($fid);
+        } catch (require_login_exception $e) {
+            return false;
+        }
+
         $sql = "SELECT min(questionid) AS questionid
                  FROM {flashcards_q_stud_rel} q
+                 JOIN {question} qq ON qq.id = q.questionid
                 WHERE q.studentid = :userid
                   AND q.currentbox = :box
                   AND q.flashcardsid = :flashcardsid
@@ -79,4 +86,16 @@ function mod_flashcards_get_next_question($fid, $boxid) {
         // Return first element of array and remove it from the session array.
         return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
     }
+}
+
+/**
+ * Deletes records from flashcards_q_stud_rel when the question got deleted
+ * @throws dml_exception
+ */
+function mod_flashcards_check_for_orphan_or_hidden_questions() {
+    global $USER, $DB;
+
+    $sql = "questionid NOT IN (SELECT id FROM {question} WHERE hidden = 0) AND studentid = :userid";
+
+    $DB->delete_records_select('flashcards_q_stud_rel', $sql, array('userid' => $USER->id));
 }

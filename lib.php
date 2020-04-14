@@ -47,6 +47,9 @@ function flashcards_add_instance($flashcards) {
  * @return number
  */
 function flashcards_check_category($flashcards, $courseid) {
+    global $CFG;
+    require_once($CFG->dirroot . '/question/editlib.php');
+    require_once($CFG->dirroot . '/question/category_class.php');
 
     $context = [];
     $context[] = context_course::instance($courseid);

@@ -23,6 +23,7 @@
  */
 require('../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 
 global $PAGE, $OUTPUT, $USER, $DB;
 
@@ -45,8 +46,8 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:studentview', $context)) {
+    mod_flashcards_check_for_orphan_or_hidden_questions();
     $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
-
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
