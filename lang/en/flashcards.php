@@ -24,14 +24,14 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['box'] = 'Box {{currentbox}}';
-$string['buttonstartlearnnow'] = 'Learn now';
-$string['existingcategory'] = 'Existing';
 $string['errornotallowedonpage'] = 'Not Allowed';
+$string['existingcategory'] = 'Existing';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
 $string['includesubcategories'] = 'include subcategories';
-$string['learnnow'] = 'Learn now';
-$string['learnnowrangeslider'] = 'Please select how many question you want to learn.';
+$string['learnnowbuttonstart'] = 'Go';
+$string['learnnownoquestions'] = 'Please add questions from Box 0 to enable random questions.';
+$string['learnnowrangeslider'] = 'Random questions';
 $string['loadquestions'] = 'load questions';
 $string['modulename'] = 'Flash cards';
 $string['modulename_help'] = 'The flash cards activity allows the teacher to create a set of flashcards for the student.';
