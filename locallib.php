@@ -40,7 +40,7 @@ function mod_flashcards_check_student_rights($flashcardsid) {
 
     if (!$course->visible || !$cm->visible) {
         // TODO Richtige exception werfen.
-        throw new require_login_exception();
+        throw new require_login_exception("Course or course module not visible.");
     }
 
     require_login($course, false, $cm);
