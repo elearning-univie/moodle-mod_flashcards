@@ -158,7 +158,7 @@ function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
     $boxtext = get_string('box', 'mod_flashcards');
     $boxindex = 1;
 
-    $boxvalues['boxtext'] = get_string('boxzero', 'mod_flashcards', []);
+    $boxvalues['boxtext'] = get_string('boxzero', 'mod_flashcards');
     $boxvalues['count'] = $boxzerocount;
     $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
     $boxvalues['flashcardsid'] = $flashcardsid;
