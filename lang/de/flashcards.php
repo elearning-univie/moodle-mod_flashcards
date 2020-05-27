@@ -23,14 +23,15 @@
  */
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
-$string['box'] = 'Fach {{currentbox}}';
+$string['box'] = 'Fach ';
+$string['boxzero'] = 'Lernkartensammlung';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
 $string['existingcategory'] = 'Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
 $string['includesubcategories'] = 'Unterkategorien einbeziehen';
 $string['learnnowbuttonstart'] = 'Los';
-$string['learnnownoquestions'] = 'Bitte fürgen sie Fragen vom Fach 0 hinzu um zufällige Fragen freizuschalten.';
+$string['learnnownoquestions'] = 'Bitte fürgen sie Fragen von der Lernkartensammlung hinzu um zufällige Fragen freizuschalten.';
 $string['learnnowrangeslider'] = 'Zufällige Fragen';
 $string['loadquestions'] = 'Lade Fragen';
 $string['modulename'] = 'Lernkartei';

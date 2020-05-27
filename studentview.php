@@ -155,19 +155,20 @@ function get_box_count_records($userid, $flashcardsid) {
  * @return array
  */
 function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
-    $boxindex = 0;
-    $boxvalues['currentbox'] = $boxindex;
+    $boxtext = get_string('box', 'mod_flashcards');
+    $boxindex = 1;
+
+    $boxvalues['boxtext'] = get_string('boxzero', 'mod_flashcards', []);
     $boxvalues['count'] = $boxzerocount;
     $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
     $boxvalues['flashcardsid'] = $flashcardsid;
 
     $boxarray[] = $boxvalues;
-    $boxindex++;
 
     foreach ($records as $record) {
 
         while ($record->currentbox != $boxindex) {
-            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['boxtext'] = $boxtext . $boxindex;
             $boxvalues['count'] = 0;
             $boxvalues['redirecturl'] = null;
 
@@ -176,7 +177,7 @@ function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
         }
 
         if ($record->currentbox = $boxindex) {
-            $boxvalues['currentbox'] = $boxindex;
+            $boxvalues['boxtext'] = $boxtext . $boxindex;
             $boxvalues['count'] = $record->countid;
             $boxvalues['redirecturl'] = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $id, 'box' => $boxindex]);
 
@@ -186,7 +187,7 @@ function create_boxvalue_array($records, $id, $boxzerocount, $flashcardsid) {
     }
 
     while ($boxindex <= 5) {
-        $boxvalues['currentbox'] = $boxindex;
+        $boxvalues['boxtext'] = $boxtext . $boxindex;
         $boxvalues['count'] = 0;
         $boxvalues['redirecturl'] = null;
 

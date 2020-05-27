@@ -23,14 +23,15 @@
  */
 
 $string['addflashcardbutton'] = 'Add flash card';
-$string['box'] = 'Box {{currentbox}}';
+$string['box'] = 'Box ';
+$string['boxzero'] = 'Flash card collection';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['existingcategory'] = 'Existing';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
 $string['includesubcategories'] = 'include subcategories';
 $string['learnnowbuttonstart'] = 'Go';
-$string['learnnownoquestions'] = 'Please add questions from Box 0 to enable random questions.';
+$string['learnnownoquestions'] = 'Please add questions from the flash card collection to enable random questions.';
 $string['learnnowrangeslider'] = 'Random questions';
 $string['loadquestions'] = 'load questions';
 $string['modulename'] = 'Flash cards';
