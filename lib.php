@@ -52,14 +52,13 @@ function flashcards_check_category($flashcards, $courseid) {
     require_once($CFG->dirroot . '/question/category_class.php');
 
     $context = [];
+    $categorylist = [];
     $coursecontext = context_course::instance($courseid);
     $context[] = $coursecontext;
     $contexts = [$coursecontext->id => $coursecontext];
 
     $defaultcategoryobj = question_make_default_categories($contexts);
     $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
-
-    $categorylist = [];
 
     foreach ($coursecategorylist as $category) {
         list($catid, $catcontextid) = explode(",", $category);
@@ -80,7 +79,7 @@ function flashcards_check_category($flashcards, $courseid) {
 
     if ($flashcards->newcategory) {
         $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-            $context, $defaultcategoryobj->id, $newparent, null, null);
+            $context, 0, $defaultcategoryobj->id, null, null);
         $categoryid = $qcobject->add_category($newparent, $flashcards->newcategoryname, '', true);
         return $categoryid;
     } else {
