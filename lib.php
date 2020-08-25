@@ -52,32 +52,35 @@ function flashcards_check_category($flashcards, $courseid) {
     require_once($CFG->dirroot . '/question/category_class.php');
 
     $context = [];
-    $context[] = context_course::instance($courseid);
+    $categorylist = [];
     $coursecontext = context_course::instance($courseid);
+    $context[] = $coursecontext;
     $contexts = [$coursecontext->id => $coursecontext];
 
     $defaultcategoryobj = question_make_default_categories($contexts);
     $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
-
-    $categorylist = [];
 
     foreach ($coursecategorylist as $category) {
         list($catid, $catcontextid) = explode(",", $category);
         $categorylist = array_merge(question_categorylist($catid), $categorylist);
     }
 
-    list($catid, $catcontextid) = explode(",", $flashcards->category);
+    if (isset($flashcards->category)) {
+        list($catid, $catcontextid) = explode(",", $flashcards->category);
 
-    if (!in_array($catid, $categorylist)) {
-        print_error('invalidcategoryid');
-        return;
+        if (!in_array($catid, $categorylist)) {
+            print_error('invalidcategoryid');
+            return;
+        }
+        $newparent = $flashcards->category;
+    } else {
+        $newparent = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
     }
 
     if ($flashcards->newcategory) {
-        $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
         $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-            $context, $defaultcategoryobj->id, $defaultcategory, null, null);
-        $categoryid = $qcobject->add_category($flashcards->category, $flashcards->newcategoryname, '', true);
+            $context, 0, $defaultcategoryobj->id, null, null);
+        $categoryid = $qcobject->add_category($newparent, $flashcards->newcategoryname, '', true);
         return $categoryid;
     } else {
         return $catid;
