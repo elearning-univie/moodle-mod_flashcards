@@ -22,9 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require_once('lib.php');
+require_once(__DIR__ . 'lib.php');
 
-global $PAGE, $OUTPUT, $COURSE, $USER;
+global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -45,6 +45,9 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
+echo $OUTPUT->header();
+echo $OUTPUT->heading($flashcards->name);
+
 if (has_capability('mod/flashcards:studentview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
     redirect($redirecturl);
@@ -52,11 +55,6 @@ if (has_capability('mod/flashcards:studentview', $context) ) {
 if (has_capability('mod/flashcards:teacherview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id));
     redirect($redirecturl);
-} else {
-    print("hier kommt die Auswahl für beide hin.");
 }
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
 
 echo $OUTPUT->footer();
