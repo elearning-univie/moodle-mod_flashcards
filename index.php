@@ -24,3 +24,14 @@
 require_once('../../config.php');
 
 defined(MOODLE_INTERNAL) || die();
+
+global $DB;
+
+$id = required_param('id', PARAM_INT);   // Course id.
+
+if (!$course = $DB->get_record('course', array('id' => $id))) {
+    print_error('Course ID is incorrect');
+}
+$coursecontext = context_course::instance($course->id);
+
+require_course_login($course);
