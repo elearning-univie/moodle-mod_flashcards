@@ -36,25 +36,31 @@ $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING
 if ($node) {
     $node->make_active();
 }
+
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context)) {
-    $PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
-    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-    echo $OUTPUT->heading($flashcards->name);
+if (!has_capability('mod/flashcards:studentview', $context)) {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
 
-    if ($flashcards->inclsubcats) {
-        require_once($CFG->dirroot . "/lib/questionlib.php");
-        $qcategories = question_categorylist($flashcards->categoryid);
-    } else {
-        $qcategories = $flashcards->categoryid;
-    }
+$PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
+$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+echo $OUTPUT->heading($flashcards->name);
 
-    list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-    $sql = "SELECT id, questiontext
+if ($flashcards->inclsubcats) {
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    $qcategories = question_categorylist($flashcards->categoryid);
+} else {
+    $qcategories = $flashcards->categoryid;
+}
+
+list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
+$sql = "SELECT id, questiontext
               FROM {question} q
              WHERE category $sqlwhere
                AND qtype = 'flashcard'
@@ -63,50 +69,45 @@ if (has_capability('mod/flashcards:studentview', $context)) {
                                WHERE studentid = :userid
                                  AND flashcardsid = :fid)";
 
-    $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
-    $questions = array();
+$questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
+$questions = array();
 
-    foreach ($questionstemp as $question) {
-        $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php',
-                array('id' => $question->id, 'courseid' => $course->id));
+foreach ($questionstemp as $question) {
+    $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php',
+        array('id' => $question->id, 'courseid' => $course->id));
 
-        $questiontext =
-                file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
-                        $question->id);
-        $questiontext = format_text($questiontext, FORMAT_HTML);
+    $questiontext =
+        file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+            $question->id);
+    $questiontext = format_text($questiontext, FORMAT_HTML);
 
-        preg_match_all('/<img[^>]+>/i', $questiontext, $images);
+    preg_match_all('/<img[^>]+>/i', $questiontext, $images);
 
-        if (!empty($images)) {
-            foreach ($images[0] as $image) {
-                preg_match('/alt="(.*?)"/', $image, $imagealt);
-                if (!empty($imagealt[1])) {
-                    $questiontext = str_replace($image, $imagealt[1], $questiontext);
-                } else {
-                    $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
-                }
+    if (!empty($images)) {
+        foreach ($images[0] as $image) {
+            preg_match('/alt="(.*?)"/', $image, $imagealt);
+            if (!empty($imagealt[1])) {
+                $questiontext = str_replace($image, $imagealt[1], $questiontext);
+            } else {
+                $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
             }
         }
-
-        $questiontext = html_to_text($questiontext, 0);
-
-        if (strlen($questiontext) > 30) {
-            $questiontext = substr($questiontext, 0, 30) . '...';
-        }
-
-        $questions[] = ['text' => $questiontext,
-                'qurl' => html_entity_decode($qurl->__toString()),
-                'qid' => $question->id
-        ];
     }
 
-    $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
-    $renderer = $PAGE->get_renderer('core');
+    $questiontext = html_to_text($questiontext, 0);
 
-    echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
-    echo $OUTPUT->footer();
-} else {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
+    if (strlen($questiontext) > 30) {
+        $questiontext = substr($questiontext, 0, 30) . '...';
+    }
+
+    $questions[] = ['text' => $questiontext,
+        'qurl' => html_entity_decode($qurl->__toString()),
+        'qid' => $question->id
+    ];
 }
+
+$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
+$renderer = $PAGE->get_renderer('core');
+
+echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
+echo $OUTPUT->footer();
