@@ -31,11 +31,13 @@ require_once('../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/previewlib.php');
 
-// Get and validate question id.
+global $PAGE, $DB, $OUTPUT;
+
 $id = required_param('id', PARAM_INT);
-$question = question_bank::load_question($id);
 $courseid = required_param('courseid', PARAM_INT);
 require_login($courseid);
+
+$question = question_bank::load_question($id);
 $context = context_course::instance($courseid);
 $PAGE->set_pagelayout('popup');
 

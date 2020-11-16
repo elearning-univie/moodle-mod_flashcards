@@ -22,16 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../config.php');
-require($CFG->dirroot . '/mod/flashcards/locallib.php');
-require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
+require_once(__DIR__ . '/locallib.php');
+require_once(__DIR__ . '/renderer.php');
 
-global $PAGE, $OUTPUT, $USER, $_SESSION;
+global $PAGE, $OUTPUT, $USER, $_SESSION, $DB;
 
 $id = required_param('id', PARAM_INT);
 $box = required_param('box', PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
-
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
@@ -61,7 +60,6 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $questionhtml .= '</div>';
 
     echo $questionhtml;
-
     echo $OUTPUT->footer();
 } else {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
