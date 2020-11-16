@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Flashcards Teacher view
+ * Flashcards teacher view
  *
  * @package    mod_flashcards
  * @copyright  2019 University of Vienna
@@ -23,7 +23,7 @@
  */
 require('../../config.php');
 
-global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
+global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -31,17 +31,18 @@ $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-if (!has_capability('mod/flashcards:teacherview', $context) ) {
-    $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
-    $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-    if ($node) {
-        $node->make_active();
-    }
-    $pagetitle = get_string('pagetitle', 'flashcards');
-    $PAGE->set_title($pagetitle);
-    $PAGE->set_heading($course->fullname);
+$PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
+$node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
+if ($node) {
+    $node->make_active();
+}
 
-    echo $OUTPUT->header();
+$pagetitle = get_string('pagetitle', 'flashcards');
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
+echo $OUTPUT->header();
+
+if (!has_capability('mod/flashcards:teacherview', $context) ) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
@@ -50,7 +51,7 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
 if ($flashcards->inclsubcats) {
-    require_once($CFG->dirroot."/lib/questionlib.php");
+    require_once($CFG->dirroot . '/lib/questionlib.php');
     $qcategories = question_categorylist($flashcards->categoryid);
 } else {
     $qcategories = $flashcards->categoryid;
@@ -59,14 +60,14 @@ if ($flashcards->inclsubcats) {
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
 $sql = "SELECT id, name
-           FROM   {question}
-           WHERE  $sqlwhere
+          FROM {question}
+         WHERE $sqlwhere
            AND qtype = 'flashcard'";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
 
-$baseurl = $CFG->wwwroot.'/question/question.php';
-$returnurl = '/mod/flashcards/teacherview.php?id='.$id;
+$baseurl = $CFG->wwwroot . '/question/question.php';
+$returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
 
 $questions = array();
 foreach ($questionstemp as $question) {
@@ -82,17 +83,7 @@ foreach ($questionstemp as $question) {
         'editurl' => html_entity_decode($editurl->__toString())
     ];
 }
-$PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
-$node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-if ($node) {
-    $node->make_active();
-}
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
-
-echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 
 $params = array(
@@ -111,6 +102,6 @@ $templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
     'questions' => $questions];
 
 $renderer = $PAGE->get_renderer('core');
-echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
+echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 echo $OUTPUT->footer();
