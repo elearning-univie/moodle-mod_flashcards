@@ -74,18 +74,17 @@ class renderer {
      * @throws moodle_exception
      */
     public function render_question() {
-        global $PAGE;
 
         $cm = get_coursemodule_from_instance("flashcards", $this->flashcardsid);
         $context = context_module::instance($cm->id);
-        $PAGE->set_context($context);
+        $this->page->set_context($context);
 
-        $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
+        $this->page->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
         $jsmodule = array(
                 'name' => 'core_question_engine',
                 'fullpath' => '/question/qengine.js'
         );
-        $PAGE->requires->js_init_call('M.core_question_engine.init_form',
+        $this->page->requires->js_init_call('M.core_question_engine.init_form',
                 array('#mod-flashcards-responseform'), false, $jsmodule);
 
         $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
