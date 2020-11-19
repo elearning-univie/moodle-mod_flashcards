@@ -40,7 +40,7 @@ $PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
 if (has_capability('mod/flashcards:studentview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
     redirect($redirecturl);
-} elseif (has_capability('mod/flashcards:teacherview', $context) ) {
+} else if (has_capability('mod/flashcards:teacherview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id));
     redirect($redirecturl);
 } else {
