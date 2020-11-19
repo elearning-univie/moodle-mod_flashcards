@@ -145,7 +145,7 @@ class mod_flashcards_external extends external_api {
         $params = self::validate_parameters(self::load_next_question_parameters(), array('fid' => $fid, 'boxid' => $boxid));
 
         $qid = mod_flashcards_get_next_question($params['fid'], $params['boxid']);
-        $questionrenderer = new renderer($USER->id, $params['boxid'], $params['fid'], $qid);
+        $questionrenderer = new mod_flashcards_renderer($USER->id, $params['boxid'], $params['fid'], $qid);
         return $questionrenderer->render_question();
     }
 

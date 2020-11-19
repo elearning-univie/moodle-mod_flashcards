@@ -23,7 +23,7 @@
  */
 require('../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
+require_once(__DIR__ . '/locallib.php');
 
 global $PAGE, $OUTPUT, $USER, $DB;
 
