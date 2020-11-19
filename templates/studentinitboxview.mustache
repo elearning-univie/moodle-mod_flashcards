@@ -14,37 +14,57 @@
   You should have received a copy of the GNU General Public License
   along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<section>
-    <table class="generaltable fullwidth">
-        <thead>
-        <tr>
-            <th class="flashcards_studentview_all header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)" /> {{# str }} selectall, mod_flashcards {{/ str }}</th>
-            <th class="header name">{{# str }} question, mod_flashcards {{/ str }}</th>
-            <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
-        </tr>
-        </thead>
-        <tbody class="table">
-        {{#questions}}
-            <tr class="table-row">
-                <td>
-                    <input class="mod-flashcards-checkbox" data-value="{{qid}}" type="checkbox">
-                </td>
-                <td>
-                    {{{text}}}
-                </td>
-                <td>
-                    <a href="{{qurl}}" target="questionpreview" title="Preview">
-                        <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
-                    </a>
-                </td>
-            </tr>
-        {{/questions}}
-        </tbody>
-    </table>
-</section>
+{{!
+    @template mod_flashcards/studentinitboxview
 
-<section>
-    <div>
-        <button class="btn btn-primary" onclick="$.mod_flashcards_init_questions({{aid}}, {{cmid}})">{{# str }} addflashcardbutton, mod_flashcards {{/ str }}</button>
-    </div>
-</section>
+    Example context (json):
+    {
+        "questions":
+        [
+            {
+            "text": "example text of a question",
+            "qurl": "https://redirecturl",
+            "qid": 17,
+            },
+            {
+            "text": "example text2 of a question",
+            "qurl": "https://redirecturl2",
+            "qid": 18,
+            }
+         ],
+         "aid": 20,
+         "cmid": 12
+    }
+}}
+
+<table class="generaltable fullwidth">
+    <thead>
+    <tr>
+        <th class="flashcards_studentview_all header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)"/> {{# str }}
+            selectall, mod_flashcards {{/ str }}</th>
+        <th class="header name">{{# str }} question, mod_flashcards {{/ str }}</th>
+        <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
+    </tr>
+    </thead>
+    <tbody class="table">
+    {{#questions}}
+        <tr class="table-row">
+            <td>
+                <input class="mod-flashcards-checkbox" data-value="{{qid}}" type="checkbox">
+            </td>
+            <td>
+                {{{text}}}
+            </td>
+            <td>
+                <a href="{{qurl}}" target="questionpreview" title="Preview">
+                    <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
+                </a>
+            </td>
+        </tr>
+    {{/questions}}
+    </tbody>
+</table>
+
+<div>
+    <button class="btn btn-primary" onclick="$.mod_flashcards_init_questions({{aid}}, {{cmid}})">{{# str }} addflashcardbutton, mod_flashcards {{/ str }}</button>
+</div>

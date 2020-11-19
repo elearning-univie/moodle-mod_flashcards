@@ -33,36 +33,9 @@ require_once('locallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_flashcards_renderer extends plugin_renderer_base {
-    /**
-     * @var int
-     */
-    private $userid;
-    /**
-     * @var int
-     */
-    private $box;
-    /**
-     * @var int
-     */
-    private $flashcardsid;
-    /**
-     * @var int
-     */
-    private $questionid;
 
-    /**
-     * renderer constructor.
-     *
-     * @param int $userid
-     * @param int $box
-     * @param int $flashcardsid
-     * @param int $questionid
-     */
-    public function __construct($userid, $box, $flashcardsid, $questionid) {
-        $this->userid = $userid;
-        $this->box = $box;
-        $this->flashcardsid = $flashcardsid;
-        $this->questionid = $questionid;
+    public function render_flashcard($flashcardsid, $userid, $box, $questionid) {
+        return $this->render_question(new flashcard($flashcardsid, $userid, $box, $questionid));
     }
 
     /**
@@ -73,8 +46,8 @@ class mod_flashcards_renderer extends plugin_renderer_base {
      * @throws dml_exception
      * @throws moodle_exception
      */
-    public function render_question() {
-        $cm = get_coursemodule_from_instance("flashcards", $this->flashcardsid);
+    protected function render_question(flashcard $flashcard) {
+        $cm = get_coursemodule_from_instance("flashcards", $flashcard->id);
         $context = context_module::instance($cm->id);
         $this->page->set_context($context);
 
@@ -89,11 +62,11 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
 
-        if ($this->questionid == null) {
+        if ($flashcard->questionid == null) {
             return null;
         }
 
-        $question = question_bank::load_question($this->questionid);
+        $question = question_bank::load_question($flashcard->questionid);
         $quba->add_question($question, 1);
         $quba->start_all_questions();
         question_engine::save_questions_usage_by_activity($quba);
@@ -101,8 +74,8 @@ class mod_flashcards_renderer extends plugin_renderer_base {
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post"' .
-                 'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $this->flashcardsid . ',' . $this->questionid . ',' . $qaid . ',' . $cm->id .
+                'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
+                $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
                 ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
@@ -115,5 +88,46 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $result .= $quba->render_question(1, $options);
 
         return $result;
+    }
+}
+
+/**
+ * Renderable class used by the flashcards module.
+ *
+ * @package   mod_flashcards
+ * @copyright 2020 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class flashcard implements renderable {
+    /**
+     * @var int
+     */
+    public $id;
+    /**
+     * @var int
+     */
+    public $userid;
+    /**
+     * @var int
+     */
+    public $box;
+    /**
+     * @var int
+     */
+    public $questionid;
+
+    /**
+     * renderer constructor.
+     *
+     * @param int $id
+     * @param int $userid
+     * @param int $box
+     * @param int $questionid
+     */
+    public function __construct($id, $userid, $box, $questionid) {
+        $this->id = $id;
+        $this->userid = $userid;
+        $this->box = $box;
+        $this->questionid = $questionid;
     }
 }
