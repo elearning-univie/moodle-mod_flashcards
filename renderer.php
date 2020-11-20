@@ -34,6 +34,18 @@ require_once('locallib.php');
  */
 class mod_flashcards_renderer extends plugin_renderer_base {
 
+    /**
+     * Creates a flashcard object and calls the question renderer
+     *
+     * @param int $flashcardsid
+     * @param int $userid
+     * @param int $box
+     * @param int $questionid
+     * @return string|null
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
     public function render_flashcard($flashcardsid, $userid, $box, $questionid) {
         return $this->render_question(new flashcard($flashcardsid, $userid, $box, $questionid));
     }
@@ -41,6 +53,7 @@ class mod_flashcards_renderer extends plugin_renderer_base {
     /**
      * renders the question
      *
+     * @param object $flashcard
      * @return string|null
      * @throws coding_exception
      * @throws dml_exception
