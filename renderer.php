@@ -51,13 +51,11 @@ class mod_flashcards_renderer extends plugin_renderer_base {
     }
 
     /**
-     * renders the question
+     * Renders the question
      *
-     * @param object $flashcard
+     * @param flashcard $flashcard
      * @return string|null
      * @throws coding_exception
-     * @throws dml_exception
-     * @throws moodle_exception
      */
     protected function render_question(flashcard $flashcard) {
         $cm = get_coursemodule_from_instance("flashcards", $flashcard->id);
