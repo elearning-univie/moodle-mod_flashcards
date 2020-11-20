@@ -37,7 +37,7 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
     /**
      * Defines structure of path elements to be processed during the restore
      *
-     * @return array of {@link restore_path_element}
+     * @return array of {@see restore_path_element}
      */
     protected function define_structure() {
 
