@@ -9,7 +9,8 @@
     margin: 0;
 }
 
-th.flashcards_studentview_ec, th.flashcards_teacherview_ec {
+th.flashcards_studentview_ec,
+th.flashcards_teacherview_ec {
     width: 2%;
 }
 
@@ -30,7 +31,7 @@ th.flashcards_studentview_all {
 }
 .mod-flashcards.fc-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .mod-flashcards.btn-learn-now {

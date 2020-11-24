@@ -32,70 +32,52 @@ require_once('locallib.php');
  * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class renderer {
-    /**
-     * @var int
-     */
-    private $userid;
-    /**
-     * @var int
-     */
-    private $box;
-    /**
-     * @var int
-     */
-    private $flashcardsid;
-    /**
-     * @var int
-     */
-    private $questionid;
+class mod_flashcards_renderer extends plugin_renderer_base {
 
     /**
-     * renderer constructor.
+     * Creates a flashcard object and calls the question renderer
      *
+     * @param int $flashcardsid
      * @param int $userid
      * @param int $box
-     * @param int $flashcardsid
      * @param int $questionid
-     */
-    public function __construct($userid, $box, $flashcardsid, $questionid) {
-        $this->userid = $userid;
-        $this->box = $box;
-        $this->flashcardsid = $flashcardsid;
-        $this->questionid = $questionid;
-    }
-
-    /**
-     * renders the question
-     *
      * @return string|null
      * @throws coding_exception
      * @throws dml_exception
      * @throws moodle_exception
      */
-    public function render_question() {
-        global $PAGE;
+    public function render_flashcard($flashcardsid, $userid, $box, $questionid) {
+        return $this->render_question(new flashcard($flashcardsid, $userid, $box, $questionid));
+    }
 
-        $cm = get_coursemodule_from_instance("flashcards", $this->flashcardsid);
+    /**
+     * Renders the question
+     *
+     * @param flashcard $flashcard
+     * @return string|null
+     * @throws coding_exception
+     */
+    protected function render_question(flashcard $flashcard) {
+        $cm = get_coursemodule_from_instance("flashcards", $flashcard->id);
         $context = context_module::instance($cm->id);
-        $PAGE->set_context($context);
+        $this->page->set_context($context);
 
-        $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
+        $this->page->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
         $jsmodule = array(
                 'name' => 'core_question_engine',
                 'fullpath' => '/question/qengine.js'
         );
-        $PAGE->requires->js_init_call('M.core_question_engine.init_form',
+        $this->page->requires->js_init_call('M.core_question_engine.init_form',
                 array('#mod-flashcards-responseform'), false, $jsmodule);
 
         $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
 
-        if ($this->questionid == null) {
+        if ($flashcard->questionid == null) {
             return null;
         }
 
-        $question = question_bank::load_question($this->questionid);
+        $question = question_bank::load_question($flashcard->questionid);
         $quba->add_question($question, 1);
         $quba->start_all_questions();
         question_engine::save_questions_usage_by_activity($quba);
@@ -103,8 +85,8 @@ class renderer {
 
         $result =
                 '<form id="mod-flashcards-responseform" method="post"' .
-                 'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $this->flashcardsid . ',' . $this->questionid . ',' . $qaid . ',' . $cm->id .
+                'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
+                $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
                 ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
@@ -117,5 +99,46 @@ class renderer {
         $result .= $quba->render_question(1, $options);
 
         return $result;
+    }
+}
+
+/**
+ * Renderable class used by the flashcards module.
+ *
+ * @package   mod_flashcards
+ * @copyright 2020 University of Vienna
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class flashcard implements renderable {
+    /**
+     * @var int
+     */
+    public $id;
+    /**
+     * @var int
+     */
+    public $userid;
+    /**
+     * @var int
+     */
+    public $box;
+    /**
+     * @var int
+     */
+    public $questionid;
+
+    /**
+     * renderer constructor.
+     *
+     * @param int $id
+     * @param int $userid
+     * @param int $box
+     * @param int $questionid
+     */
+    public function __construct($id, $userid, $box, $questionid) {
+        $this->id = $id;
+        $this->userid = $userid;
+        $this->box = $box;
+        $this->questionid = $questionid;
     }
 }

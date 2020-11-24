@@ -26,8 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->dirroot . '/mod/flashcards/renderer.php');
-require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
+require_once(__DIR__ . '/locallib.php');
 
 /**
  * Class mod_flashcards_external
@@ -140,13 +139,13 @@ class mod_flashcards_external extends external_api {
      * @return string|null
      */
     public static function load_next_question($fid, $boxid) {
-        global $USER;
+        global $USER, $PAGE;
 
         $params = self::validate_parameters(self::load_next_question_parameters(), array('fid' => $fid, 'boxid' => $boxid));
 
         $qid = mod_flashcards_get_next_question($params['fid'], $params['boxid']);
-        $questionrenderer = new renderer($USER->id, $params['boxid'], $params['fid'], $qid);
-        return $questionrenderer->render_question();
+        $questionrenderer = $PAGE->get_renderer('mod_flashcards');
+        return $questionrenderer->render_flashcard($params['fid'], $USER->id, $params['boxid'], $qid);
     }
 
     /**
