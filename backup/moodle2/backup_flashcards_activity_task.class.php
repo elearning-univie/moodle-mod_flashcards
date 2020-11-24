@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(__DIR__ . '/backup/moodle2/backup_flashcards_stepslib.php');
+require_once(__DIR__ . '/backup_flashcards_stepslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the flashcards instance

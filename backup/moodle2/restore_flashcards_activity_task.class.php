@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/backup/moodle2/restore_flashcards_stepslib.php');
+require_once(__DIR__ . '/restore_flashcards_stepslib.php');
 
 /**
  * Restore task for the flashcards activity module
@@ -72,8 +72,8 @@ class restore_flashcards_activity_task extends restore_activity_task {
     static public function define_decode_rules() {
         $rules = array();
 
-        $rules[] = new restore_decode_rule('flashcardsVIEWBYID', '/mod/flashcards/view.php?id=$1', 'course_module');
-        $rules[] = new restore_decode_rule('flashcardsINDEX', '/mod/flashcards/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule('FLASHCARDSVIEWBYID', '/mod/flashcards/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('FLASHCARDSINDEX', '/mod/flashcards/index.php?id=$1', 'course');
 
         return $rules;
 

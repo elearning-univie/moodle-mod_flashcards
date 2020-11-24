@@ -43,7 +43,6 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
 
         $paths = array();
         $paths[] = new restore_path_element('flashcards', '/activity/flashcards');
-        $paths[] = new restore_path_element('flashcardsmap', '/activity/flashcards/flashcardsmap');
 
         return $this->prepare_activity_structure($paths);
     }
@@ -59,33 +58,12 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
         $data = (object)$data;
         $data->course = $this->get_courseid();
 
-        if (empty($data->timecreated)) {
-            $data->timecreated = time();
-        }
-
         if (empty($data->timemodified)) {
             $data->timemodified = time();
         }
 
         $newitemid = $DB->insert_record('flashcards', $data);
         $this->apply_activity_instance($newitemid);
-    }
-
-    /**
-     * Process the given restore path element data
-     *
-     * @param array $data parsed element data
-     */
-    protected function process_flashcardsmap($data) {
-        global $DB;
-
-        $data = (object) $data;
-        $oldid = $data->id;
-
-        $data->flashcardsid = $this->get_new_parentid('flashcards');
-
-        $newitemid = $DB->insert_record('flashcards_map', $data);
-        $this->set_mapping('flashcards_map', $oldid, $newitemid, true);
     }
 
 
