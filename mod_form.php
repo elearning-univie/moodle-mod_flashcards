@@ -18,14 +18,14 @@
  * Multiple choice question definition classes.
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/flashcards/lib.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
+require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir.'/formslib.php');
 
 define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
@@ -37,7 +37,7 @@ define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
  * mod_flashcards_mod_form...
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_flashcards_mod_form extends moodleform_mod {

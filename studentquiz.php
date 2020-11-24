@@ -18,14 +18,13 @@
  * Question View
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
-require_once(__DIR__ . '/renderer.php');
 
-global $PAGE, $OUTPUT, $USER, $_SESSION, $DB;
+global $PAGE, $OUTPUT, $USER, $DB;
 
 $id = required_param('id', PARAM_INT);
 $box = required_param('box', PARAM_INT);

@@ -18,10 +18,10 @@
  * Flashcards teacher view
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require('../../config.php');
+require_once(__DIR__ . '/../../config.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG;
 

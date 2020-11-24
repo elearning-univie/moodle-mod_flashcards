@@ -39,7 +39,6 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     $context = context_module::instance($cm->id);
 
     if (!$course->visible || !$cm->visible) {
-        // TODO Richtige exception werfen.
         throw new require_login_exception("Course or course module not visible.");
     }
 
