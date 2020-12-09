@@ -186,7 +186,8 @@ if ($wizardnow !== '') {
 } else {
     $mform = $qtypeobj->create_editing_form('question.php', $question, $category, $contexts, $formeditable);
 }
-$toform = fullclone($question); // send the question object and a few more parameters to the form
+// send the question object and a few more parameters to the form
+$toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
 $toform->scrollpos = $scrollpos;
 if ($formeditable && $id){
@@ -221,8 +222,8 @@ if ($mform->is_cancelled()) {
         $question->hidden = 0; // Copies should not be hidden.
     }
 
-    /// Process the combination of usecurrentcat, categorymoveto and category form
-    /// fields, so the save_question method only has to consider $fromform->category
+    // Process the combination of usecurrentcat, categorymoveto and category form
+    // fields, so the save_question method only has to consider $fromform->category
     if (!empty($fromform->usecurrentcat)) {
         // $fromform->category is the right category to save in.
     } else {
@@ -233,8 +234,8 @@ if ($mform->is_cancelled()) {
         }
     }
 
-    /// If we are moving a question, check we have permission to move it from
-    /// whence it came. (Where we are moving to is validated by the form.)
+    // If we are moving a question, check we have permission to move it from
+    // whence it came. (Where we are moving to is validated by the form.)
     list($newcatid, $newcontextid) = explode(',', $fromform->category);
     if (!empty($question->id) && $newcatid != $question->category) {
         $contextid = $newcontextid;
@@ -305,7 +306,7 @@ if ($mform->is_cancelled()) {
         $nexturlparams['id'] = $question->id;
         $nexturlparams['wizardnow'] = $fromform->wizard;
         $nexturl = new moodle_url('/question/question.php', $nexturlparams);
-        if ($cmid){
+        if ($cmid) {
             $nexturl->param('cmid', $cmid);
         } else {
             $nexturl->param('courseid', $COURSE->id);
