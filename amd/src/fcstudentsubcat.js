@@ -1,9 +1,16 @@
 define(function() {
     return {
-        init: function(fcstring) {
-            document.getElementById('id_name').addEventListener('change', function(){
-               var activityname = document.getElementById('id_name').value;
-               document.getElementById('id_newcategoryname').value = fcstring + ' ' + activityname;
+        init: function() {
+            document.getElementById('id_addfcstudent').addEventListener('change', function(){
+               var selectvalue = document.getElementById('id_addfcstudent').value;
+               var inclsubcats = document.getElementById("id_inclsubcats");
+               if (selectvalue == 1) {
+                 inclsubcats.checked = true;
+                 inclsubcats.disabled = true;
+               } else {
+                 inclsubcats.checked = false;
+                 inclsubcats.disabled = false;
+               }
     });
         }
     };

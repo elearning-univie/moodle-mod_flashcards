@@ -52,7 +52,15 @@ function flashcards_supports($feature) {
  * @return bool
  */
 function flashcards_add_instance($flashcards) {
-    global $DB;
+    global $DB, $COURSE;
+
+    if($flashcards->addfcstudent == 1){
+        $flashcards->inclsubcats = 1;
+        $courseid = $COURSE->id;
+        $context = context_course::instance($courseid);
+        $contextid = $context->id;
+        mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid);
+    }
 
     $flashcardsdb = flashcards_get_database_object($flashcards);
     $id = $DB->insert_record('flashcards', $flashcardsdb);
@@ -143,6 +151,12 @@ function flashcards_get_database_object($flashcards) {
 
     $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
 
+    if (!property_exists($flashcards, 'addfcstudent') || !$flashcards->addfcstudent) {
+        $flashcardsdb->addfcstudent = 0;
+    } else {
+        $flashcardsdb->addfcstudent = 1;
+    }
+
     if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
         $flashcardsdb->inclsubcats = 0;
     } else {
@@ -204,12 +218,21 @@ function flashcards_question_pluginfile($course, $context, $component,
  * @return bool
  */
 function flashcards_update_instance($flashcards) {
-    global $DB;
+    global $DB, $COURSE;
     require_once('locallib.php');
+
+    if($flashcards->addfcstudent == 1){
+        $flashcards->inclsubcats = 1;
+        $courseid = $COURSE->id;
+        $context = context_course::instance($courseid);
+        $contextid = $context->id;
+        mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid);
+    }
 
     $flashcardsdb = flashcards_get_database_object($flashcards);
     $flashcardsdb->id = $flashcards->instance;
     $DB->update_record('flashcards', $flashcardsdb);
+
 
     return true;
 }

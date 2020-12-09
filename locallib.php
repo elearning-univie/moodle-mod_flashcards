@@ -98,3 +98,34 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 
     $DB->delete_records_select('flashcards_q_stud_rel', $sql, array('userid' => $USER->id));
 }
+/**
+ * Checks for the question subcategory with the name 'von Studierenden erstellt' and adds it if not found
+ * 
+ */
+function mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid) {
+    global $DB;
+
+    $sql = "SELECT * FROM {question_categories}
+            WHERE contextid = :contextid
+            AND name LIKE 'von Studierenden erstellt';";
+
+    $subcategory = $DB->get_records_sql($sql, ['contextid' => $contextid]);
+    if(!$subcategory){
+        $sql = "SELECT * FROM {question_categories}
+            WHERE contextid = :contextid
+            AND parent = 0;";
+
+        $parent = $DB->get_record_sql($sql, ['contextid' => $contextid]);
+        $cat = new stdClass();
+        $cat->parent = $parent->id;
+        $cat->contextid = $contextid;
+        $cat->name = 'von Studierenden erstellt';
+        $cat->info = 'von Studierenden erstellt';
+        $cat->infoformat = 0;
+        $cat->sortorder = 999;
+        $cat->stamp = make_unique_id_code();
+        $cat->idnumber = null;
+
+        $DB->insert_record('question_categories', $cat);
+    }
+}
