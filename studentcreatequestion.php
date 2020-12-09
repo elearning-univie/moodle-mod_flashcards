@@ -35,7 +35,6 @@ $makecopy = optional_param('makecopy', 0, PARAM_BOOL);
 $qtype = 'flashcard';
 $categoryid = optional_param('category', 0, PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
-$courseid = optional_param('courseid', 0, PARAM_INT);
 $wizardnow = optional_param('wizardnow', '', PARAM_ALPHA);
 $originalreturnurl = optional_param('returnurl', 0, PARAM_LOCALURL);
 $appendqnumstring = optional_param('appendqnumstring', '', PARAM_ALPHA);
@@ -58,9 +57,6 @@ if ($categoryid !== 0) {
 if ($cmid !== 0) {
     $url->param('cmid', $cmid);
 }
-if ($courseid !== 0) {
-    $url->param('courseid', $courseid);
-}
 if ($wizardnow !== '') {
     $url->param('wizardnow', $wizardnow);
 }
@@ -78,16 +74,8 @@ if ($scrollpos) {
 }
 $PAGE->set_url($url);
 
-list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
-$context = context_module::instance($cm->id);
+$questionbankurl = new moodle_url('/question/edit.php', array('cmid' => $cmid));
 
-require_login($course, false, $cm);
-
-if ($cmid) {
-    $questionbankurl = new moodle_url('/question/edit.php', array('cmid' => $cmid));
-} else {
-    $questionbankurl = new moodle_url('/question/edit.php', array('courseid' => $courseid));
-}
 navigation_node::override_active_url($questionbankurl);
 
 if ($originalreturnurl) {
@@ -102,18 +90,10 @@ if ($scrollpos) {
     $returnurl->param('scrollpos', $scrollpos);
 }
 
-if ($cmid){
-    list($module, $cm) = get_module_from_cmid($cmid);
-    require_login($cm->course, false, $cm);
-    $thiscontext = context_module::instance($cmid);
-} elseif ($courseid) {
-    require_login($courseid, false);
-    $thiscontext = context_course::instance($courseid);
-    $module = null;
-    $cm = null;
-} else {
-    print_error('missingcourseorcmid', 'question');
-}
+list($module, $cm) = get_module_from_cmid($cmid);
+require_login($cm->course, false, $cm);
+$thiscontext = context_module::instance($cmid);
+
 $contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
 
