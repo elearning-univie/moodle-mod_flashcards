@@ -23,6 +23,7 @@
  */
 
 $string['addflashcardbutton'] = 'Add flash card';
+$string['addfcstudent'] = 'Allow students to add flashcards';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
 $string['errornotallowedonpage'] = 'Not Allowed';

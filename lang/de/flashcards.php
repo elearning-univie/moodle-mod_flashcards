@@ -23,6 +23,7 @@
  */
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
+$string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
 $string['box'] = 'Fach ';
 $string['boxzero'] = 'Lernkartensammlung';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';

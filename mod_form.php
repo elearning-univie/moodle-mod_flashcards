@@ -83,9 +83,21 @@ class mod_flashcards_mod_form extends moodleform_mod {
             $mform->setDefault('category', $catdefault);
         }
 
-        $mform->addElement('checkbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
+        $mform->addElement('advcheckbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
         $mform->hideIf('inclsubcats', 'newcategory', 'eq', 1);
 
+        $mform->addElement('select','addfcstudent', get_string('addfcstudent', 'flashcards'), array(1 => get_string('yes'),0 => get_string('no')));
+        $mform->hideIf('addfcstudent', 'newcategory', 'eq', 1);
+        $mform->disabledIf('inclsubcats', 'addfcstudent', 'eq', 1);
+        
+        
+        
+        $config_checkbox =& $mform->getElement('addfcstudent');
+        print_object($config_checkbox->_attributes['name']);
+//         if (isset($config_checkbox->_attributes['selected'])) {
+//             $config_text->attributes[‘value’] = "The checkbox is checked";
+//         }
+        
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
 
