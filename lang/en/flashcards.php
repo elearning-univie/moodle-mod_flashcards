@@ -24,6 +24,7 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';
+$string['addfcstudent_help'] = 'Flashcards created by Students will be stored in a special question subcategory.';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
 $string['errornotallowedonpage'] = 'Not Allowed';
@@ -51,6 +52,7 @@ $string['pluginname'] = 'Flashcard';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['question'] = 'Question';
 $string['selectall'] = 'Select all';
+$string['studentsubcatname'] = 'Subcategory name';
 $string['taskqubadelete'] = 'Delete old Question usages';
 $string['userpreferences'] = 'User preferences';
 $string['flashcards:studentview'] = 'View for students';

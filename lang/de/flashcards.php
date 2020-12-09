@@ -24,6 +24,7 @@
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
+$string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
 $string['box'] = 'Fach ';
 $string['boxzero'] = 'Lernkartensammlung';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
@@ -51,6 +52,7 @@ $string['pluginname'] = 'Lernkartei';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Frage';
 $string['selectall'] = 'Alle';
+$string['studentsubcatname'] = 'Name der Unterkategorie';
 $string['taskqubadelete'] = 'Alte Versuche aus der Fragendatenbank löschen';
 $string['userpreferences'] = 'Benutzereigenschaften';
 $string['flashcards:studentview'] = 'Teilnehmer/innenansicht anzeigen';

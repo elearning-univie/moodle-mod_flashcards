@@ -100,17 +100,20 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 }
 /**
  * Checks for the question subcategory with the name 'von Studierenden erstellt' and adds it if not found
+ * @param int $contextid
+ * @return int
  *
  */
-function mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid) {
+function mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid, $flashcards) {
     global $DB;
 
-    $sql = "SELECT * FROM {question_categories}
+    $sql = "SELECT id FROM {question_categories}
             WHERE contextid = :contextid
             AND name LIKE 'von Studierenden erstellt';";
 
-    $subcategory = $DB->get_records_sql($sql, ['contextid' => $contextid]);
-    if (!$subcategory) {
+    $subcatid = $DB->get_field_sql($sql, ['contextid' => $contextid]);
+
+    if (is_null($flashcards->studentsubcat) && !$subcatid) {
         $sql = "SELECT * FROM {question_categories}
             WHERE contextid = :contextid
             AND parent = 0;";
@@ -126,6 +129,8 @@ function mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid) {
         $cat->stamp = make_unique_id_code();
         $cat->idnumber = null;
 
-        $DB->insert_record('question_categories', $cat);
+        $subcatid = $DB->insert_record('question_categories', $cat);
     }
+
+    return $subcatid;
 }
