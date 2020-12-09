@@ -54,7 +54,7 @@ function flashcards_supports($feature) {
 function flashcards_add_instance($flashcards) {
     global $DB, $COURSE;
 
-    if($flashcards->addfcstudent == 1){
+    if ($flashcards->addfcstudent == 1) {
         $flashcards->inclsubcats = 1;
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
@@ -221,7 +221,7 @@ function flashcards_update_instance($flashcards) {
     global $DB, $COURSE;
     require_once('locallib.php');
 
-    if($flashcards->addfcstudent == 1){
+    if ($flashcards->addfcstudent == 1) {
         $flashcards->inclsubcats = 1;
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
@@ -232,7 +232,6 @@ function flashcards_update_instance($flashcards) {
     $flashcardsdb = flashcards_get_database_object($flashcards);
     $flashcardsdb->id = $flashcards->instance;
     $DB->update_record('flashcards', $flashcardsdb);
-
 
     return true;
 }

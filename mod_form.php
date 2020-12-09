@@ -51,7 +51,6 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform =& $this->_form;
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
-        $contextid = $context->id;
 
         $mform->addElement('text', 'name', get_string('flashcardname', 'flashcards'), array('size' => '64'));
         $mform->setType('name', PARAM_TEXT);
@@ -87,7 +86,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
         $mform->hideIf('inclsubcats', 'newcategory', 'eq', 1);
 
-        $mform->addElement('select','addfcstudent', get_string('addfcstudent', 'flashcards'), array(1 => get_string('yes'),0 => get_string('no')));
+        $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'), array(1 => get_string('yes'), 0 => get_string('no')));
         $mform->hideIf('addfcstudent', 'newcategory', 'eq', 1);
         $mform->disabledIf('inclsubcats', 'addfcstudent', 'eq', 1);
         $PAGE->requires->js_call_amd('mod_flashcards/fcstudentsubcat', 'init');
