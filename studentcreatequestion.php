@@ -156,10 +156,10 @@ $question->formoptions->mustbeusable = (bool) $appendqnumstring;
 $PAGE->set_pagetype('question-type-' . $question->qtype);
 
 $mform = $qtypeobj->create_editing_form('question.php', $question, $category, $contexts, $formeditable);
-$mform->removeFormElement('category');
+$mform->remove_form_element('category');
 // TODO set category automatically
-$mform->removeFormElement('generalfeedback');
-$mform->removeFormElement('idnumber');
+$mform->remove_form_element('generalfeedback');
+$mform->remove_form_element('idnumber');
 
 /*$toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
