@@ -171,6 +171,7 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->studentsubcat = null;
     if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
         $subcatid = null;
+        $flashcards->studentsubcat = null;
         if ($flashcards->addfcstudent == 1) {
             $flashcards->inclsubcats = 1;
             $courseid = $COURSE->id;

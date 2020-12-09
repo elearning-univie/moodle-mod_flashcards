@@ -114,7 +114,7 @@ function mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid, $
 
     $subcatid = $DB->get_field_sql($sql, ['contextid' => $contextid]);
 
-    if (is_null($flashcards->studentsubcat) && !$subcatid) {
+    if (!$flashcards->studentsubcat && !$subcatid) {
         $sql = "SELECT * FROM {question_categories}
             WHERE contextid = :contextid
             AND parent = 0;";
