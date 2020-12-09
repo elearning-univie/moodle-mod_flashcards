@@ -7,9 +7,11 @@ define(function() {
                if (selectvalue == 1) {
                  inclsubcats.checked = true;
                  inclsubcats.disabled = true;
+                 document.getElementById("id_studentsubcatname").style.visibility = "visible";
                } else {
                  inclsubcats.checked = false;
                  inclsubcats.disabled = false;
+                 document.getElementById("id_studentsubcatname").style.visibility = "hidden";
                }
     });
         }

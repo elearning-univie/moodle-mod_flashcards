@@ -96,7 +96,8 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->setType('studentsubcatname', PARAM_TEXT);
         $mform->setDefault('studentsubcatname', 'von Studierenden erstellt');
         $mform->hideIf('studentsubcatname', 'addfcstudent', 'eq', 0);
-        $mform->hideIf('studentsubcatname', 'inclsubcats', 'eq', 0);
+        $mform->hideIf('studentsubcatname', 'newcategory', 'eq', 1);
+     //   $mform->hideIf('studentsubcatname', 'inclsubcats', 'eq', 0);
 
         $mform->addElement('text', 'studentsubcat', '');
         $mform->setType('studentsubcat', PARAM_INT);

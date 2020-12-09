@@ -101,6 +101,7 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 /**
  * Checks for the question subcategory with the name 'von Studierenden erstellt' and adds it if not found
  * @param int $contextid
+ * @param stdClass $flashcards
  * @return int
  *
  */
