@@ -111,5 +111,18 @@ function xmldb_flashcards_upgrade($oldversion) {
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2020120900, 'flashcards');
     }
+    if ($oldversion < 2020120900.01) {
+        
+        // Changing the default of field addfcstudent on table flashcards to 0.
+        $table = new xmldb_table('flashcards');
+        $field = new xmldb_field('addfcstudent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'timemodified');
+        
+        // Launch change of default for field addfcstudent.
+        $dbman->change_field_default($table, $field);
+        
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2020120900.01, 'flashcards');
+    }
+    
     return true;
 }

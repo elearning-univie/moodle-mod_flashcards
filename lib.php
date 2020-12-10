@@ -173,7 +173,7 @@ function flashcards_get_database_object($flashcards) {
         $subcatid = null;
         $flashcards->studentsubcat = null;
         if ($flashcards->addfcstudent == 1) {
-            $flashcards->inclsubcats = 1;
+            $flashcardsdb->inclsubcats = 1;
             $courseid = $COURSE->id;
             $context = context_course::instance($courseid);
             $contextid = $context->id;
@@ -182,7 +182,11 @@ function flashcards_get_database_object($flashcards) {
         }
         $flashcardsdb->studentsubcat = $subcatid;
     } else {
-        $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
+        if ($flashcardsdb->addfcstudent == 0) {
+            $flashcardsdb->studentsubcat = null;
+        } else {
+            $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
+        }
     }
     return $flashcardsdb;
 }
