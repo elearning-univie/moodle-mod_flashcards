@@ -177,7 +177,7 @@ function flashcards_get_database_object($flashcards) {
             $courseid = $COURSE->id;
             $context = context_course::instance($courseid);
             $contextid = $context->id;
-            $subcatid = mod_flashcards_check_and_add_for_fcstudentsubcat_category($contextid, $flashcards);
+            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid);
             $flashcards->studentsubcat = $subcatid;
         }
         $flashcardsdb->studentsubcat = $subcatid;
