@@ -1,11 +1,10 @@
-/*TODO richtiger Context*/
-#page-content .que .info {
+#mod-flashcards-question .que .info {
     visibility: hidden;
     width: 0;
     padding: 0;
 }
 
-#page-content .que .content {
+#mod-flashcards-question .que .content {
     margin: 0;
 }
 
