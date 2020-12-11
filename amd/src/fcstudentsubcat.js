@@ -1,4 +1,4 @@
-define(function() {
+define(['jquery'], function() {
     return {
         init: function() {
             document.getElementById('id_addfcstudent').addEventListener('change', function(){
