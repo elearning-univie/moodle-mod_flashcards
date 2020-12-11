@@ -24,15 +24,15 @@
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';
-$string['addfcstudent_help'] = 'Flashcards created by Students will be stored in a special question subcategory.';
+$string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['existingcategory'] = 'Existing';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
-$string['inclsubcats'] = 'include subcategories';
-$string['inclsubcats_help'] = 'In order to not include question subcategories, you have to omit students from creating flashcards (see setting below). If you chose to allow students to create flashcards subcategeries must be included, thus, in this case, the setting is disabled and checked.';
+$string['inclsubcats'] = 'Include subcategories';
+$string['inclsubcats_help'] = 'To exclude subcategories, you have to omit students from creating flashcards (see setting below). If you chose to allow students to create flashcards subcategeries must be included, thus, in this case, the setting is disabled and checked.';
 $string['learnnowbuttonstart'] = 'Go';
 $string['learnnownoquestions'] = 'Please add questions from the flash card collection to enable random questions.';
 $string['learnnowrangeslider'] = 'Random questions';

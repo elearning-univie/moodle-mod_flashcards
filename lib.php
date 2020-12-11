@@ -171,10 +171,8 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->studentsubcat = null;
     if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
         $subcatid = null;
-        $flashcards->studentsubcat = null;
         if ($flashcards->addfcstudent == 1) {
             $flashcardsdb->inclsubcats = 1;
-            $courseid = $COURSE->id;
             $context = context_course::instance($courseid);
             $contextid = $context->id;
             $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid);
@@ -182,9 +180,7 @@ function flashcards_get_database_object($flashcards) {
         }
         $flashcardsdb->studentsubcat = $subcatid;
     } else {
-        if ($flashcardsdb->addfcstudent == 0) {
-            $flashcardsdb->studentsubcat = null;
-        } else {
+        if ($flashcardsdb->addfcstudent == 1) {
             $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
         }
     }
