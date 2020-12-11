@@ -10,7 +10,7 @@ define(['jquery'], function() {
                } else {
                  inclsubcats.disabled = false;
                }
-    });
+           });
         }
     };
 });
