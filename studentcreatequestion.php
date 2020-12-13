@@ -229,9 +229,9 @@ if ($mform->is_cancelled()) {
     }
 
     if (empty($fromform->usecurrentcat)) {
-      if (!empty($fromform->categorymoveto)) {
-        $fromform->category = $fromform->categorymoveto;
-      }
+        if (!empty($fromform->categorymoveto)) {
+            $fromform->category = $fromform->categorymoveto;
+        }
     }
 
     list($newcatid, $newcontextid) = explode(',', $fromform->category);
