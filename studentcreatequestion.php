@@ -244,9 +244,9 @@ if ($mform->is_cancelled()) {
     $returnurl->param('category', $fromform->category);
 
     if (empty($question->id)) {
-       if (!empty($fromform->makecopy) && !$question->formoptions->cansaveasnew) {
+        if (!empty($fromform->makecopy) && !$question->formoptions->cansaveasnew) {
             print_error('nopermissions', '', '', 'edit');
-        }
+       }
     }
 
     $question = $qtypeobj->save_question($question, $fromform);
