@@ -231,6 +231,7 @@ if ($mform->is_cancelled()) {
     if (empty($fromform->usecurrentcat)) {
       if (!empty($fromform->categorymoveto)) {
         $fromform->category = $fromform->categorymoveto;
+      }
     }
 
     list($newcatid, $newcontextid) = explode(',', $fromform->category);
@@ -314,6 +315,4 @@ $mform->remove_form_element('generalfeedback');
 $mform->remove_form_element('idnumber');
 /*$mform->remove_form_element('defaultmark');*/
 $qtypeobj->display_question_editing_page($mform, $question, $wizardnow);
-if ($rec->addfcstudent == 1) {
-    echo $OUTPUT->footer();
-}
+echo $OUTPUT->footer();
