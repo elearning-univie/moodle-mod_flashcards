@@ -86,21 +86,21 @@ if ($scrollpos) {
     $returnurl->param('scrollpos', $scrollpos);
 }
 
-$sql = 'SELECT * 
-          FROM {flashcards} 
-         WHERE id = (SELECT instance 
-                       FROM {course_modules} 
+$sql = 'SELECT *
+          FROM {flashcards}
+         WHERE id = (SELECT instance
+                       FROM {course_modules}
                       WHERE id = :cmid)';
 
 $rec = $DB->get_record_sql($sql, ['cmid' => $cmid]);
 
 $categoryid = $rec->studentsubcat;
 
-if ($cmid){
+if ($cmid) {
     list($module, $cm) = get_module_from_cmid($cmid);
     require_login($cm->course, false, $cm);
     $thiscontext = context_module::instance($cmid);
-} elseif ($courseid) {
+} else if ($courseid) {
     require_login($courseid, false);
     $thiscontext = context_course::instance($courseid);
     $module = null;
@@ -112,7 +112,7 @@ if ($cmid){
 $contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
 
-if($rec->addfcstudent == 0) {
+if ($rec->addfcstudent == 0) {
     $PAGE->set_title('Errorrrr');
     $PAGE->set_heading($COURSE->fullname);
     echo $OUTPUT->header();
@@ -172,23 +172,19 @@ if ($id) {
     $question->formoptions->cansaveasnew = $addpermission &&
             (question_has_capability_on($question, 'view') || $question->formoptions->canedit);
     $question->formoptions->repeatelements = $question->formoptions->canedit || $question->formoptions->cansaveasnew;
-    $formeditable =  $question->formoptions->canedit || $question->formoptions->cansaveasnew || $question->formoptions->canmove;
-    if (!$formeditable) {
-        //question_require_capability_on($question, 'view');
-    }
+    $formeditable = $question->formoptions->canedit || $question->formoptions->cansaveasnew || $question->formoptions->canmove;
     if ($makecopy) {
         $question->name = get_string('questionnamecopy', 'question', $question->name);
         $question->idnumber = core_question_find_next_unused_idnumber($question->idnumber, $category->id);
         $question->beingcopied = true;
     }
 
-} else  {
+} else {
     $question->formoptions->canedit = question_has_capability_on($question, 'edit');
     $question->formoptions->canmove = (question_has_capability_on($question, 'move') && $addpermission);
     $question->formoptions->cansaveasnew = false;
     $question->formoptions->repeatelements = true;
     $formeditable = true;
-    //require_capability('moodle/question:add', $categorycontext);
 }
 $question->formoptions->mustbeusable = (bool) $appendqnumstring;
 
@@ -202,13 +198,13 @@ if ($wizardnow !== '') {
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
 $toform->scrollpos = $scrollpos;
-if ($formeditable && $id){
+if ($formeditable && $id) {
     $toform->categorymoveto = $toform->category;
 }
 
 $toform->appendqnumstring = $appendqnumstring;
 $toform->makecopy = $makecopy;
-if ($cm !== null){
+if ($cm !== null) {
     $toform->cmid = $cm->id;
     $toform->courseid = $cm->course;
 } else {
@@ -232,31 +228,22 @@ if ($mform->is_cancelled()) {
         $question->hidden = 0; // Copies should not be hidden.
     }
 
-    if (!empty($fromform->usecurrentcat)) {
-        // $fromform->category is the right category to save in.
-    } else {
-        if (!empty($fromform->categorymoveto)) {
-            $fromform->category = $fromform->categorymoveto;
-        } else {
-            // $fromform->category is the right category to save in.
-        }
+    if (empty($fromform->usecurrentcat)) {
+      if (!empty($fromform->categorymoveto)) {
+        $fromform->category = $fromform->categorymoveto;
     }
 
     list($newcatid, $newcontextid) = explode(',', $fromform->category);
     if (!empty($question->id) && $newcatid != $question->category) {
         $contextid = $newcontextid;
-        //question_require_capability_on($question, 'move');
     } else {
         $contextid = $category->contextid;
     }
 
     $returnurl->param('category', $fromform->category);
 
-    if (!empty($question->id)) {
-        //question_require_capability_on($question, 'edit');
-    } else {
-        //require_capability('moodle/question:add', context::instance_by_id($contextid));
-        if (!empty($fromform->makecopy) && !$question->formoptions->cansaveasnew) {
+    if (empty($question->id)) {
+       if (!empty($fromform->makecopy) && !$question->formoptions->cansaveasnew) {
             print_error('nopermissions', '', '', 'edit');
         }
     }
@@ -299,7 +286,7 @@ if ($mform->is_cancelled()) {
                 'returnurl' => $originalreturnurl,
                 'appendqnumstring' => $appendqnumstring,
                 'scrollpos' => $scrollpos);
-        if (isset($fromform->nextpageparam) && is_array($fromform->nextpageparam)){
+        if (isset($fromform->nextpageparam) && is_array($fromform->nextpageparam)) {
             $nexturlparams += $fromform->nextpageparam;
         }
         $nexturlparams['id'] = $question->id;
