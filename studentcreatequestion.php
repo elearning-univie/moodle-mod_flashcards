@@ -314,4 +314,6 @@ $mform->remove_form_element('generalfeedback');
 $mform->remove_form_element('idnumber');
 /*$mform->remove_form_element('defaultmark');*/
 $qtypeobj->display_question_editing_page($mform, $question, $wizardnow);
-echo $OUTPUT->footer();
+if ($rec->addfcstudent == 1) {
+    echo $OUTPUT->footer();
+}
