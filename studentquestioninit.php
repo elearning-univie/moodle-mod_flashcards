@@ -105,8 +105,13 @@ foreach ($questionstemp as $question) {
         'qid' => $question->id
     ];
 }
-
-$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id];
+$createbuttonvisibility = 'hidden';
+if($flashcards->addfcstudent == 1) {
+    $createbuttonvisibility = 'visible';
+}
+$createflashcardurl = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
+$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
+    'cbvis' => $createbuttonvisibility];
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);

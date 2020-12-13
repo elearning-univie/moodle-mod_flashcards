@@ -25,6 +25,7 @@
 $string['addflashcardbutton'] = 'Add flash card';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
+$string['createflashcardbutton'] = 'Create flash card';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['existingcategory'] = 'Existing';
 $string['flashcardname'] = 'Flash cards activity name';

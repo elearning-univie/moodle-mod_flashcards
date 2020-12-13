@@ -73,7 +73,7 @@ if ($scrollpos) {
     $url->param('scrollpos', $scrollpos);
 }
 $PAGE->set_url($url);
-
+require_login();
 if ($cmid) {
     $questionbankurl = new moodle_url('/question/edit.php', array('cmid' => $cmid));
 } else {
@@ -93,7 +93,8 @@ $sql = 'SELECT *
                       WHERE id = :cmid)';
 
 $rec = $DB->get_record_sql($sql, ['cmid' => $cmid]);
-$categoryid = $rec->categoryid;
+
+$categoryid = $rec->studentsubcat;
 
 if ($cmid){
     list($module, $cm) = get_module_from_cmid($cmid);
@@ -107,8 +108,18 @@ if ($cmid){
 } else {
     print_error('missingcourseorcmid', 'question');
 }
+
 $contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
+
+if($rec->addfcstudent == 0) {
+    $PAGE->set_title('Errorrrr');
+    $PAGE->set_heading($COURSE->fullname);
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
 
 if (optional_param('addcancel', false, PARAM_BOOL)) {
     redirect($returnurl);
@@ -310,6 +321,7 @@ $PAGE->set_heading($COURSE->fullname);
 $PAGE->navbar->add($streditingquestion);
 
 echo $OUTPUT->header();
+
 $mform->remove_form_element('category');
 $mform->remove_form_element('generalfeedback');
 $mform->remove_form_element('idnumber');

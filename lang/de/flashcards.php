@@ -25,6 +25,7 @@
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['box'] = 'Fach ';
 $string['boxzero'] = 'Lernkartensammlung';
+$string['createflashcardbutton'] = 'Lernkarte anlegen';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
 $string['existingcategory'] = 'Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
