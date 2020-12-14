@@ -162,6 +162,28 @@ function flashcards_get_database_object($flashcards) {
     }
     $flashcardsdb->timemodified = time();
 
+    if (!property_exists($flashcards, 'addfcstudent') || !$flashcards->addfcstudent) {
+        $flashcardsdb->addfcstudent = 0;
+    } else {
+        $flashcardsdb->addfcstudent = $flashcards->addfcstudent;
+    }
+
+    $flashcardsdb->studentsubcat = null;
+    if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
+        $subcatid = null;
+        if ($flashcards->addfcstudent == 1) {
+            $flashcardsdb->inclsubcats = 1;
+            $context = context_course::instance($courseid);
+            $contextid = $context->id;
+            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid);
+            $flashcards->studentsubcat = $subcatid;
+        }
+        $flashcardsdb->studentsubcat = $subcatid;
+    } else {
+        if ($flashcardsdb->addfcstudent == 1) {
+            $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
+        }
+    }
     return $flashcardsdb;
 }
 

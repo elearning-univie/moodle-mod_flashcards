@@ -83,8 +83,33 @@ class mod_flashcards_mod_form extends moodleform_mod {
             $mform->setDefault('category', $catdefault);
         }
 
-        $mform->addElement('checkbox', 'inclsubcats', get_string('includesubcategories', 'flashcards'));
-        $mform->hideIf('inclsubcats', 'newcategory', 'eq', 1);
+        $mform->addElement('advcheckbox', 'inclsubcats', get_string('inclsubcats', 'flashcards'));
+        $mform->setDefault('inclsubcats', 1);
+        $mform->addHelpButton('inclsubcats', 'inclsubcats', 'flashcards');
+
+        $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'), array(1 => get_string('yes'), 0 => get_string('no')));
+        $mform->addHelpButton('addfcstudent', 'addfcstudent', 'flashcards');
+        $mform->setDefault('addfcstudent', 1);
+        $mform->disabledIf('inclsubcats', 'addfcstudent', 'eq', 1);
+        $PAGE->requires->js_call_amd('mod_flashcards/fcstudentsubcat', 'init');
+
+        $mform->addElement('text', 'studentsubcatname', get_string('studentsubcatname', 'flashcards'));
+        $mform->setType('studentsubcatname', PARAM_TEXT);
+        $mform->setDefault('studentsubcatname', 'von Studierenden erstellt');
+        $mform->hideIf('studentsubcatname', 'addfcstudent', 'eq', 0);
+
+        $mform->addElement('text', 'studentsubcat', '');
+        $mform->setType('studentsubcat', PARAM_INT);
+        $mform->hideIf('studentsubcat', 'addfcstudent', 'lt', 3);
+
+        if (optional_param('update', 0, PARAM_INT)) {
+            if (!$flashcards->studentsubcat && $flashcards->addfcstudent == 1) {
+                $subcatname = $DB->get_field('question_categories', 'name', ['id' => $flashcards->studentsubcat]);
+                $mform->setDefault('studentsubcatname', $subcatname);
+            }
+        }
+
+        $mform->disabledIf('studentsubcatname', 'addfcstudent', 'lt', 3);
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();

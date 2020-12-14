@@ -23,6 +23,8 @@
  */
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
+$string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
+$string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
 $string['box'] = 'Fach ';
 $string['boxzero'] = 'Lernkartensammlung';
 $string['createflashcardbutton'] = 'Lernkarte anlegen';
@@ -30,7 +32,8 @@ $string['errornotallowedonpage'] = 'Keine Berechtigung';
 $string['existingcategory'] = 'Existiert';
 $string['flashcardname'] = 'Lernkartei Aktivitätsname';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
-$string['includesubcategories'] = 'Unterkategorien einbeziehen';
+$string['inclsubcats'] = 'Unterkategorien einbeziehen';
+$string['inclsubcats_help'] = 'Wenn sie Unterkategorien nicht miteinbeziehen, dürfen Studierende keine eigenen Lernkarten erstellen (siehe nachfolgende Einstellung). Erlauben sie Studierenden eigene Lernkarten anzulegen müssen Unterkategorien miteingebunden werden und diese Einstellung wird automatisch gesetzt und kann nicht geändert werden.';
 $string['learnnowbuttonstart'] = 'Los';
 $string['learnnownoquestions'] = 'Bitte fügen Sie Fragen aus der Lernkartensammlung hinzu, um zufällige Fragen freizuschalten.';
 $string['learnnowrangeslider'] = 'Zufällige Fragen';
@@ -51,6 +54,7 @@ $string['pluginname'] = 'Lernkartei';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Frage';
 $string['selectall'] = 'Alle';
+$string['studentsubcatname'] = 'Name der Unterkategorie';
 $string['taskqubadelete'] = 'Alte Versuche aus der Fragendatenbank löschen';
 $string['userpreferences'] = 'Benutzereigenschaften';
 $string['flashcards:studentview'] = 'Teilnehmer/innenansicht anzeigen';
