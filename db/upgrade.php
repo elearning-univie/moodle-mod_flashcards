@@ -82,6 +82,35 @@ function xmldb_flashcards_upgrade($oldversion) {
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2019121201, 'flashcards');
     }
+    if ($oldversion < 2020113000) {
+
+        // Define field addfcstudent to be added to flashcards.
+        $table = new xmldb_table('flashcards');
+        $field = new xmldb_field('addfcstudent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'timemodified');
+
+        // Conditionally launch add field addfcstudent.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2020113000, 'flashcards');
+    }
+
+    if ($oldversion < 2020120900) {
+
+        // Define field studentsubcat to be added to flashcards.
+        $table = new xmldb_table('flashcards');
+        $field = new xmldb_field('studentsubcat', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'addfcstudent');
+
+        // Conditionally launch add field studentsubcat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2020120900, 'flashcards');
+    }
 
     return true;
 }

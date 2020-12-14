@@ -23,13 +23,17 @@
  */
 
 $string['addflashcardbutton'] = 'Add flash card';
+$string['addfcstudent'] = 'Allow students to add flashcards';
+$string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
+$string['createflashcardbutton'] = 'Create flash card';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['existingcategory'] = 'Existing';
 $string['flashcardname'] = 'Flash cards activity name';
 $string['flashcards:addinstance'] = 'Add new flash cards';
-$string['includesubcategories'] = 'include subcategories';
+$string['inclsubcats'] = 'Include subcategories';
+$string['inclsubcats_help'] = 'To exclude subcategories, you have to omit students from creating flashcards (see setting below). If you chose to allow students to create flashcards subcategeries must be included, thus, in this case, the setting is disabled and checked.';
 $string['learnnowbuttonstart'] = 'Go';
 $string['learnnownoquestions'] = 'Please add questions from the flash card collection to enable random questions.';
 $string['learnnowrangeslider'] = 'Random questions';
@@ -50,6 +54,7 @@ $string['pluginname'] = 'Flashcard';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['question'] = 'Question';
 $string['selectall'] = 'Select all';
+$string['studentsubcatname'] = 'Subcategory name';
 $string['taskqubadelete'] = 'Delete old Question usages';
 $string['userpreferences'] = 'User preferences';
 $string['flashcards:studentview'] = 'View for students';
