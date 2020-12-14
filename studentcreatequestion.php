@@ -261,7 +261,6 @@ if ($mform->is_cancelled()) {
     }
 
     question_bank::notify_question_edited($question->id);
-
     if (!empty($fromform->updatebutton)) {
         $url->param('id', $question->id);
         $url->remove_params('makecopy');
