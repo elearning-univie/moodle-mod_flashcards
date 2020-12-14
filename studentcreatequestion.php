@@ -75,9 +75,9 @@ if ($scrollpos) {
 $PAGE->set_url($url);
 require_login();
 if ($cmid) {
-    $questionbankurl = new moodle_url('/question/edit.php', array('cmid' => $cmid));
+    $questionbankurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $cmid));
 } else {
-    $questionbankurl = new moodle_url('/question/edit.php', array('courseid' => $courseid));
+    $questionbankurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('courseid' => $courseid));
 }
 navigation_node::override_active_url($questionbankurl);
 
