@@ -82,7 +82,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         // Flashcards savepoint reached.
         upgrade_mod_savepoint(true, 2019121201, 'flashcards');
     }
-    if ($oldversion < 2020113000) {
+    if ($oldversion < 2020120800) {
 
         // Define field addfcstudent to be added to flashcards.
         $table = new xmldb_table('flashcards');
@@ -94,7 +94,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         }
 
         // Flashcards savepoint reached.
-        upgrade_mod_savepoint(true, 2020113000, 'flashcards');
+        upgrade_mod_savepoint(true, 2020120800, 'flashcards');
     }
 
     if ($oldversion < 2020120900) {
