@@ -27,6 +27,12 @@ div.flashcards_add_btn_invisi {
     margin-bottom: 1em;
 }
 
+.mod-flashcards.fc-center {
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
 .mod-flashcards.btn-box {
     text-align: left;
     min-width: 10em;
