@@ -23,14 +23,13 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/studentcreatequestionform.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/formslib.php');
 
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
-// Read URL parameters telling us which question to edit.
-$id = optional_param('id', 0, PARAM_INT); // question id
 $makecopy = optional_param('makecopy', 0, PARAM_BOOL);
 $qtype = 'flashcard';
 $categoryid = optional_param('category', 0, PARAM_INT);
@@ -42,46 +41,22 @@ $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
 $scrollpos = optional_param('scrollpos', 0, PARAM_INT);
 
 $url = new moodle_url('/mod/flashcards/studentcreatequestion.php');
-if ($id !== 0) {
-    $url->param('id', $id);
-}
-if ($makecopy) {
-    $url->param('makecopy', $makecopy);
-}
-if ($qtype !== '') {
-    $url->param('qtype', $qtype);
-}
-if ($categoryid !== 0) {
-    $url->param('category', $categoryid);
-}
 if ($cmid !== 0) {
     $url->param('cmid', $cmid);
 }
 if ($courseid !== 0) {
     $url->param('courseid', $courseid);
 }
-if ($wizardnow !== '') {
-    $url->param('wizardnow', $wizardnow);
-}
-if ($appendqnumstring !== '') {
-    $url->param('appendqnumstring', $appendqnumstring);
-}
-if ($inpopup !== 0) {
-    $url->param('inpopup', $inpopup);
-}
-if ($scrollpos) {
-    $url->param('scrollpos', $scrollpos);
-}
 $PAGE->set_url($url);
-require_login();
-if ($cmid) {
-    $questionbankurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $cmid));
-} else {
-    $questionbankurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('courseid' => $courseid));
-}
-navigation_node::override_active_url($questionbankurl);
 
-$returnurl = $questionbankurl;
+if ($cmid) {
+    $initboxurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $cmid));
+} else {
+    $initboxurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('courseid' => $courseid));
+}
+navigation_node::override_active_url($initboxurl);
+
+$returnurl = $initboxurl;
 if ($scrollpos) {
     $returnurl->param('scrollpos', $scrollpos);
 }
@@ -125,13 +100,7 @@ if (optional_param('addcancel', false, PARAM_BOOL)) {
     redirect($returnurl);
 }
 
-if ($id) {
-    if (!$question = $DB->get_record('question', array('id' => $id))) {
-        print_error('questiondoesnotexist', 'question', $returnurl);
-    }
-    get_question_options($question, true, [$COURSE]);
-
-} else if ($categoryid && $qtype) {
+if ($categoryid && $qtype) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;
@@ -166,41 +135,20 @@ $categorycontext = context::instance_by_id($category->contextid);
 $question->contextid = $category->contextid;
 $addpermission = has_capability('moodle/question:add', $categorycontext);
 
-if ($id) {
-    $question->formoptions->canedit = question_has_capability_on($question, 'edit');
-    $question->formoptions->canmove = $addpermission && question_has_capability_on($question, 'move');
-    $question->formoptions->cansaveasnew = $addpermission &&
-            (question_has_capability_on($question, 'view') || $question->formoptions->canedit);
-    $question->formoptions->repeatelements = $question->formoptions->canedit || $question->formoptions->cansaveasnew;
-    $formeditable = $question->formoptions->canedit || $question->formoptions->cansaveasnew || $question->formoptions->canmove;
-    if ($makecopy) {
-        $question->name = get_string('questionnamecopy', 'question', $question->name);
-        $question->idnumber = core_question_find_next_unused_idnumber($question->idnumber, $category->id);
-        $question->beingcopied = true;
-    }
+$question->formoptions->canedit = question_has_capability_on($question, 'edit');
+$question->formoptions->canmove = (question_has_capability_on($question, 'move') && $addpermission);
+$question->formoptions->cansaveasnew = false;
+$question->formoptions->repeatelements = true;
+$formeditable = true;
 
-} else {
-    $question->formoptions->canedit = question_has_capability_on($question, 'edit');
-    $question->formoptions->canmove = (question_has_capability_on($question, 'move') && $addpermission);
-    $question->formoptions->cansaveasnew = false;
-    $question->formoptions->repeatelements = true;
-    $formeditable = true;
-}
 $question->formoptions->mustbeusable = (bool) $appendqnumstring;
 
 $PAGE->set_pagetype('question-type-' . $question->qtype);
+$mform = new studentcreatequestionform('studentcreatequestion.php', $question, $category, $formeditable);
 
-if ($wizardnow !== '') {
-    $mform = $qtypeobj->next_wizard_form('studentcreatequestion.php', $question, $wizardnow, $formeditable);
-} else {
-    $mform = $qtypeobj->create_editing_form('studentcreatequestion.php', $question, $category, $contexts, $formeditable);
-}
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
 $toform->scrollpos = $scrollpos;
-if ($formeditable && $id) {
-    $toform->categorymoveto = $toform->category;
-}
 
 $toform->appendqnumstring = $appendqnumstring;
 $toform->makecopy = $makecopy;
@@ -223,17 +171,6 @@ if ($mform->is_cancelled()) {
     }
 
 } else if ($fromform = $mform->get_data()) {
-    if ($makecopy) {
-        $question->id = 0;
-        $question->hidden = 0; // Copies should not be hidden.
-    }
-
-    if (empty($fromform->usecurrentcat)) {
-        if (!empty($fromform->categorymoveto)) {
-            $fromform->category = $fromform->categorymoveto;
-        }
-    }
-
     list($newcatid, $newcontextid) = explode(',', $fromform->category);
     if (!empty($question->id) && $newcatid != $question->category) {
         $contextid = $newcontextid;
@@ -242,12 +179,6 @@ if ($mform->is_cancelled()) {
     }
 
     $returnurl->param('category', $fromform->category);
-
-    if (empty($question->id)) {
-        if (!empty($fromform->makecopy) && !$question->formoptions->cansaveasnew) {
-            print_error('nopermissions', '', '', 'edit');
-        }
-    }
 
     $question = $qtypeobj->save_question($question, $fromform);
     if (isset($fromform->tags)) {
@@ -261,11 +192,6 @@ if ($mform->is_cancelled()) {
     }
 
     question_bank::notify_question_edited($question->id);
-    if (!empty($fromform->updatebutton)) {
-        $url->param('id', $question->id);
-        $url->remove_params('makecopy');
-        redirect($url);
-    }
 
     if ($qtypeobj->finished_edit_wizard($fromform)) {
         if ($inpopup) {
@@ -308,10 +234,5 @@ $PAGE->set_heading($COURSE->fullname);
 $PAGE->navbar->add($streditingquestion);
 
 echo $OUTPUT->header();
-
-$mform->remove_form_element('category');
-$mform->remove_form_element('generalfeedback');
-$mform->remove_form_element('idnumber');
-/*$mform->remove_form_element('defaultmark');*/
-$qtypeobj->display_question_editing_page($mform, $question, $wizardnow);
+$mform->display();
 echo $OUTPUT->footer();
