@@ -143,18 +143,15 @@ class studentcreatequestionform extends moodleform {
                 && empty($fromform['usecurrentcat']) && !$this->question->formoptions->canmove) {
             $errors['currentgrp'] = get_string('nopermissionmove', 'question');
         }
-
         // Category.
         if (empty($fromform['category'])) {
             // User has provided an invalid category.
             $errors['category'] = get_string('required');
         }
-
         // Default mark.
         if (array_key_exists('defaultmark', $fromform) && $fromform['defaultmark'] < 0) {
             $errors['defaultmark'] = get_string('defaultmarkmustbepositive', 'question');
         }
-        
         // Can only have one idnumber per category.
         if (strpos($fromform['category'], ',') !== false) {
             list($category, $categorycontextid) = explode(',', $fromform['category']);
