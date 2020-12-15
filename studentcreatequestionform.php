@@ -28,6 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
+/**
+ * Student flashcard form definition.
+ *
+ * @copyright  2020 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class studentcreatequestionform extends moodleform {
 
     /**
@@ -35,7 +41,7 @@ class studentcreatequestionform extends moodleform {
      * @var object
      */
     protected $question;
-    protected $contexts;
+    /** @var string question category */
     protected $category;
 
     /** @var object current context */
@@ -53,7 +59,6 @@ class studentcreatequestionform extends moodleform {
      * @param string $submiturl
      * @param object $question
      * @param string $category
-     * @param object $contexts
      * @param bool $formeditable
      * @throws coding_exception
      * @throws dml_exception
