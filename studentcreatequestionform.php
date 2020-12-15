@@ -154,8 +154,7 @@ class studentcreatequestionform extends moodleform {
         if (array_key_exists('defaultmark', $fromform) && $fromform['defaultmark'] < 0) {
             $errors['defaultmark'] = get_string('defaultmarkmustbepositive', 'question');
         }
-        print_object($fromform);
-
+        
         // Can only have one idnumber per category.
         if (strpos($fromform['category'], ',') !== false) {
             list($category, $categorycontextid) = explode(',', $fromform['category']);
