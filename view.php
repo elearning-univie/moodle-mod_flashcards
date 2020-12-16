@@ -30,11 +30,11 @@ $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-if (has_capability('mod/flashcards:studentview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
-    redirect($redirecturl);
-} else if (has_capability('mod/flashcards:teacherview', $context) ) {
+if (has_capability('mod/flashcards:teacherview', $context) ) {
     $redirecturl = new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id));
+    redirect($redirecturl);
+} else if (has_capability('mod/flashcards:studentview', $context) ) {
+    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
     redirect($redirecturl);
 } else {
     global $PAGE, $OUTPUT, $DB;
