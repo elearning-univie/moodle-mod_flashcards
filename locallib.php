@@ -25,6 +25,9 @@
 defined('MOODLE_INTERNAL') || die;
 define('FLASHCARDS_LN', 'mod_flashcards_ln_');
 
+define('FLASHCARDS_AUTHOR_NONE', 0);
+define('FLASHCARDS_AUTHOR_GROUP', 1);
+define('FLASHCARDS_AUTHOR_NAME', 2);
 /**
  * Checks if the user has the right to view the course
  *
@@ -127,4 +130,92 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
     }
 
     return $subcatid;
+}
+
+function mod_flashcards_get_preview_questiontext($context, $question) {
+    $questiontext =
+        file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+            $question->id);
+    $questiontext = format_text($questiontext, FORMAT_HTML);
+
+    preg_match_all('/<img[^>]+>/i', $questiontext, $images);
+
+    if (!empty($images)) {
+        foreach ($images[0] as $image) {
+            preg_match('/alt="(.*?)"/', $image, $imagealt);
+            if (!empty($imagealt[1])) {
+                $questiontext = str_replace($image, $imagealt[1], $questiontext);
+            } else {
+                $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
+            }
+        }
+    }
+
+    $questiontext = html_to_text($questiontext, 0);
+
+    if (strlen($questiontext) > 30) {
+        $questiontext = substr($questiontext, 0, 30) . '...';
+    }
+    return $questiontext;
+}
+
+function mod_flashcards_get_question_authors($questions, $courseid) {
+    global $DB, $USER;
+    $authordisplay = get_config('flashcards', 'authordisplay');
+    $authors = [];
+    if($authordisplay) {
+        $authorids = [];
+        foreach($questions as $question) {
+            if(!key_exists($question->createdby, $authorids)) {
+                $authorids[$question->createdby] = $question->createdby;
+            }
+        }
+        if(sizeof($authorids) > 0) {
+            if($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
+                $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+                if(sizeof($roleids) > 0) {
+                    list($inusersql, $useridparams) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
+                    list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+                    $params = array_merge($useridparams, $roleparams);
+                    $params['courseid'] = $courseid;
+                    $sql = "SELECT userid
+                              FROM {role_assignments} ra,
+                                   {context} c
+                             WHERE c.contextlevel = 50
+                               AND ra.contextid = c.id
+                               AND c.instanceid = :courseid
+                               AND ra.roleid $inrolesql
+                               AND ra.userid $inusersql";
+                   $teacherids = $DB->get_records_sql($sql, $params);
+               } else {
+                   $teacherids = [];
+               }
+               foreach ($authorids as $author) {
+                   if($author == $USER->id) {
+                       $authors[$author] = get_string('author_me', 'flashcards');
+                   } else if(key_exists($author, $teacherids)) {
+                       $authors[$author] = get_string('author_teacher', 'flashcards');
+                   } else {
+                       $authors[$author] = get_string('author_student', 'flashcards');
+                   }
+               }
+            } else if($authordisplay == FLASHCARDS_AUTHOR_NAME) {
+                list($insql,$params) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
+                $sql = "SELECT id,
+                               firstname,
+                               lastname,
+                               firstnamephonetic,
+                               lastnamephonetic,
+                               middlename,
+                               alternatename
+                          FROM {user}
+                         WHERE id $insql";
+                $users = $DB->get_records_sql($sql, $params);
+                foreach ($users as $author) {
+                    $authors[$author->id] = fullname($author);
+                }
+            }
+        }
+    }
+    return $authors;
 }

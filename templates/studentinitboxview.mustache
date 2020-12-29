@@ -24,28 +24,34 @@
             "text": "example text of a question",
             "qurl": "https://redirecturl",
             "qid": 17
+            "author": "John Doe"
             },
             {
             "text": "example text2 of a question",
             "qurl": "https://redirecturl2",
             "qid": 18
+            "author": "Sophisti Cat"
             }
          ],
          "aid": 20,
-         "cmid": 12
+         "cmid": 12,
+         "displayauthorcolumn": 1
     }
 }}
 
 <div class="{{cbvis}}">
-    <p><button class="btn btn-primary" onclick="window.location.href='{{createfcurl}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button></p>
+    <p><button class="btn btn-secondary" onclick="window.location.href='{{createfcurl}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button></p>
 </div>
 
-<table class="generaltable fullwidth">
+<table class="generaltable fullwidth flashcardsstudenttable">
     <thead>
     <tr>
         <th class="flashcards_studentview_all header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)"/> {{# str }}
             selectall, mod_flashcards {{/ str }}</th>
         <th class="header name">{{# str }} question, mod_flashcards {{/ str }}</th>
+        {{#displayauthorcolumn}}
+            <th class="flashcards_studentview_author header iconcol" scope="col">{{# str }} author, flashcards {{/ str }}</th>
+        {{/displayauthorcolumn}}
         <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
     </tr>
     </thead>
@@ -58,6 +64,9 @@
             <td>
                 {{{text}}}
             </td>
+            {{#displayauthorcolumn}}
+                <td>{{author}}</td>
+            {{/displayauthorcolumn}}
             <td>
                 <a href="{{qurl}}" target="questionpreview" title="Preview">
                     <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
