@@ -1,4 +1,6 @@
 <?php
+use core\event\unknown_logged;
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -131,7 +133,12 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
 
     return $subcatid;
 }
-
+/**
+ * Get the questiontext for a preview (first 30 characters)
+ * @param context $context
+ * @param stdClass $question
+ * @return string the first 30 chars of a question
+ */
 function mod_flashcards_get_preview_questiontext($context, $question) {
     $questiontext =
         file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
@@ -158,7 +165,12 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     }
     return $questiontext;
 }
-
+/**
+ * Find all authors to a set of questions 
+ * @param array $questions the questions for which the authors are searched
+ * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
+ * @return string[]
+ */
 function mod_flashcards_get_question_authors($questions, $courseid) {
     global $DB, $USER;
     $authordisplay = get_config('flashcards', 'authordisplay');

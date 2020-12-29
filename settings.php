@@ -17,8 +17,7 @@
 /**
  * Administration settings definitions for the offlinequiz module.
  *
- * @package       mod
- * @subpackage    flashcards
+ * @package       mod_flashcards
  * @author        Thomas Wedekind <Thomas.Wedekind@univie.ac.at
  * @copyright     2020 University of Vienna
  * @since         Moodle 3.10
