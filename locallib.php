@@ -164,7 +164,7 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     return $questiontext;
 }
 /**
- * Find all authors to a set of questions 
+ * Find all authors to a set of questions
  * @param array $questions the questions for which the authors are searched
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
  * @return string[]
