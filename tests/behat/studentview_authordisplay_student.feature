@@ -52,7 +52,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection" 
+    And I follow "Flash card collection"
     Then I should see "Student" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
 
