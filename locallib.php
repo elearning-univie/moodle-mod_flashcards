@@ -61,7 +61,7 @@ function mod_flashcards_get_next_question($fid, $boxid) {
 
     if ($boxid > 0) {
         try {
-            $unused = mod_flashcards_check_student_rights($fid);
+            mod_flashcards_check_student_rights($fid);
         } catch (require_login_exception $e) {
             return false;
         }
@@ -112,10 +112,10 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 function mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $categoryid) {
     global $DB;
 
-    $subcatid = $DB->get_field('question_categories', 'id', ['contextid' => $contextid, 'parent' => $categoryid, 'name' => 'von Studierenden erstellt']);
+    $subcatid = $DB->get_field('question_categories', 'id',
+        ['contextid' => $contextid, 'parent' => $categoryid, 'name' => 'von Studierenden erstellt']);
 
     if (!$flashcards->studentsubcat && !$subcatid) {
-        $parent = $DB->get_record('question_categories', ['contextid' => $contextid, 'parent' => 0]);
         $cat = new stdClass();
         $cat->parent = $categoryid;
         $cat->contextid = $contextid;
@@ -163,17 +163,17 @@ function mod_flashcards_get_question_authors($questions, $courseid) {
     global $DB, $USER;
     $authordisplay = get_config('flashcards', 'authordisplay');
     $authors = [];
-    if($authordisplay) {
+    if ($authordisplay) {
         $authorids = [];
-        foreach($questions as $question) {
-            if(!key_exists($question->createdby, $authorids)) {
+        foreach ($questions as $question) {
+            if (!key_exists($question->createdby, $authorids)) {
                 $authorids[$question->createdby] = $question->createdby;
             }
         }
-        if(sizeof($authorids) > 0) {
-            if($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
+        if (count($authorids) > 0) {
+            if ($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
                 $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
-                if(sizeof($roleids) > 0) {
+                if (count($roleids) > 0) {
                     list($inusersql, $useridparams) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
                     list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
                     $params = array_merge($useridparams, $roleparams);
@@ -187,20 +187,20 @@ function mod_flashcards_get_question_authors($questions, $courseid) {
                                AND ra.roleid $inrolesql
                                AND ra.userid $inusersql";
                    $teacherids = $DB->get_records_sql($sql, $params);
-               } else {
-                   $teacherids = [];
-               }
-               foreach ($authorids as $author) {
-                   if($author == $USER->id) {
-                       $authors[$author] = get_string('author_me', 'flashcards');
-                   } else if(key_exists($author, $teacherids)) {
-                       $authors[$author] = get_string('author_teacher', 'flashcards');
-                   } else {
-                       $authors[$author] = get_string('author_student', 'flashcards');
-                   }
-               }
-            } else if($authordisplay == FLASHCARDS_AUTHOR_NAME) {
-                list($insql,$params) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
+                } else {
+                    $teacherids = [];
+                }
+                foreach ($authorids as $author) {
+                    if ($author == $USER->id) {
+                        $authors[$author] = get_string('author_me', 'flashcards');
+                    } else if (key_exists($author, $teacherids)) {
+                        $authors[$author] = get_string('author_teacher', 'flashcards');
+                    } else {
+                        $authors[$author] = get_string('author_student', 'flashcards');
+                    }
+                }
+            } else if ($authordisplay == FLASHCARDS_AUTHOR_NAME) {
+                list($insql, $params) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
                 $sql = "SELECT id,
                                firstname,
                                lastname,

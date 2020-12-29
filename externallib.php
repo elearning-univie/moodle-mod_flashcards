@@ -107,11 +107,12 @@ class mod_flashcards_external extends external_api {
     public static function update_progress($fid, $questionid, $qanswervalue) {
         global $DB, $USER;
 
-        $params = self::validate_parameters(self::update_progress_parameters(), array('fid' => $fid, 'questionid' => $questionid, 'qanswervalue' => $qanswervalue));
+        $params = self::validate_parameters(self::update_progress_parameters(), 
+            array('fid' => $fid, 'questionid' => $questionid, 'qanswervalue' => $qanswervalue));
 
         $record = $DB->get_record('flashcards_q_stud_rel',
-                ['studentid' => $USER->id, 'flashcardsid' => $params['fid'], 'questionid' => $params['questionid']], $fields = '*',
-                $strictness = MUST_EXIST);
+                ['studentid' => $USER->id, 'flashcardsid' => $params['fid'], 'questionid' => $params['questionid']], '*',
+                MUST_EXIST);
 
         $currentbox = $record->currentbox;
 
@@ -160,7 +161,8 @@ class mod_flashcards_external extends external_api {
     public static function init_questions($flashcardsid, $qids) {
         global $DB, $USER;
 
-        $params = self::validate_parameters(self::init_questions_parameters(), array('flashcardsid' => $flashcardsid, 'qids' => $qids));
+        $params = self::validate_parameters(self::init_questions_parameters(),
+            array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
         $categories = question_categorylist($record->categoryid);
@@ -176,7 +178,8 @@ class mod_flashcards_external extends external_api {
                                    WHERE studentid = :userid
                                      AND flashcardsid = :fid)";
 
-        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids + ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
+            ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
         $questionarray = [];
 
         foreach ($questionids as $question) {
@@ -201,7 +204,8 @@ class mod_flashcards_external extends external_api {
     public static function start_learn_now($flashcardsid, $qcount) {
         global $DB, $USER, $_SESSION;
 
-        $params = self::validate_parameters(self::start_learn_now_parameters(), array('flashcardsid' => $flashcardsid, 'qcount' => $qcount));
+        $params = self::validate_parameters(self::start_learn_now_parameters(),
+            array('flashcardsid' => $flashcardsid, 'qcount' => $qcount));
 
         list($context, $course, $cm) = mod_flashcards_check_student_rights($params['flashcardsid']);
 

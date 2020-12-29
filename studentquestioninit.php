@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
-require_once ('locallib.php');
+require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG, $USER;
 
@@ -64,7 +64,7 @@ list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NA
 $authordisplay = get_config('flashcards', 'authordisplay');
 $sql = "SELECT id,
                questiontext,
-               createdby 
+               createdby
           FROM {question} q
          WHERE category $sqlwhere
            AND qtype = 'flashcard'
@@ -83,9 +83,9 @@ foreach ($questionstemp as $question) {
         array('id' => $question->id, 'courseid' => $course->id));
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
-    //display Author group
-    if($authordisplay) {
-        if($question->createdby) {
+    // Display author group.
+    if ($authordisplay) {
+        if ($question->createdby) {
             $row['author'] = $authors[$question->createdby];
         } else {
             $row['author'] = get_string('author_unknown');

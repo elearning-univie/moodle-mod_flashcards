@@ -34,16 +34,17 @@ if ($ADMIN->fulltree) {
     // Introductory explanation that all the settings are defaults for the add offlinequiz form.
     $settings->add(new admin_setting_heading('flashcards', '', get_string('configintro', 'flashcards')));
 
-    // authordisplay
+    // Authordisplay.
     $options = array();
     $options[0] = get_string("authordisplay_disabled", "flashcards");
     $options[1] = get_string("authordisplay_group", "flashcards");
     $options[2] = get_string("authordisplay_name", "flashcards");
-    
 
     $settings->add(new admin_setting_configselect('flashcards/authordisplay', get_string('authordisplay', 'flashcards'),
             get_string('authordisplay', 'flashcards'), 1, $options));
     $allroles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINALANDSHORT, true);
     $defaultteacherroles = $DB->get_fieldset_select('role', 'id', "archetype = 'editingteacher' OR archetype = 'manager' OR archetype = 'coursecreator'");
-    $settings->add(new admin_setting_configmultiselect('flashcards/authordisplay_group_teacherroles', get_string('authordisplay_teacherroles', 'flashcards'), get_string('authordisplay_teacherroles_desc', 'flashcards'), $defaultteacherroles, $allroles));
+    $settings->add(new admin_setting_configmultiselect('flashcards/authordisplay_group_teacherroles', 
+        get_string('authordisplay_teacherroles', 'flashcards'), get_string('authordisplay_teacherroles_desc',
+        'flashcards'), $defaultteacherroles, $allroles));
 }
