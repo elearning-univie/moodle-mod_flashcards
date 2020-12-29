@@ -54,7 +54,7 @@ Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
   @javascript 
 Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     Given the following config values are set as admin:
-      | authordisplay | 2 | flashcards |
+      | authordisplay | 0 | flashcards |
    When I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
