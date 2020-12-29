@@ -33,7 +33,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
   Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
-   When I log in as "student"
+    When I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Flash card collection"
