@@ -1,6 +1,6 @@
 @mod @mod_flashcards @amc @mod_flashcards
 
-Feature: As a teacher I want to add an flashcards activity
+Feature: As a student I want to see the students name, if a student creates a flashcard
 
   Background:
     Given the following "users" exist:
@@ -21,7 +21,7 @@ Feature: As a teacher I want to add an flashcards activity
     And I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
     And I log out
-   Then I log in as "student1"
+    Then I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Flash card collection"
@@ -31,38 +31,38 @@ Feature: As a teacher I want to add an flashcards activity
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-   Then I should see "This is a question"
-   Then I log out
+    Then I should see "This is a question"
+    Then I log out
 
-  @javascript 
-Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
+  @javascript
+    Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
-   When I log in as "student2"
+    When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Flash card collection"
-   Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
+    Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Student" in the ".flashcardsstudenttable" "css_element"
 
   @javascript
-  Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
+    Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
-   When I log in as "student2"
+    When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Flash card collection" 
-   Then I should see "Student" in the ".flashcardsstudenttable" "css_element"
+    Then I should see "Student" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
 
-  @javascript 
-Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
+  @javascript
+    Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
-   When I log in as "student2"
+    When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Flash card collection"
-   Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
+    Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Student" in the ".flashcardsstudenttable" "css_element"
