@@ -35,7 +35,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     Then I log out
 
   @javascript
-    Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
+  Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
     When I log in as "student2"
@@ -46,7 +46,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     And I should not see "Student" in the ".flashcardsstudenttable" "css_element"
 
   @javascript
-    Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
+  Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
     When I log in as "student2"
@@ -57,7 +57,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
 
   @javascript
-    Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
+  Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
     When I log in as "student2"

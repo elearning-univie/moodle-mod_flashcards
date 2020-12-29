@@ -32,7 +32,7 @@ Feature: As a student I want to see my name, if I create a flashcard
     Then I should see "This is a question"
 
   @javascript
-Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
+  Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
     And I reload the page
@@ -48,7 +48,7 @@ Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
 
   @javascript
-Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
+  Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
     And I reload the page
