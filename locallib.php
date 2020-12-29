@@ -186,7 +186,7 @@ function mod_flashcards_get_question_authors($questions, $courseid) {
                                AND c.instanceid = :courseid
                                AND ra.roleid $inrolesql
                                AND ra.userid $inusersql";
-                   $teacherids = $DB->get_records_sql($sql, $params);
+                    $teacherids = $DB->get_records_sql($sql, $params);
                 } else {
                     $teacherids = [];
                 }

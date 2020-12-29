@@ -43,8 +43,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect('flashcards/authordisplay', get_string('authordisplay', 'flashcards'),
             get_string('authordisplay', 'flashcards'), 1, $options));
     $allroles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINALANDSHORT, true);
-    $defaultteacherroles = $DB->get_fieldset_select('role', 'id', "archetype = 'editingteacher' OR archetype = 'manager' OR archetype = 'coursecreator'");
-    $settings->add(new admin_setting_configmultiselect('flashcards/authordisplay_group_teacherroles', 
+    $defaultteacherroles = $DB->get_fieldset_select('role', 'id',
+        "archetype = 'editingteacher' OR archetype = 'manager' OR archetype = 'coursecreator'");
+    $settings->add(new admin_setting_configmultiselect('flashcards/authordisplay_group_teacherroles',
         get_string('authordisplay_teacherroles', 'flashcards'), get_string('authordisplay_teacherroles_desc',
         'flashcards'), $defaultteacherroles, $allroles));
 }

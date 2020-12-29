@@ -107,7 +107,7 @@ class mod_flashcards_external extends external_api {
     public static function update_progress($fid, $questionid, $qanswervalue) {
         global $DB, $USER;
 
-        $params = self::validate_parameters(self::update_progress_parameters(), 
+        $params = self::validate_parameters(self::update_progress_parameters(),
             array('fid' => $fid, 'questionid' => $questionid, 'qanswervalue' => $qanswervalue));
 
         $record = $DB->get_record('flashcards_q_stud_rel',
