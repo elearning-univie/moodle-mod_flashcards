@@ -96,8 +96,7 @@ $params = array(
 
 $link = new moodle_url($baseurl, $params);
 
-$templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
-    'btnlink' => html_entity_decode($link->__toString()),
+$templateinfo = ['createbtnlink' => html_entity_decode($link->__toString()),
     'qlabel' => get_string('question', 'flashcards'),
     'questions' => $questions];
 

@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
+require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG, $USER;
 
@@ -60,50 +61,37 @@ if ($flashcards->inclsubcats) {
 }
 
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-$sql = "SELECT id, questiontext
-              FROM {question} q
-             WHERE category $sqlwhere
-               AND qtype = 'flashcard'
-               AND id NOT IN (SELECT questionid
-                                FROM {flashcards_q_stud_rel}
-                               WHERE studentid = :userid
-                                 AND flashcardsid = :fid)";
+$authordisplay = get_config('flashcards', 'authordisplay');
+$sql = "SELECT id,
+               questiontext,
+               createdby
+          FROM {question} q
+         WHERE category $sqlwhere
+           AND qtype = 'flashcard'
+           AND id NOT IN (SELECT questionid
+                            FROM {flashcards_q_stud_rel}
+                           WHERE studentid = :userid
+                             AND flashcardsid = :fid)";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
-$questions = array();
-
+$questions = [];
+$authors = mod_flashcards_get_question_authors($questionstemp, $course->id);
 foreach ($questionstemp as $question) {
+    $row = [];
+    $row['qid'] = $question->id;
     $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php',
         array('id' => $question->id, 'courseid' => $course->id));
-
-    $questiontext =
-        file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
-            $question->id);
-    $questiontext = format_text($questiontext, FORMAT_HTML);
-
-    preg_match_all('/<img[^>]+>/i', $questiontext, $images);
-
-    if (!empty($images)) {
-        foreach ($images[0] as $image) {
-            preg_match('/alt="(.*?)"/', $image, $imagealt);
-            if (!empty($imagealt[1])) {
-                $questiontext = str_replace($image, $imagealt[1], $questiontext);
-            } else {
-                $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
-            }
+    $row['qurl'] = html_entity_decode($qurl->__toString());
+    $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
+    // Display author group.
+    if ($authordisplay) {
+        if ($question->createdby) {
+            $row['author'] = $authors[$question->createdby];
+        } else {
+            $row['author'] = get_string('author_unknown');
         }
     }
-
-    $questiontext = html_to_text($questiontext, 0);
-
-    if (strlen($questiontext) > 30) {
-        $questiontext = substr($questiontext, 0, 30) . '...';
-    }
-
-    $questions[] = ['text' => $questiontext,
-        'qurl' => html_entity_decode($qurl->__toString()),
-        'qid' => $question->id
-    ];
+    $questions[] = $row;
 }
 $createbuttonvisibility = 'flashcards_add_btn_invisi';
 if ($flashcards->addfcstudent == 1) {
@@ -111,7 +99,7 @@ if ($flashcards->addfcstudent == 1) {
 }
 $createflashcardurl = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
 $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
-    'cbvis' => $createbuttonvisibility];
+    'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);

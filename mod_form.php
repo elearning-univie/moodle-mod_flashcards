@@ -87,7 +87,8 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $mform->setDefault('inclsubcats', 1);
         $mform->addHelpButton('inclsubcats', 'inclsubcats', 'flashcards');
 
-        $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'), array(1 => get_string('yes'), 0 => get_string('no')));
+        $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'),
+            array(1 => get_string('yes'), 0 => get_string('no')));
         $mform->addHelpButton('addfcstudent', 'addfcstudent', 'flashcards');
         $mform->setDefault('addfcstudent', 1);
         $mform->disabledIf('inclsubcats', 'addfcstudent', 'eq', 1);
