@@ -19,12 +19,11 @@
 
     Example context (json):
     {
-        "btnlabel": "Add flash card",
-        "btnlink": "https://addflashcardlink",
+        "createbtnlink": "https://addflashcardlink",
         "qlabel": "Question",
         "questions": [
             {
-                "name": "testfrageneu1",
+                "name": "testquestionnew1",
                 "qurl": "https://previewurl",
                 "deleteurl": "https://deleturl",
                 "editurl": "https://editurl"
@@ -70,7 +69,7 @@
 </table>
 
 <div>
-    <button class="btn btn-secondary" onclick="window.location.href = '{{btnlink}}';"> {{btnlabel}} </button>
+    <button class="btn btn-secondary" onclick="window.location.href = '{{createbtnlink}}';"> {{# str }} createflashcardbutton, mod_flashcards {{/ str }} </button>
 </div>
 
 
