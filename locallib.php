@@ -163,6 +163,53 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     }
     return $questiontext;
 }
+
+function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
+    global $CFG, $DB;
+    require_capability('mod/flashcards:deleteownquestion', $context);
+    require_sesskey();
+    if (!$questionid) {
+        throw new coding_exception('deleting a question requires an id of the question to delete');
+    }
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    $question = question_bank::load_question_data($questionid);
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        //TODO ERROR MESSAGE
+        return;
+    }
+    if (questions_in_use(array($questionid))) {
+        $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
+    } else {
+        question_delete_question($questionid);
+    }
+    return;
+}
+
+function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
+    global $USER;
+    $result = has_capability('mod/flashcards:deleteownquestion', $context);
+    //
+    if($question->createdby != $USER->id ||
+        $question->category != $flashcards->studentsubcat ||
+        $question->qtype != 'flashcard') {
+        $result = false;
+    }
+    return $result;
+}
+
+function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
+    if(!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        return null;
+    }
+    $url = new moodle_url('/mod/flashcards/studentquestioninit.php', [
+        'id' => $id,
+        'action' => 'delete',
+        'questionid' => $question->id,
+        'sesskey' => sesskey()
+    ]);
+    return $url->out(false);
+}
+
 /**
  * Find all authors to a set of questions
  * @param array $questions the questions for which the authors are searched
