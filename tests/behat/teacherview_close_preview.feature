@@ -30,8 +30,7 @@ Feature: As a teacher I close the flashcard preview
     When I log in as "teacher"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
     And I click on "Preview" "button"
     Then I should see "Flip card"
     And I click on "Close preview" "button"
-    And I should see "Flash card collection"
+    And I should see "Test flash cards"
