@@ -31,6 +31,6 @@ Feature: As a teacher I close the flashcard preview
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I click on "Preview" "link"
-    Then I should see "Flip card"
+    Then I should see "This is a question"
     And I click on "Close preview" "button"
     And I should see "Test flash cards"
