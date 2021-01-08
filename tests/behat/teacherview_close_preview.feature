@@ -26,10 +26,8 @@ Feature: As a teacher I close the flashcard preview
 
   @javascript
   Scenario: Close Flashcard preview as Teacher
-    Given I am on "Course 1" course homepage
-    And I follow "Test flash cards"
-    And I follow "Flash card collection"
+    Given I am on "Flash card collection"
     And I click on "Preview" "button"
-    And I see "Flip card"
+    And I follow "Flip card"
     And I click on "Close preview" "button"
     Then I should see "Flash card collection"
