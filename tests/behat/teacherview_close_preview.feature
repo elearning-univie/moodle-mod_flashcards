@@ -30,7 +30,7 @@ Feature: As a teacher I close the flashcard preview
     When I log in as "teacher"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Preview"
+    And I follow the link "Preview"
     Then I should see "This is a question"
     And I click on "Close preview" "button"
     And I should see "Test flash cards"
