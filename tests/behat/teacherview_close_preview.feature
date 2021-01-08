@@ -23,11 +23,15 @@ Feature: As a teacher I close the flashcard preview
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
+    Then I log out
 
   @javascript
   Scenario: Close Flashcard preview as Teacher
-    Given I am on "Flash card collection"
+    When I log in as "teacher"
+    And I am on "Course 1" course homepage
+    And I follow "Test flash cards"
+    And I follow "Flash card collection"
     And I click on "Preview" "button"
-    And I follow "Flip card"
+    Then I should see "Flip card"
     And I click on "Close preview" "button"
-    Then I should see "Flash card collection"
+    And I should see "Flash card collection"
