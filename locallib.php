@@ -213,7 +213,7 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
  * @param stdClass $id id of the module
  * @param stdClass $context module context
  * @param stdClass $flashcards flashcardsobject
- * @param stdClass $question the question db-object 
+ * @param stdClass $question the question db-object
  * @return NULL|string
  */
 function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
