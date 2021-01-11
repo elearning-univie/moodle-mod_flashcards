@@ -27,9 +27,10 @@ require_once('locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG, $USER;
 
 $id = required_param('id', PARAM_INT);
+$action = optional_param('action', null, PARAM_ALPHA);
+$questionid = optional_param('questionid', null, PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
-
 require_login($course, false, $cm);
 
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentquestioninit.php", ['id' => $id]));
@@ -38,19 +39,28 @@ if ($node) {
     $node->make_active();
 }
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
-echo $OUTPUT->header();
-
 if (!has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
 }
 
-$PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+
+if ($action == 'delete') {
+    mod_flashcards_delete_student_question($questionid, $flashcards, $context);
+    $redirecturl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $id));
+    redirect($redirecturl);
+    die();
+}
+
+
+$pagetitle = get_string('pagetitle', 'flashcards');
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
+echo $OUTPUT->header();
+
+$PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
 echo $OUTPUT->heading($flashcards->name);
 
 if ($flashcards->inclsubcats) {
@@ -64,10 +74,13 @@ list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NA
 $authordisplay = get_config('flashcards', 'authordisplay');
 $sql = "SELECT id,
                questiontext,
-               createdby
+               createdby,
+               category,
+               qtype
           FROM {question} q
          WHERE category $sqlwhere
            AND qtype = 'flashcard'
+           AND q.hidden <> 1
            AND id NOT IN (SELECT questionid
                             FROM {flashcards_q_stud_rel}
                            WHERE studentid = :userid
@@ -83,6 +96,7 @@ foreach ($questionstemp as $question) {
         array('id' => $question->id, 'courseid' => $course->id));
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
+    $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
     // Display author group.
     if ($authordisplay) {
         if ($question->createdby) {

@@ -164,6 +164,72 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     return $questiontext;
 }
 /**
+ * Deletes a student question, checks for rights before deleting
+ * @param int $questionid the db-id of the question
+ * @param stdClass $flashcards the flashcards-object
+ * @param stdClass $context the context of the flashcards-module
+ * @throws coding_exception if the question is null
+ */
+function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
+    global $CFG, $DB;
+    require_capability('mod/flashcards:deleteownquestion', $context);
+    require_sesskey();
+    if (!$questionid) {
+        throw new coding_exception('deleting a question requires an id of the question to delete');
+    }
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    $question = question_bank::load_question_data($questionid);
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        print_error('deletion_not_allowed', 'flashcards');
+        return;
+    }
+    if (questions_in_use(array($questionid))) {
+        $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
+    } else {
+        question_delete_question($questionid);
+    }
+    return;
+}
+/**
+ * checks if the user has deletion rights for this question
+ * @param stdClass $context context of the flashcards module
+ * @param stdClass $flashcards flashcards object
+ * @param stdClass $question DB-Object of the question
+ * @return boolean true if allowed to delete, false if not
+ */
+function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
+    global $USER;
+    $result = has_capability('mod/flashcards:deleteownquestion', $context);
+    if ($question->createdby != $USER->id ||
+        $question->category != $flashcards->studentsubcat ||
+        $question->qtype != 'flashcard') {
+        $result = false;
+    }
+    return $result;
+}
+
+/**
+ * gives back the url to delete a question
+ * @param stdClass $id id of the module
+ * @param stdClass $context module context
+ * @param stdClass $flashcards flashcardsobject
+ * @param stdClass $question the question db-object
+ * @return NULL|string
+ */
+function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        return null;
+    }
+    $url = new moodle_url('/mod/flashcards/studentquestioninit.php', [
+        'id' => $id,
+        'action' => 'delete',
+        'questionid' => $question->id,
+        'sesskey' => sesskey()
+    ]);
+    return $url->out(false);
+}
+
+/**
  * Find all authors to a set of questions
  * @param array $questions the questions for which the authors are searched
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
