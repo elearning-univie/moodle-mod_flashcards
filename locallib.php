@@ -174,7 +174,7 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
     require_once($CFG->dirroot . '/lib/questionlib.php');
     $question = question_bank::load_question_data($questionid);
     if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
-        //TODO ERROR MESSAGE
+        print_error('deletion_not_allowed', 'flashcards');
         return;
     }
     if (questions_in_use(array($questionid))) {
@@ -188,8 +188,7 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
 function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
     global $USER;
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
-    //
-    if($question->createdby != $USER->id ||
+    if ($question->createdby != $USER->id ||
         $question->category != $flashcards->studentsubcat ||
         $question->qtype != 'flashcard') {
         $result = false;
@@ -198,7 +197,7 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
 }
 
 function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
-    if(!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
         return null;
     }
     $url = new moodle_url('/mod/flashcards/studentquestioninit.php', [

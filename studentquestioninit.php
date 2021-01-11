@@ -47,7 +47,7 @@ if (!has_capability('mod/flashcards:studentview', $context)) {
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
-if($action == 'delete') {
+if ($action == 'delete') {
     mod_flashcards_delete_student_question($questionid, $flashcards, $context);
     $redirecturl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $id));
     redirect($redirecturl);
