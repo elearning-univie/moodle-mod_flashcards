@@ -29,7 +29,4 @@ Feature: As a teacher I close the flashcard preview
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
     Then I should see "Flip card"
-    And I click on "Close preview" "button"
-    And I switch to window "Moodle Flashcard"
-    And I pause
-    And I should see "Test flash cards"
+
