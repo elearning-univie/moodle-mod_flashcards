@@ -1,6 +1,6 @@
 @mod @mod_flashcards @amc @mod_flashcards
 
-Feature: As a student I want to see the teachers name, if a teacher creates a flashcard
+Feature: As a student I can delete my own questions
 
   Background:
     Given the following "users" exist:
@@ -41,7 +41,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     Then ".mod_flashcards_studentview_delete" "css_element" should not exist
 
   @javascript
-  Scenario: Students can not delete teacher questions
+  Scenario: Students can delete their own questions
     Then I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
