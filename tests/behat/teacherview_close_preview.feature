@@ -22,15 +22,14 @@ Feature: As a teacher I close the flashcard preview
       | Question name | flashcard 1 |
       | Question text | This is a question |
       | Solution | This is a solution |
-    And I click on "Save changes" "button"
-    Then I log out
+    And I click on "Save changes" "button" in the "#fgroup_id_buttonar" "css_element"
 
   @javascript
   Scenario: Close Flashcard preview as Teacher
-    When I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
-    And I follow the link "Preview"
-    Then I should see "This is a question"
+    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
+    And I switch to the browser tab opened by the app
+    Then I should see "Flip card"
     And I click on "Close preview" "button"
+    And I switch to window "Moodle Flashcard"
+    And I pause
     And I should see "Test flash cards"
