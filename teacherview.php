@@ -55,7 +55,7 @@ $sql = "SELECT id, name, createdby
            AND qtype = 'flashcard'";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
-if($authordisplay) {
+if ($authordisplay) {
      $authors = mod_flashcards_get_question_authors($questionstemp, $course->id);
 }
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
@@ -72,7 +72,7 @@ foreach ($questionstemp as $question) {
     $row['editurl'] = html_entity_decode($eurl->__toString());
 
     $row['deleteurl'] = html_entity_decode($durl->__toString());
-    if($authordisplay) {
+    if ($authordisplay) {
         $row['author'] = $authors[$question->createdby];
     }
     $questions[] = $row;
