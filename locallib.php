@@ -163,7 +163,13 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     }
     return $questiontext;
 }
-
+/**
+ * Deletes a student question, checks for rights before deleting
+ * @param int $questionid the db-id of the question
+ * @param stdClass $flashcards the flashcards-object
+ * @param stdClass $context the context of the flashcards-module
+ * @throws coding_exception if the question is null
+ */
 function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
     global $CFG, $DB;
     require_capability('mod/flashcards:deleteownquestion', $context);
@@ -184,7 +190,13 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
     }
     return;
 }
-
+/**
+ * checks if the user has deletion rights for this question
+ * @param stdClass $context context of the flashcards module
+ * @param stdClass $flashcards flashcards object
+ * @param stdClass $question DB-Object of the question
+ * @return boolean true if allowed to delete, false if not
+ */
 function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
     global $USER;
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
@@ -196,6 +208,14 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
     return $result;
 }
 
+/**
+ * gives back the url to delete a question
+ * @param stdClass $id id of the module
+ * @param stdClass $context module context
+ * @param stdClass $flashcards flashcardsobject
+ * @param stdClass $question the question db-object 
+ * @return NULL|string
+ */
 function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
     if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
         return null;
