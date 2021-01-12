@@ -20,7 +20,6 @@
     Example context (json):
     {
         "createbtnlink": "https://addflashcardlink",
-        "displayauthorcolumn": true,
         "qlabel": "Question",
         "questions": [
             {
@@ -38,9 +37,7 @@
     <thead>
     <tr>
         <th class="header name">{{qlabel}}</th>
-        {{#displayauthorcolumn}}
-            <th class="flashcards_teacherview_author header">{{# str }} author, flashcards {{/ str }}</th>
-        {{/displayauthorcolumn}}
+        <th class="flashcards_teacherview_author header">{{# str }} author, flashcards {{/ str }}</th>
         <th class="flashcards_teacherview_ec header iconcol editaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol previewaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol deleteaction" scope="col">&#160;</th>
@@ -52,11 +49,9 @@
             <td class="table-cell">
                 {{name}}
             </td>
-            {{#displayauthorcolumn}}
-	            <td class="table-row">
-	                {{author}}
-	            </td>
-            {{/displayauthorcolumn}}
+            <td class="table-row">
+                {{author}}
+            </td>
             <td class="iconcol editaction">
                 <a title="Edit" href="{{editurl}}">
                     <i class="icon fa fa-cog fa-fw " title="{{# str }} edit, moodle {{/ str }}" aria-label="{{# str }} edit, moodle {{/ str }}"></i>
