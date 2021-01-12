@@ -238,7 +238,7 @@ function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $que
  */
 function mod_flashcards_get_question_authors($questions, $courseid, $authordisplay = null) {
     global $DB, $USER;
-    if(!$authordisplay) {
+    if (!$authordisplay) {
         $authordisplay = get_config('flashcards', 'authordisplay');
     }
     $authors = [];
