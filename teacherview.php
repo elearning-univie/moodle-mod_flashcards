@@ -30,7 +30,6 @@ $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
-$authordisplay = get_config('flashcards', 'authordisplay');
 $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
@@ -55,9 +54,8 @@ $sql = "SELECT id, name, createdby
            AND qtype = 'flashcard'";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
-if ($authordisplay) {
-     $authors = mod_flashcards_get_question_authors($questionstemp, $course->id);
-}
+$authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLASHCARDS_AUTHOR_NAME);
+
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
 $questions = array();
 foreach ($questionstemp as $question) {
@@ -72,9 +70,7 @@ foreach ($questionstemp as $question) {
     $row['editurl'] = html_entity_decode($eurl->__toString());
 
     $row['deleteurl'] = html_entity_decode($durl->__toString());
-    if ($authordisplay) {
-        $row['author'] = $authors[$question->createdby];
-    }
+    $row['author'] = $authors[$question->createdby];
     $questions[] = $row;
 }
 
@@ -103,7 +99,6 @@ echo $OUTPUT->heading($flashcards->name);
 
 
 $templateinfo = ['createbtnlink' => $link->out(false),
-    'displayauthorcolumn' => $authordisplay,
     'qlabel' => get_string('question', 'flashcards'),
     'questions' => $questions];
 
