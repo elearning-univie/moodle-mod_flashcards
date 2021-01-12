@@ -230,10 +230,11 @@ function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $que
 }
 
 /**
+ * /**
  * Find all authors to a set of questions
  * @param array $questions the questions for which the authors are searched
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
- * @param int authordisplay The type of how the author is displayed
+ * @param int $authordisplay The type of how the author is displayed
  * @return string[]
  */
 function mod_flashcards_get_question_authors($questions, $courseid, $authordisplay = null) {
