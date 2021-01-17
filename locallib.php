@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 define('FLASHCARDS_LN', 'mod_flashcards_ln_');
+define('FLASHCARDS_LN_COUNT', 'mod_flashcards_ln_count_');
+define('FLASHCARDS_LN_KNOWN', 'mod_flashcards_ln_known_');
+define('FLASHCARDS_LN_UNKNOWN', 'mod_flashcards_ln_unknown_');
 
 /**
  * Checks if the user has the right to view the course

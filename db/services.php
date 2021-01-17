@@ -32,7 +32,9 @@ const MOD_FLASHCARDS_SERVICE_SHORTNAME = 'flashcards';
 $services = array(
         'flashcardsservice' => array(
                 'functions' => array('mod_flashcards_update_progress',
-                    'mod_flashcards_load_next_question', 'mod_flashcards_init_questions',
+                    'mod_flashcards_load_next_question',
+                    'mod_flashcards_load_learn_progress',
+                    'mod_flashcards_init_questions',
                     'mod_flashcards_start_learn_now'),
                 'shortname' => MOD_FLASHCARDS_SERVICE_SHORTNAME,
                 'requiredcapability' => 'mod/flashcards:webservice',
@@ -43,13 +45,22 @@ $services = array(
 
 $functions = array(
         'mod_flashcards_update_progress' => array(
-                'classname' => 'mod_flashcards_external',
-                'methodname' => 'update_progress',
-                'classpath' => 'mod/flashcards/externallib.php',
-                'description' => 'Update question progress of a student',
-                'type' => 'write',
-                'ajax' => true,
-                'loginrequired' => true
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'update_progress',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Update question progress of a student',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        ),
+        'mod_flashcards_load_learn_progress' => array(
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'load_learn_progress',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Loads a html progress bar for learn now',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
         ),
         'mod_flashcards_load_next_question' => array(
             'classname' => 'mod_flashcards_external',
@@ -61,21 +72,21 @@ $functions = array(
             'loginrequired' => true
         ),
         'mod_flashcards_init_questions' => array(
-                'classname' => 'mod_flashcards_external',
-                'methodname' => 'init_questions',
-                'classpath' => 'mod/flashcards/externallib.php',
-                'description' => 'Load questions for a student',
-                'type' => 'write',
-                'ajax' => true,
-                'loginrequired' => true
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'init_questions',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Load questions for a student',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
         ),
         'mod_flashcards_start_learn_now' => array(
-                'classname' => 'mod_flashcards_external',
-                'methodname' => 'start_learn_now',
-                'classpath' => 'mod/flashcards/externallib.php',
-                'description' => 'Initializes the learn now session',
-                'type' => 'write',
-                'ajax' => true,
-                'loginrequired' => true
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'start_learn_now',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Initializes the learn now session',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
         )
 );

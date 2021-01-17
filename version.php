@@ -28,7 +28,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_flashcards';
-$plugin->version = 2020121500;
+$plugin->version = 2020121501;
 $plugin->release = 'v0.0.1';
 $plugin->requires = 2020061501;
 $plugin->maturity = MATURITY_STABLE;

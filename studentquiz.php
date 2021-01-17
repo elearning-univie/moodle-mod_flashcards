@@ -54,8 +54,18 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $qid = mod_flashcards_get_next_question($flashcards->id, $box);
     $questionrenderer = $PAGE->get_renderer('mod_flashcards');
 
-    $questionhtml = '<div id="mod-flashcards-question">';
+    $questionhtml = '<div>';
+    if ($box == -1) {
+        $lncount = $_SESSION[FLASHCARDS_LN_COUNT . $flashcards->id];
+        $lnknown = $_SESSION[FLASHCARDS_LN_KNOWN . $flashcards->id];
+        $lnunknown = $_SESSION[FLASHCARDS_LN_UNKNOWN . $flashcards->id];
+        $questionhtml .= '<div id="mod-flashcards-learning-progress" class="progress mb-2">';
+        $questionhtml .= $questionrenderer->render_learn_progress($lncount, $lnknown, $lnunknown);
+        $questionhtml .= '</div>';
+    }
+    $questionhtml .= '<div id="mod-flashcards-question">';
     $questionhtml .= $questionrenderer->render_flashcard($flashcards->id, $USER->id, $box, $qid);
+    $questionhtml .= '</div>';
     $questionhtml .= '</div>';
 
     echo $questionhtml;

@@ -21,6 +21,43 @@
  * @copyright  2019 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+$string['boxheader_1'] = 'Start';
+$string['boxheader_2'] = 'Repeat';
+$string['boxheader_3'] = 'Memorize';
+$string['boxheader_4'] = 'Almost';
+$string['boxheader_5'] = 'Done';
+$string['learnboxbutton'] = 'Learn from box {$a}';
+$string['learnprogress'] = 'Contains {$a} card(s).';
+$string['emptybox'] = 'Contains no cards.';
+$string['boxzeroprogress'] = '{$a} card(s) can be added.';
+$string['boxzeroallused'] = 'All cards are already in use.';
+$string['learnnowintro'] = 'Customize the number of flashcards you want to learn, through using the slider or the text box. <br>Currently your flashcard deck contains {$a} card(s).';
+$string['learnnowafterconfig'] = 'Afterwards, you can start learning!';
+$string['initalintrohelp'] = '<strong>Before you can use this activity, you will need to customize your personal flashcard deck.</strong><br><br>This is enabling you to adapt the learning materials for your needs.';
+$string['noquestionsassignedwarning'] = '<strong>No flashcards were assigned to this activity.</strong><br><br>Teaching staff or if possible, yourself need to create and assign flashcards. Afterwards this activity becomes usable.';
+$string['iconcarddeckalt'] = 'card deck icon';
+$string['iconphonealt'] = 'phone icon';
+$string['iconstartalt'] = 'start icon';
+$string['boxbackgroundalt'] = 'flashcard box background image';
+$string['smileyalt'] = 'headline smiley';
+$string['nocardsaddedtoselect'] = 'No cards were created yet.';
+$string['customizedeckbutton'] = 'Customize your flashcard deck';
+$string['proposenewcardbutton'] = 'Propose novel flashcards';
+$string['carddeckconfigexplained'] = 'Choose cards, which you want to learn. Newly chosen cards are added into box 1.';
+$string['cardbehaviourexplained'] = 'Afterwards, cards move between boxes as you repeatedly learn them. Finally, all cards should end up in box 5.';
+$string['proposecardsexplained'] = 'If permitted by your lecturer, you can even propose and add your own cards.';
+$string['playnowbutton'] = 'Start learning';
+$string['getmobileexplanation'] = 'You can learn online and offline. The latter requires a separate app available for Android and iOS. In addition you can use Moodle on mobile devices as well.';
+$string['getmobilemotivation'] = 'The way you like it.';
+$string['appstoregooglealt'] = 'Google play app store badge';
+$string['appstoreapplealt'] = 'Apple app store badge';
+$string['customizedeckbuttondisabled'] = 'Deck customization requires unused cards.';
+$string['learnboxbuttondisabled'] = 'Learning requires cards.';
+$string['boxheaderadapt'] = 'Adapt';
+$string['boxheaderapp'] = 'Get Mobile';
+$string['boxheaderlearnnow'] = 'Learn Now';
+$string['progressknowncards'] = 'Learned: {$a}';
+$string['progressunknowncards'] = 'Still to learn: {$a}';
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';
