@@ -10,7 +10,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
             function updatebar() {
                 let barwidth = ((output.value - 1) * 100) / (slidermax - 1);
                 progressbar.css('width', barwidth + '%');
-            };
+            }
             updatebar();
             slider.oninput = function() {
                 output.value = this.value;
