@@ -28,6 +28,9 @@ define('FLASHCARDS_LN_COUNT', 'mod_flashcards_ln_count_');
 define('FLASHCARDS_LN_KNOWN', 'mod_flashcards_ln_known_');
 define('FLASHCARDS_LN_UNKNOWN', 'mod_flashcards_ln_unknown_');
 
+define('FLASHCARDS_AUTHOR_NONE', 0);
+define('FLASHCARDS_AUTHOR_GROUP', 1);
+define('FLASHCARDS_AUTHOR_NAME', 2);
 /**
  * Checks if the user has the right to view the course
  *
@@ -61,7 +64,7 @@ function mod_flashcards_get_next_question($fid, $boxid) {
 
     if ($boxid > 0) {
         try {
-            $unused = mod_flashcards_check_student_rights($fid);
+            mod_flashcards_check_student_rights($fid);
         } catch (require_login_exception $e) {
             return false;
         }
@@ -101,6 +104,7 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 
     $DB->delete_records_select('flashcards_q_stud_rel', $sql, array('userid' => $USER->id));
 }
+
 /**
  * Checks for the question subcategory with the name 'von Studierenden erstellt' and adds it if not found
  * @param int $contextid
@@ -112,10 +116,10 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 function mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $categoryid) {
     global $DB;
 
-    $subcatid = $DB->get_field('question_categories', 'id', ['contextid' => $contextid, 'parent' => $categoryid, 'name' => 'von Studierenden erstellt']);
+    $subcatid = $DB->get_field('question_categories', 'id',
+        ['contextid' => $contextid, 'parent' => $categoryid, 'name' => 'von Studierenden erstellt']);
 
     if (!$flashcards->studentsubcat && !$subcatid) {
-        $parent = $DB->get_record('question_categories', ['contextid' => $contextid, 'parent' => 0]);
         $cat = new stdClass();
         $cat->parent = $categoryid;
         $cat->contextid = $contextid;
@@ -130,4 +134,175 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
     }
 
     return $subcatid;
+}
+
+/**
+ * Get the questiontext for a preview (first 30 characters)
+ * @param context $context
+ * @param stdClass $question
+ * @return string the first 30 chars of a question
+ */
+function mod_flashcards_get_preview_questiontext($context, $question) {
+    $questiontext =
+        file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+            $question->id);
+    $questiontext = format_text($questiontext, FORMAT_HTML);
+
+    preg_match_all('/<img[^>]+>/i', $questiontext, $images);
+
+    if (!empty($images)) {
+        foreach ($images[0] as $image) {
+            preg_match('/alt="(.*?)"/', $image, $imagealt);
+            if (!empty($imagealt[1])) {
+                $questiontext = str_replace($image, $imagealt[1], $questiontext);
+            } else {
+                $questiontext = str_replace($image, get_string('noimagetext', 'mod_flashcards'), $questiontext);
+            }
+        }
+    }
+
+    $questiontext = html_to_text($questiontext, 0);
+
+    if (strlen($questiontext) > 30) {
+        $questiontext = substr($questiontext, 0, 30) . '...';
+    }
+    return $questiontext;
+}
+
+/**
+ * Deletes a student question, checks for rights before deleting
+ * @param int $questionid the db-id of the question
+ * @param stdClass $flashcards the flashcards-object
+ * @param stdClass $context the context of the flashcards-module
+ * @throws coding_exception if the question is null
+ */
+function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
+    global $CFG, $DB;
+    require_capability('mod/flashcards:deleteownquestion', $context);
+    require_sesskey();
+    if (!$questionid) {
+        throw new coding_exception('deleting a question requires an id of the question to delete');
+    }
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    $question = question_bank::load_question_data($questionid);
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        print_error('deletion_not_allowed', 'flashcards');
+        return;
+    }
+    if (questions_in_use(array($questionid))) {
+        $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
+    } else {
+        question_delete_question($questionid);
+    }
+    return;
+}
+
+/**
+ * checks if the user has deletion rights for this question
+ * @param stdClass $context context of the flashcards module
+ * @param stdClass $flashcards flashcards object
+ * @param stdClass $question DB-Object of the question
+ * @return boolean true if allowed to delete, false if not
+ */
+function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
+    global $USER;
+    $result = has_capability('mod/flashcards:deleteownquestion', $context);
+    if ($question->createdby != $USER->id ||
+        $question->category != $flashcards->studentsubcat ||
+        $question->qtype != 'flashcard') {
+        $result = false;
+    }
+    return $result;
+}
+
+/**
+ * gives back the url to delete a question
+ * @param stdClass $id id of the module
+ * @param stdClass $context module context
+ * @param stdClass $flashcards flashcardsobject
+ * @param stdClass $question the question db-object
+ * @return NULL|string
+ */
+function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        return null;
+    }
+    $url = new moodle_url('/mod/flashcards/studentquestioninit.php', [
+        'id' => $id,
+        'action' => 'delete',
+        'questionid' => $question->id,
+        'sesskey' => sesskey()
+    ]);
+    return $url->out(false);
+}
+
+/**
+ * /**
+ * Find all authors to a set of questions
+ * @param array $questions the questions for which the authors are searched
+ * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
+ * @param int $authordisplay The type of how the author is displayed
+ * @return string[]
+ */
+function mod_flashcards_get_question_authors($questions, $courseid, $authordisplay = null) {
+    global $DB, $USER;
+    if (!$authordisplay) {
+        $authordisplay = get_config('flashcards', 'authordisplay');
+    }
+    $authors = [];
+    if ($authordisplay) {
+        $authorids = [];
+        foreach ($questions as $question) {
+            if (!key_exists($question->createdby, $authorids)) {
+                $authorids[$question->createdby] = $question->createdby;
+            }
+        }
+        if (count($authorids) > 0) {
+            if ($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
+                $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+                if (count($roleids) > 0) {
+                    list($inusersql, $useridparams) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
+                    list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+                    $params = array_merge($useridparams, $roleparams);
+                    $params['courseid'] = $courseid;
+                    $sql = "SELECT userid
+                              FROM {role_assignments} ra,
+                                   {context} c
+                             WHERE c.contextlevel = 50
+                               AND ra.contextid = c.id
+                               AND c.instanceid = :courseid
+                               AND ra.roleid $inrolesql
+                               AND ra.userid $inusersql";
+                    $teacherids = $DB->get_records_sql($sql, $params);
+                } else {
+                    $teacherids = [];
+                }
+                foreach ($authorids as $author) {
+                    if ($author == $USER->id) {
+                        $authors[$author] = get_string('author_me', 'flashcards');
+                    } else if (key_exists($author, $teacherids)) {
+                        $authors[$author] = get_string('author_teacher', 'flashcards');
+                    } else {
+                        $authors[$author] = get_string('author_student', 'flashcards');
+                    }
+                }
+            } else if ($authordisplay == FLASHCARDS_AUTHOR_NAME) {
+                list($insql, $params) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
+                $sql = "SELECT id,
+                               firstname,
+                               lastname,
+                               firstnamephonetic,
+                               lastnamephonetic,
+                               middlename,
+                               alternatename
+                          FROM {user}
+                         WHERE id $insql";
+                $users = $DB->get_records_sql($sql, $params);
+                foreach ($users as $author) {
+                    $authors[$author->id] = fullname($author);
+                }
+            }
+        }
+    }
+    return $authors;
 }

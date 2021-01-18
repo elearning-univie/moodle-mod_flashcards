@@ -23,30 +23,37 @@
             {
             "text": "example text of a question",
             "qurl": "https://redirecturl",
-            "qid": 17
+            "qid": 17, 
+            "author": "John Doe"
             },
             {
             "text": "example text2 of a question",
             "qurl": "https://redirecturl2",
-            "qid": 18
+            "qid": 18,
+            "author": "Sophisti Cat"
             }
          ],
          "aid": 20,
-         "cmid": 12
+         "cmid": 12,
+         "displayauthorcolumn": 1
     }
 }}
 
 <div class="{{cbvis}}">
-    <p><button class="btn btn-primary" onclick="window.location.href='{{createfcurl}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button></p>
+    <p><button class="btn btn-secondary" onclick="window.location.href='{{createfcurl}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button></p>
 </div>
 
-<table class="generaltable fullwidth">
+<table class="generaltable fullwidth flashcardsstudenttable">
     <thead>
     <tr>
         <th class="flashcards_studentview_all header" scope="col"><input type="checkbox" onClick="$.mod_flashcards_select_all(this)"/> {{# str }}
             selectall, mod_flashcards {{/ str }}</th>
         <th class="header name">{{# str }} question, mod_flashcards {{/ str }}</th>
+        {{#displayauthorcolumn}}
+            <th class="flashcards_studentview_author header iconcol" scope="col">{{# str }} author, flashcards {{/ str }}</th>
+        {{/displayauthorcolumn}}
         <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
+        <th class="flashcards_studentview_dc header iconcol" scope="col">{{# str }} delete, moodle {{/ str }}</th>
     </tr>
     </thead>
     <tbody class="table">
@@ -58,11 +65,20 @@
             <td>
                 {{{text}}}
             </td>
+            {{#displayauthorcolumn}}
+                <td>{{author}}</td>
+            {{/displayauthorcolumn}}
             <td>
-                <a href="{{qurl}}" target="questionpreview" title="Preview">
+                <a href="{{qurl}}" target="questionpreview" title="{{# str }} preview, moodle {{/ str }}">
                     <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
                 </a>
             </td>
+            <td>
+               {{#deletequestionurl}}
+               <a class="mod_flashcards_studentview_delete" href="{{deletequestionurl}}" title="{{# str }} delete, moodle {{/ str }}">
+               		<i class="icon fa fa-trash fa-fw iconsmall" title="{{# str }} delete, moodle {{/ str }}" aria-label="{{# str }} delete, moodle {{/ str }}"></i>
+               </a>
+               {{/deletequestionurl}}
         </tr>
     {{/questions}}
     </tbody>

@@ -25,47 +25,59 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-        'mod/flashcards:addinstance' => array(
-                'riskbitmask' => RISK_SPAM | RISK_XSS,
-                'captype' => 'write',
-                'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
-                        'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+    'mod/flashcards:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
         ),
-        'mod/flashcards:view' => array(
-                'captype' => 'read',
-                'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
-                        'guest' => CAP_PROHIBIT,
-                        'student' => CAP_ALLOW,
-                        'teacher' => CAP_ALLOW,
-                        'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                )
-        ),
-        'mod/flashcards:studentview' => array(
-                'captype' => 'read',
-                'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
-                        'student' => CAP_ALLOW,
-                )
-        ),
-        'mod/flashcards:teacherview' => array(
-                'captype' => 'read',
-                'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
-                        'teacher' => CAP_ALLOW,
-                        'editingteacher' => CAP_ALLOW,
-                )
-        ),
-        'mod/flashcards:webservice' => array(
-                'captype' => 'write',
-                'contextlevel' => CONTEXT_SYSTEM,
-                'archetypes' => array(
-                        'user' => CAP_ALLOW
-                )
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+    ),
+    'mod/flashcards:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_PROHIBIT,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
         )
+    ),
+    'mod/flashcards:studentview' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'student' => CAP_ALLOW,
+        )
+    ),
+    'mod/flashcards:teacherview' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+        )
+    ),
+    'mod/flashcards:deleteownquestion' => array(
+        'riskbitmask' => RISK_DATALOSS,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_PROHIBIT,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+    ),
+    'mod/flashcards:webservice' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    ),
 );

@@ -22,31 +22,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
+require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
-
 require_login($course, false, $cm);
-
 $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
 }
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
-echo $OUTPUT->header();
-
-if (!has_capability('mod/flashcards:teacherview', $context) ) {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
-}
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
@@ -59,32 +48,31 @@ if ($flashcards->inclsubcats) {
 
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
-$sql = "SELECT id, name
+$sql = "SELECT id, name, createdby
           FROM {question}
          WHERE $sqlwhere
            AND qtype = 'flashcard'";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
+$authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLASHCARDS_AUTHOR_NAME);
 
-$baseurl = $CFG->wwwroot . '/question/question.php';
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
-
 $questions = array();
 foreach ($questionstemp as $question) {
-    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id ));
-    $editurl = new moodle_url('/question/question.php',
+    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id));
+    $eurl = new moodle_url('/question/question.php',
         array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
-    $deleteurl = new moodle_url('/question/edit.php', array('returnurl' => $returnurl, 'courseid' => $course->id,
+    $durl = new moodle_url('/question/edit.php', array('returnurl' => $returnurl, 'courseid' => $course->id,
         'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
+    $row = [];
+    $row['name'] = $question->name;
+    $row['qurl'] = html_entity_decode($qurl->__toString());
+    $row['editurl'] = html_entity_decode($eurl->__toString());
 
-    $questions[] = ['name' => $question->name,
-        'qurl' => html_entity_decode($qurl->__toString()),
-        'deleteurl' => html_entity_decode($deleteurl->__toString()),
-        'editurl' => html_entity_decode($editurl->__toString())
-    ];
+    $row['deleteurl'] = html_entity_decode($durl->__toString());
+    $row['author'] = $authors[$question->createdby];
+    $questions[] = $row;
 }
-
-echo $OUTPUT->heading($flashcards->name);
 
 $params = array(
     'courseid' => $course->id,
@@ -94,10 +82,23 @@ $params = array(
     'returnurl' => $returnurl,
 );
 
-$link = new moodle_url($baseurl, $params);
+$link = new moodle_url('/question/question.php', $params);
 
-$templateinfo = ['btnlabel' => get_string('addflashcardbutton', 'flashcards' ),
-    'btnlink' => html_entity_decode($link->__toString()),
+$pagetitle = get_string('pagetitle', 'flashcards');
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
+echo $OUTPUT->header();
+
+if (!has_capability('mod/flashcards:teacherview', $context) ) {
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
+
+echo $OUTPUT->heading($flashcards->name);
+
+
+$templateinfo = ['createbtnlink' => $link->out(false),
     'qlabel' => get_string('question', 'flashcards'),
     'questions' => $questions];
 

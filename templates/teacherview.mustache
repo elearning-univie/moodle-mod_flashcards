@@ -19,12 +19,12 @@
 
     Example context (json):
     {
-        "btnlabel": "Add flash card",
-        "btnlink": "https://addflashcardlink",
+        "createbtnlink": "https://addflashcardlink",
         "qlabel": "Question",
         "questions": [
             {
-                "name": "testfrageneu1",
+                "name": "testquestionnew1",
+                "author": "Jack Nicholson",
                 "qurl": "https://previewurl",
                 "deleteurl": "https://deleturl",
                 "editurl": "https://editurl"
@@ -37,6 +37,7 @@
     <thead>
     <tr>
         <th class="header name">{{qlabel}}</th>
+        <th class="flashcards_teacherview_author header">{{# str }} author, flashcards {{/ str }}</th>
         <th class="flashcards_teacherview_ec header iconcol editaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol previewaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol deleteaction" scope="col">&#160;</th>
@@ -48,13 +49,16 @@
             <td class="table-cell">
                 {{name}}
             </td>
+            <td class="table-row">
+                {{author}}
+            </td>
             <td class="iconcol editaction">
                 <a title="Edit" href="{{editurl}}">
                     <i class="icon fa fa-cog fa-fw " title="{{# str }} edit, moodle {{/ str }}" aria-label="{{# str }} edit, moodle {{/ str }}"></i>
                 </a>
             </td>
             <td class="iconcol previewaction">
-                <a href="{{qurl}}" id="action_link5de0e9d32ce5523" class="" title="Preview">
+                <a class="mod_flashcards_questionpreviewlink" href="{{qurl}}" target="questionpreview" title="Preview">
                     <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>
                 </a>
             </td>
@@ -70,8 +74,5 @@
 </table>
 
 <div>
-    <button class="btn btn-secondary" onclick="window.location.href = '{{btnlink}}';"> {{btnlabel}} </button>
+    <button class="btn btn-secondary" onclick="window.location.href = '{{createbtnlink}}';"> {{# str }} createflashcardbutton, mod_flashcards {{/ str }} </button>
 </div>
-
-
-
