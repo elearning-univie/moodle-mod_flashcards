@@ -4,14 +4,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
             var slider = document.getElementById("mod-flashcards-range-slider");
             var output = document.getElementById("mod-flashcards-range-slider-value");
             var progressbar = $("#mod-flashcards-range-progressbar");
+            function updatebar() {
+                let barwidth = ((output.value - 1) * 100) / (slidermax - 1);
+                progressbar.css('width', barwidth + '%');
+            }
             if(slider) {
                 var slidermin = Number(slider.getAttribute("min"));
                 var slidermax = Number(slider.getAttribute("max"));
                 output.value = slider.value;
-                function updatebar() {
-                    let barwidth = ((output.value - 1) * 100) / (slidermax - 1);
-                    progressbar.css('width', barwidth + '%');
-                }
                 updatebar();
                 slider.oninput = function() {
                     output.value = this.value;
