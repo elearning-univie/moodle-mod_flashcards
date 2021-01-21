@@ -59,18 +59,25 @@ if (has_capability('mod/flashcards:studentview', $context)) {
         'start' => $OUTPUT->image_url('start', 'mod_flashcards')
     ];
 
-    $templatestablecontext['stores'] = [
-        [
+    $templatestablecontext['stores'] = array();
+
+    $applestoreurl = get_config('flashcards', 'applestoreapp');
+    $googlestoreurl = get_config('flashcards', 'googlestoreapp');
+    if (empty($applestoreurl)) {
+        $templatestablecontext['stores'][] = [
             'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
-            'redirecturl' => 'https://testflight.apple.com/join/rb33yNxj',
+            'redirecturl' => $applestoreurl,
             'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
-        ],
-        [
+        ];
+    }
+    if (!empty($googlestoreurl)) {
+        $templatestablecontext['stores'][] = [
             'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
-            'redirecturl' => 'https://play.google.com/store/apps/details?id=com.ntbab.flashcards',
+            'redirecturl' => $googlestoreurl,
             'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
-        ]
-    ];
+        ];
+    }
+    $templatestablecontext['displaymobileapps'] = !empty($templatestablecontext['stores']);
 
     $boxzeroquestioncount = get_box_zero_count_record($USER->id, $flashcards);
     $totalquestioncount = get_total_card_count_record($USER->id, $flashcards);

@@ -81,7 +81,7 @@
 
 <div class="flex-container">
     <div class="row">
-        <div class="pb-2 col-sm-4 col-xs-6 text-center">
+        <div class="pb-2 {{#displaymobileapps}}col-sm-4{{/displaymobileapps}}{{^displaymobileapps}}col-sm-6{{/displaymobileapps}} col-xs-6 text-center">
             <div class="card h-100 rounded border">
                 <h2 class="card-title">
                     {{# str }} boxheaderadapt, mod_flashcards {{/ str }}
@@ -126,28 +126,30 @@
                 </a>
             </div>
         </div>
-        <div class="pb-2 col-sm-4 col-xs-6 text-center">
-            <div class="card px-1 h-100 rounded border">
-                <h2 class="card-title">
-                    {{# str }} boxheaderapp, mod_flashcards {{/ str }}
-                </h2>
-                <img class="mod-flashcards-decoration-icon" src="{{icons.phone}}" alt="{{# str }} iconphonealt, mod_flashcards {{/ str }}">
-                <p>{{# str }} getmobileexplanation, mod_flashcards {{/ str }}</p>
-                <p>{{# str }} getmobilemotivation, mod_flashcards {{/ str }}</p>
-                <div class="mt-auto container">
-                    <div class="row d-flex">
-                        {{#stores}}
-                            <div class="flex-fill m-0 p-0">
-                                <a class="btn btn-sm" href="{{{redirecturl}}}" role="button" target="_blank">
-                                    <img src="{{{badge}}}" class="img-fluid mod-flashcards-appstore-badge" alt="{{{badgealt}}}">
-                                </a>
-                            </div>
-                        {{/stores}}
+        {{#displaymobileapps}}
+            <div class="pb-2 col-sm-4 col-xs-6 text-center">
+                <div class="card px-1 h-100 rounded border">
+                    <h2 class="card-title">
+                        {{# str }} boxheaderapp, mod_flashcards {{/ str }}
+                    </h2>
+                    <img class="mod-flashcards-decoration-icon" src="{{icons.phone}}" alt="{{# str }} iconphonealt, mod_flashcards {{/ str }}">
+                    <p>{{# str }} getmobileexplanation, mod_flashcards {{/ str }}</p>
+                    <p>{{# str }} getmobilemotivation, mod_flashcards {{/ str }}</p>
+                    <div class="mt-auto container">
+                        <div class="row d-flex">
+                            {{#stores}}
+                                <div class="flex-fill m-0 p-0">
+                                    <a class="btn btn-sm" href="{{{redirecturl}}}" role="button" target="_blank">
+                                        <img src="{{{badge}}}" class="img-fluid mod-flashcards-appstore-badge" alt="{{{badgealt}}}">
+                                    </a>
+                                </div>
+                            {{/stores}}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="pb-2 col-sm-4 col-xs-6 text-center">
+        {{/displaymobileapps}}
+        <div class="pb-2 {{#displaymobileapps}}col-sm-4{{/displaymobileapps}}{{^displaymobileapps}}col-sm-6{{/displaymobileapps}} col-xs-6 text-center">
             <div class="card h-100 rounded border">
                 <h2 class="card-title">
                     {{# str }} boxheaderlearnnow, mod_flashcards {{/ str }}

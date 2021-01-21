@@ -58,6 +58,12 @@ $string['boxheaderapp'] = 'Get Mobile';
 $string['boxheaderlearnnow'] = 'Learn Now';
 $string['progressknowncards'] = 'Learned: {$a}';
 $string['progressunknowncards'] = 'Still to learn: {$a}';
+$string['settingappstoreheading'] = 'Configure App Stores';
+$string['settingappstoredesc'] = 'Give the respective URLs where students can install the mobile flashcards apps from (for offline and mixed course learning). If an URL field is empty the respective store badge will be hidden as well. If all fields are empty the activity will not inform users about the potential availability of apps.';
+$string['settingappstoreappletitle'] = 'Apple App Store';
+$string['settingappstoreappledesc'] = 'URL for the flashcards mobile app for iOS devices.';
+$string['settingappstoregoogletitle'] = 'Google Play Store';
+$string['settingappstoregoogledesc'] = 'URL for the flashcards mobile app for Android devices.';
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';

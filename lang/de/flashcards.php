@@ -58,6 +58,12 @@ $string['boxheaderapp'] = 'Mobil lernen';
 $string['boxheaderlearnnow'] = 'Jetzt lernen';
 $string['progressknowncards'] = 'Gelernt: {$a}';
 $string['progressunknowncards'] = 'Noch zu lernen: {$a}';
+$string['settingappstoreheading'] = 'App Stores konfigurieren';
+$string['settingappstoredesc'] = 'Geben Sie die jeweiligen URLs an, unter denen Benutzer die mobilen Lernkarten-Apps installieren können (für Offlinelernen). Wenn ein URL-Feld leer ist, wird auch der entsprechende Store-Badge ausgeblendet. Wenn alle Felder leer sind, informiert die Aktivität die Benutzer nicht länger über die Verfügbarkeit von Apps.';
+$string['settingappstoreappletitle'] = 'Apple App Store';
+$string['settingappstoreappledesc'] = 'URL für die Flashcards Mobile App für iOS-Geräte.';
+$string['settingappstoregoogletitle'] = 'Google Play Store';
+$string['settingappstoregoogledesc'] = 'URL für die Flashcards Mobile App für Android-Geräte.';
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
