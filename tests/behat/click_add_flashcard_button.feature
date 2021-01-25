@@ -25,7 +25,7 @@ Feature: As a student I can add a flashcard
   Scenario: I add a flashcard as a student
     Given I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
+    And I follow "Customize your flashcard deck"
     And I click on "Create new flash card" "button"
     Then I should see "Editing a Flashcard question"
     And I should see "Question name"
