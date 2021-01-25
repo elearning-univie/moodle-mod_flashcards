@@ -55,7 +55,7 @@ class mod_flashcards_renderer extends plugin_renderer_base {
      *
      * @param int $cardcount number of cards chosen by the user for learn now
      * @param int $knowncount cards known by the user
-     * @param int $unknowncoun cards not known by the user
+     * @param int $unknowncount cards not known by the user
      * @return string multi progress bar html representation
      * @throws coding_exception
      * @throws dml_exception
