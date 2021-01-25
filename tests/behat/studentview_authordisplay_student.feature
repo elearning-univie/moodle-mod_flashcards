@@ -24,8 +24,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     Then I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
-    And I click on "Create new flash card" "button"
+    And I follow "Propose novel flashcards"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
@@ -41,7 +40,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
+    And I follow "Customize your flashcard deck"
     Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Student" in the ".flashcardsstudenttable" "css_element"
 
@@ -52,7 +51,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
+    And I follow "Customize your flashcard deck"
     Then I should see "Student" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
 
@@ -63,6 +62,6 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
+    And I follow "Customize your flashcard deck"
     Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
     And I should not see "Student" in the ".flashcardsstudenttable" "css_element"

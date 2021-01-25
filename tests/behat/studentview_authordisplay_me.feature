@@ -22,8 +22,7 @@ Feature: As a student I want to see my name, if I create a flashcard
     Then I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Flash card collection"
-    And I click on "Create new flash card" "button"
+    And I follow "Propose novel flashcards"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
