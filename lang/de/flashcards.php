@@ -21,6 +21,49 @@
  * @copyright  2019 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+$string['boxheader_1'] = 'Anfangen';
+$string['boxheader_2'] = 'Wiederholen';
+$string['boxheader_3'] = 'Einprägen';
+$string['boxheader_4'] = 'Beinahe';
+$string['boxheader_5'] = 'Geschafft';
+$string['learnboxbutton'] = 'Von Box {$a} lernen';
+$string['learnprogress'] = 'Enthält {$a} Karte(n).';
+$string['emptybox'] = 'Enthält keine Karten.';
+$string['boxzeroprogress'] = 'Hinzufügen von {$a} Karte(n) möglich.';
+$string['boxzeroallused'] = 'Bereits alle Karten in Verwendung.';
+$string['learnnowintro'] = 'Passen Sie die Anzahl der Lernkarten die Sie lernen möchten an. Nützen Sie dazu den Schieberegler oder das Textfeld. <br>Momentan enthält Ihr Lernkartendeck {$a} Karte(n).';
+$string['learnnowafterconfig'] = 'Danach kann mit dem Lernen begonnen werden!';
+$string['initalintrohelp'] = '<strong>Bevor diese Aktivität verwendet werden kann, muss das Lernkartendeck angepasst werden.</strong><br><br>Dadurch können die Lernmaterialien an Ihre Bedürfnisse angepasst werden.';
+$string['noquestionsassignedwarning'] = '<strong>Es wurden keine Lernkarten zu dieser Aktivität hinzugefügt.</strong><br><br>Lehrende (und falls erlaubt Studierende) müssen zuerst neue Lernkarten erstellen und hinzufügen.';
+$string['iconcarddeckalt'] = 'Lernkartendeck Icon';
+$string['iconphonealt'] = 'Telefon Icon';
+$string['iconstartalt'] = 'Start Icon';
+$string['boxbackgroundalt'] = 'Lernkartenbox Hintergrundbild';
+$string['smileyalt'] = 'Smiley Icon';
+$string['nocardsaddedtoselect'] = 'Es wurden noch keine Lernkarten erstellt.';
+$string['customizedeckbutton'] = 'Lernkartendeck anpassen';
+$string['proposenewcardbutton'] = 'Neue Lernkarten vorschlagen';
+$string['carddeckconfigexplained'] = 'Wählen Sie welche Lernkarten Sie lernen möchten. Alle neu ausgewählten Lernkarten werden zu Beginn in Box 1 eingefügt.';
+$string['cardbehaviourexplained'] = 'Während die Karten gelernt werden bewegen sich diese zwischen den Boxen 1 bis 5. Final sollten sich alle Lernkarten in Box 5 befinden.';
+$string['proposecardsexplained'] = 'Falls erlaubt können neue Lernkarten vorgeschlagen und hinzugefügt werden.';
+$string['playnowbutton'] = 'Lernen starten';
+$string['getmobileexplanation'] = 'Lernen ist sowohl online als auch offline möglich. Letzteres mittels Smartphone und den angebotenen Apps. Diese sind für Android als auch iOS verfügbar. Moodle kann ebenfalls mobil genützt werden.';
+$string['getmobilemotivation'] = 'Ganz nach Ihren persönlichen Vorlieben.';
+$string['appstoregooglealt'] = 'Google play app store badge';
+$string['appstoreapplealt'] = 'Apple app store badge';
+$string['customizedeckbuttondisabled'] = 'Zum Anpassen des Decks sind neue Karten notwendig.';
+$string['learnboxbuttondisabled'] = 'Lernen erfordert Karten.';
+$string['boxheaderadapt'] = 'Anpassen';
+$string['boxheaderapp'] = 'Mobil lernen';
+$string['boxheaderlearnnow'] = 'Jetzt lernen';
+$string['progressknowncards'] = 'Gelernt: {$a}';
+$string['progressunknowncards'] = 'Noch zu lernen: {$a}';
+$string['settingappstoreheading'] = 'App Stores konfigurieren';
+$string['settingappstoredesc'] = 'Geben Sie die jeweiligen URLs an, unter denen Benutzer die mobilen Lernkarten-Apps installieren können (für Offlinelernen). Wenn ein URL-Feld leer ist, wird auch der entsprechende Store-Badge ausgeblendet. Wenn alle Felder leer sind, informiert die Aktivität die Benutzer nicht länger über die Verfügbarkeit von Apps.';
+$string['settingappstoreappletitle'] = 'Apple App Store';
+$string['settingappstoreappledesc'] = 'URL für die Flashcards Mobile App für iOS-Geräte.';
+$string['settingappstoregoogletitle'] = 'Google Play Store';
+$string['settingappstoregoogledesc'] = 'URL für die Flashcards Mobile App für Android-Geräte.';
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';

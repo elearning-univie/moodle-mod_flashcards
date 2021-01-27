@@ -45,9 +45,24 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
                 array(
                         'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
+                        'boxid' => new external_value(PARAM_INT, 'id of box'),
                         'questionid' => new external_value(PARAM_INT, 'question id'),
                         'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer')
                 )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function load_learn_progress_parameters() {
+        return new external_function_parameters(
+            array(
+                'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
+                'boxid' => new external_value(PARAM_INT, 'id of current box')
+            )
         );
     }
 
@@ -99,16 +114,22 @@ class mod_flashcards_external extends external_api {
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
      * @param int $fid
+     * @param int $boxid id of the related box, -1 indicates learn now
      * @param int $questionid
      * @param int $qanswervalue
      * @return string|null
      * @throws dml_exception
      */
-    public static function update_progress($fid, $questionid, $qanswervalue) {
-        global $DB, $USER;
+    public static function update_progress($fid, $boxid, $questionid, $qanswervalue) {
+        global $DB, $USER, $_SESSION;
 
         $params = self::validate_parameters(self::update_progress_parameters(),
-            array('fid' => $fid, 'questionid' => $questionid, 'qanswervalue' => $qanswervalue));
+            array(
+            'fid' => $fid,
+            'boxid' => $boxid,
+            'questionid' => $questionid,
+            'qanswervalue' => $qanswervalue)
+        );
 
         $record = $DB->get_record('flashcards_q_stud_rel',
                 ['studentid' => $USER->id, 'flashcardsid' => $params['fid'], 'questionid' => $params['questionid']], '*',
@@ -123,13 +144,45 @@ class mod_flashcards_external extends external_api {
             if ($currentbox < 5) {
                 $record->currentbox++;
             }
+
+            if ($params['boxid'] == -1) {
+                $_SESSION[FLASHCARDS_LN_KNOWN . $params['fid']] += 1;
+            }
         } else {
             $record->currentbox = 1;
             $record->wronganswercount++;
+
+            if ($params['boxid'] == -1) {
+                $_SESSION[FLASHCARDS_LN_UNKNOWN . $params['fid']] += 1;
+            }
         }
 
         $DB->update_record('flashcards_q_stud_rel', $record);
         return 1;
+    }
+
+    /**
+     * Get a representation of the student learning progress
+     *
+     * @param int $fid
+     * @param int $boxid
+     * @return string|null
+     */
+    public static function load_learn_progress($fid, $boxid) {
+        global $USER, $PAGE, $_SESSION;
+
+        $params = self::validate_parameters(self::load_learn_progress_parameters(), array('fid' => $fid, 'boxid' => $boxid));
+
+        if ($params['boxid'] >= 0) {
+            return null;
+        }
+
+        $lncount = $_SESSION[FLASHCARDS_LN_COUNT . $params['fid']];
+        $lnknown = $_SESSION[FLASHCARDS_LN_KNOWN . $params['fid']];
+        $lnunknown = $_SESSION[FLASHCARDS_LN_UNKNOWN . $params['fid']];
+
+        $questionrenderer = $PAGE->get_renderer('mod_flashcards');
+        return $questionrenderer->render_learn_progress($lncount, $lnknown, $lnunknown);
     }
 
     /**
@@ -218,6 +271,9 @@ class mod_flashcards_external extends external_api {
         $questionids = $DB->get_fieldset_sql($sql, ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
 
         $_SESSION[FLASHCARDS_LN . $params['flashcardsid']] = array_slice($questionids, 0, $params['qcount']);
+        $_SESSION[FLASHCARDS_LN_COUNT . $params['flashcardsid']] = $params['qcount'];
+        $_SESSION[FLASHCARDS_LN_KNOWN . $params['flashcardsid']] = 0;
+        $_SESSION[FLASHCARDS_LN_UNKNOWN . $params['flashcardsid']] = 0;
 
         $newmoodleurl = new moodle_url('/mod/flashcards/studentquiz.php', ['id' => $cm->id, 'box' => '-1']);
 
@@ -240,6 +296,15 @@ class mod_flashcards_external extends external_api {
      */
     public static function load_next_question_returns() {
         return new external_value(PARAM_RAW, 'new question');
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function load_learn_progress_returns() {
+        return new external_value(PARAM_RAW, 'current learning progress');
     }
 
     /**

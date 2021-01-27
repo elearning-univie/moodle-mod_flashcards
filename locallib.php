@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 define('FLASHCARDS_LN', 'mod_flashcards_ln_');
+define('FLASHCARDS_LN_COUNT', 'mod_flashcards_ln_count_');
+define('FLASHCARDS_LN_KNOWN', 'mod_flashcards_ln_known_');
+define('FLASHCARDS_LN_UNKNOWN', 'mod_flashcards_ln_unknown_');
 
 define('FLASHCARDS_AUTHOR_NONE', 0);
 define('FLASHCARDS_AUTHOR_GROUP', 1);
@@ -101,6 +104,7 @@ function mod_flashcards_check_for_orphan_or_hidden_questions() {
 
     $DB->delete_records_select('flashcards_q_stud_rel', $sql, array('userid' => $USER->id));
 }
+
 /**
  * Checks for the question subcategory with the name 'von Studierenden erstellt' and adds it if not found
  * @param int $contextid
@@ -131,6 +135,7 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
 
     return $subcatid;
 }
+
 /**
  * Get the questiontext for a preview (first 30 characters)
  * @param context $context
@@ -163,6 +168,7 @@ function mod_flashcards_get_preview_questiontext($context, $question) {
     }
     return $questiontext;
 }
+
 /**
  * Deletes a student question, checks for rights before deleting
  * @param int $questionid the db-id of the question
@@ -190,6 +196,7 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
     }
     return;
 }
+
 /**
  * checks if the user has deletion rights for this question
  * @param stdClass $context context of the flashcards module

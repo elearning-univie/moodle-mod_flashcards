@@ -51,6 +51,40 @@ class mod_flashcards_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Renders a progress bar to visualize learning progress (total, known, unknown card relation)
+     *
+     * @param int $cardcount number of cards chosen by the user for learn now
+     * @param int $knowncount cards known by the user
+     * @param int $unknowncount cards not known by the user
+     * @return string multi progress bar html representation
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function render_learn_progress($cardcount, $knowncount, $unknowncount) {
+
+        if ($cardcount <= 0) {
+            return "";
+        }
+
+        $knownwidth = $knowncount / $cardcount * 100;
+        $unknownwidth = $unknowncount / $cardcount * 100;
+
+        $result = '<div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:' . $knownwidth . '%">';
+        $result .= '<h3 class="justify-content-center align-self-center my-auto">';
+        $result .= get_string('progressknowncards', 'mod_flashcards', $knowncount);
+        $result .= '</h3>';
+        $result .= '</div>';
+        $result .= '<div class="progress-bar progress-bar-striped bg-danger border-0" role="progressbar" style="width:' . $unknownwidth . '%">';
+        $result .= '<h3 class="justify-content-center align-self-center my-auto">';
+        $result .= get_string('progressunknowncards', 'mod_flashcards', $unknowncount);
+        $result .= '</h3>';
+        $result .= '</div>';
+
+        return $result;
+    }
+
+    /**
      * Renders the question
      *
      * @param flashcard $flashcard
@@ -83,11 +117,10 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         question_engine::save_questions_usage_by_activity($quba);
         $qaid = $quba->get_question_attempt(1)->get_database_id();
 
-        $result =
-                '<form id="mod-flashcards-responseform" method="post"' .
-                'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
-                $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
-                ')" enctype="multipart/form-data" accept-charset="utf-8">';
+        $result = '<form id="mod-flashcards-responseform" method="post"' .
+                   'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
+                   $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
+                   ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
         $options = new question_display_options();

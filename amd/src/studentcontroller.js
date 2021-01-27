@@ -7,7 +7,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                 var boxid = urlParams.get('box');
                 ajax.call([{
                     methodname: 'mod_flashcards_update_progress',
-                    args: {fid: $fid, questionid: $questionid, qanswervalue: $qanswervalue},
+                    args: {fid: $fid, boxid: boxid, questionid: $questionid, qanswervalue: $qanswervalue},
                     done: function () {
                         ajax.call([{
                             methodname: 'mod_flashcards_load_next_question',
@@ -15,6 +15,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                             done: function(result) {
                                 if (result !== null) {
                                     $("#mod-flashcards-question").html(result);
+                                    ajax.call([{
+                                        methodname: 'mod_flashcards_load_learn_progress',
+                                        args: {fid: $fid, boxid: boxid},
+                                        done: function(result) {
+                                            if (result !== null) {
+                                                $("#mod-flashcards-learning-progress").html(result);
+                                            }
+                                        },
+                                        fail: notification.exception
+                                    }]);
                                 } else {
                                     window.location = url.relativeUrl('/mod/flashcards/studentview.php?id=' + $cmid);
                                 }

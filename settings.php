@@ -47,4 +47,15 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configmultiselect('flashcards/authordisplay_group_teacherroles',
         get_string('authordisplay_teacherroles', 'flashcards'), get_string('authordisplay_teacherroles_desc',
         'flashcards'), $defaultteacherroles, $allroles));
+
+    // App store configuration.
+    $settings->add(new admin_setting_heading('flashcards/appstoresettings',
+        get_string('settingappstoreheading', 'flashcards'),
+         get_string('settingappstoredesc', 'flashcards')));
+    $settings->add(new admin_setting_configtext('flashcards/applestoreapp',
+        get_string('settingappstoreappletitle', 'flashcards'),
+        get_string('settingappstoreappledesc', 'flashcards'), '', PARAM_URL));
+    $settings->add(new admin_setting_configtext('flashcards/googlestoreapp',
+         get_string('settingappstoregoogletitle', 'flashcards'),
+         get_string('settingappstoregoogledesc', 'flashcards'), '', PARAM_URL));
 }
