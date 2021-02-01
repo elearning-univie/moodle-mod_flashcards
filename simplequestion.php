@@ -34,12 +34,6 @@ $cmid = required_param('cmid', PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
-if ($cmid) {
-    $url->param('cmid', $cmid);
-}
-if ($origin) {
-    $url->param('origin', $origin);
-}
 if($id) {
     $url->param('id', $id);
 }
@@ -82,7 +76,6 @@ if ($id) {
     $question->category = $categoryid;
     $question->qtype = $qtype;
     $question->createdby = $USER->id;
-
     if (!question_bank::qtype_enabled($qtype)) {
         print_error('cannotenable', 'question', $origin, $qtype);
     }
@@ -100,18 +93,11 @@ if (isset($question->categoryobject)) {
 }
 
 $question->formoptions = new stdClass();
-
-$categorycontext = context::instance_by_id($category->contextid);
 $question->contextid = $category->contextid;
-$addpermission = has_capability('moodle/question:add', $categorycontext);
 
-$question->formoptions->canedit = true;
-$question->formoptions->canmove = false;
-$question->formoptions->cansaveasnew = false;
-$question->formoptions->repeatelements = true;
 $formeditable = true;
 
-$PAGE->set_pagetype('question-type-' . $question->qtype);
+$PAGE->set_pagetype('question-type-flashcard');
 $mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
 
 $toform = fullclone($question);
@@ -129,18 +115,7 @@ $mform->set_data($toform);
 if ($mform->is_cancelled()) {
     redirect($origin);
 } else if ($fromform = $mform->get_data()) {
-    $contextid = $category->contextid;
-
     $question = $qtypeobj->save_question($question, $fromform);
-    if (isset($fromform->tags)) {
-        core_tag_tag::set_item_tags('core_question', 'question', $question->id,
-                context::instance_by_id($contextid), $fromform->tags, 0);
-    }
-
-    if (isset($fromform->coursetags)) {
-        core_tag_tag::set_item_tags('core_question', 'question', $question->id,
-                context_course::instance($fromform->courseid), $fromform->coursetags, 0);
-    }
 
     question_bank::notify_question_edited($question->id);
 
