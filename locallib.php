@@ -256,7 +256,6 @@ function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $quest
     ]);
     return $url->out(false);
 }
-//$createflashcardurl = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
 
 /**
  * /**

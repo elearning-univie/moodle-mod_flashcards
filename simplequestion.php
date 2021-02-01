@@ -71,7 +71,7 @@ if ($id) {
     // require_login above. Passing it as the third parameter tells the function
     // to filter the course tags by that course.
     get_question_options($question, true, [$COURSE]);
-} elseif ($categoryid) {
+} else if ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;
@@ -100,27 +100,21 @@ $formeditable = true;
 $PAGE->set_pagetype('question-type-flashcard');
 $mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
 
-$toform = fullclone($question);
-$toform->category = "{$category->id},{$category->contextid}";
+$questioncopy = fullclone($question);
+$questioncopy->category = "{$category->id},{$category->contextid}";
+$questioncopy->cmid = $cm->id;
 
-if ($cm !== null) {
-    $toform->cmid = $cm->id;
-    $toform->courseid = $cm->course;
-} else {
-    $toform->courseid = $COURSE->id;
-}
-
-$mform->set_data($toform);
+$mform->set_data($questioncopy);
 
 if ($mform->is_cancelled()) {
     redirect($origin);
 } else if ($fromform = $mform->get_data()) {
     // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form
-    $question->name = $fromform->name;
-    $question->questiontext = $fromform->questiontext['text'];
-    $question->answer = $fromform->answer;
+    $questioncopy->name = $fromform->name;
+    $questioncopy->questiontext = $fromform->questiontext;
+    $questioncopy->answer = $fromform->answer;
 
-    $question = $qtypeobj->save_question($question, $question);
+    $question = $qtypeobj->save_question($question, $questioncopy);
 
     question_bank::notify_question_edited($question->id);
 
