@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for student questions
+ * Form for creating flashcards with less information to fill out
  *
  * @package    mod_flashcards
  * @copyright  2020 University of Vienna
@@ -29,12 +29,12 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Student flashcard form definition.
+ * Flashcard form definition with less information.
  *
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class studentcreatequestionform extends moodleform {
+class fastcreatequestionform extends moodleform {
 
     /**
      * Question object with options and answers
@@ -54,7 +54,7 @@ class studentcreatequestionform extends moodleform {
     public $instance;
 
     /**
-     * studentcreatequestionform constructor.
+     * fastcreatequestionform constructor.
      *
      * @param string $submiturl
      * @param object $question
@@ -114,13 +114,6 @@ class studentcreatequestionform extends moodleform {
         $mform->addRule('answer', null, 'required', null, 'client');
 
         $this->add_hidden_fields();
-
-        $buttonarray = array();
-        $buttonarray[] = $mform->createElement('submit', 'updatebutton',
-                get_string('savechangesandcontinueediting', 'question'));
-        $mform->addGroup($buttonarray, 'updatebuttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('updatebuttonar');
-
         $this->add_action_buttons(true, get_string('savechanges'));
 
         if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||

@@ -38,9 +38,8 @@ $courseid = optional_param('courseid', 0, PARAM_INT);
 $wizardnow = optional_param('wizardnow', '', PARAM_ALPHA);
 $appendqnumstring = optional_param('appendqnumstring', '', PARAM_ALPHA);
 $inpopup = optional_param('inpopup', 0, PARAM_BOOL);
-$scrollpos = optional_param('scrollpos', 0, PARAM_INT);
 
-$url = new moodle_url('/mod/flashcards/studentcreatequestion.php');
+$url = new moodle_url('/mod/flashcards/teachercreatequestion.php');
 if ($cmid !== 0) {
     $url->param('cmid', $cmid);
 }
@@ -50,16 +49,13 @@ if ($courseid !== 0) {
 $PAGE->set_url($url);
 
 if ($cmid) {
-    $initboxurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $cmid));
+    $initboxurl = new moodle_url('/mod/flashcards/teacherview.php', array('id' => $cmid));
 } else {
-    $initboxurl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('courseid' => $courseid));
+    $initboxurl = new moodle_url('/mod/flashcards/teacherview.php', array('courseid' => $courseid));
 }
 navigation_node::override_active_url($initboxurl);
 
 $returnurl = $initboxurl;
-if ($scrollpos) {
-    $returnurl->param('scrollpos', $scrollpos);
-}
 
 $sql = 'SELECT *
           FROM {flashcards}
@@ -69,7 +65,7 @@ $sql = 'SELECT *
 
 $rec = $DB->get_record_sql($sql, ['cmid' => $cmid]);
 
-$categoryid = $rec->studentsubcat;
+$categoryid = $rec->categoryid;
 
 if ($cmid) {
     list($module, $cm) = get_module_from_cmid($cmid);
@@ -86,15 +82,6 @@ if ($cmid) {
 
 $contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
-
-if ($rec->addfcstudent == 0) {
-    $PAGE->set_title('Errorrrr');
-    $PAGE->set_heading($COURSE->fullname);
-    echo $OUTPUT->header();
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
-}
 
 if (optional_param('addcancel', false, PARAM_BOOL)) {
     redirect($returnurl);
@@ -144,11 +131,10 @@ $formeditable = true;
 $question->formoptions->mustbeusable = (bool) $appendqnumstring;
 
 $PAGE->set_pagetype('question-type-' . $question->qtype);
-$mform = new fastcreatequestionform('studentcreatequestion.php', $question, $category, $formeditable);
+$mform = new fastcreatequestionform('teachercreatequestion.php', $question, $category, $formeditable);
 
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
-$toform->scrollpos = $scrollpos;
 
 $toform->appendqnumstring = $appendqnumstring;
 $toform->makecopy = $makecopy;
@@ -178,8 +164,6 @@ if ($mform->is_cancelled()) {
         $contextid = $category->contextid;
     }
 
-    $returnurl->param('category', $fromform->category);
-
     $question = $qtypeobj->save_question($question, $fromform);
     if (isset($fromform->tags)) {
         core_tag_tag::set_item_tags('core_question', 'question', $question->id,
@@ -198,12 +182,6 @@ if ($mform->is_cancelled()) {
             echo $OUTPUT->notification(get_string('changessaved'), '');
             close_window(3);
         } else {
-            $returnurl->param('lastchanged', $question->id);
-            if ($appendqnumstring) {
-                $returnurl->param($appendqnumstring, $question->id);
-                $returnurl->param('sesskey', sesskey());
-                $returnurl->param('cmid', $cmid);
-            }
             redirect($returnurl);
         }
     }
