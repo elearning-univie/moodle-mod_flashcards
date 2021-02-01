@@ -53,7 +53,7 @@ $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
 if (has_capability('mod/flashcards:teacherview', $context)) {
-    $categoryid = $module->studentsubcat;
+    $categoryid = $module->categoryid;
 } else if (has_capability('mod/flashcards:studentview', $context)) {
     if ($module->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
