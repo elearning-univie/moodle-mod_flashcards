@@ -96,7 +96,7 @@ foreach ($questionstemp as $question) {
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
     $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
-    $row['editquestionurl'] = mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cm->id, $course->id);
+    $row['editquestionurl'] = mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cm->id, $course->id, $PAGE->url);
     // Display author group.
     if ($authordisplay) {
         if ($question->createdby) {
