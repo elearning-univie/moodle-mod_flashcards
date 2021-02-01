@@ -112,7 +112,7 @@ if ($flashcards->addfcstudent == 1) {
     $createbuttonvisibility = 'flashcards_add_btn_visi';
 }
 $createflashcardurl = new moodle_url('/mod/flashcards/simplequestion.php',
-        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => '/mod/flashcards/studentquestioninit.php']);
+        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url]);
 $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
         'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
 $renderer = $PAGE->get_renderer('core');

@@ -50,14 +50,13 @@ list($module, $cm) = get_module_from_cmid($cmid);
 require_login($cm->course, false, $cm);
 $context = context_module::instance($cmid);
 
-
 $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
 if (has_capability('mod/flashcards:teacherview', $context)) {
     $categoryid = $module->studentsubcat;
 } else if (has_capability('mod/flashcards:studentview', $context)) {
-    if ($rec->addfcstudent == 0) {
+    if ($module->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
         $PAGE->set_heading($COURSE->fullname);
         echo $OUTPUT->header();
@@ -68,6 +67,8 @@ if (has_capability('mod/flashcards:teacherview', $context)) {
 
     $categoryid = $module->studentsubcat;
 }
+
+$qtype = 'flashcard';
 
 if ($id) {
     if (!$question = $DB->get_record('question', array('id' => $id))) {
@@ -84,7 +85,7 @@ if ($id) {
     $question->createdby = $USER->id;
 
     if (!question_bank::qtype_enabled($qtype)) {
-        print_error('cannotenable', 'question', $returnurl, $qtype);
+        print_error('cannotenable', 'question', $origin, $qtype);
     }
 
 }
@@ -95,7 +96,7 @@ if (isset($question->categoryobject)) {
     $category = $question->categoryobject;
 } else {
     if (!$category = $DB->get_record('question_categories', array('id' => $question->category))) {
-        print_error('categorydoesnotexist', 'question', $returnurl);
+        print_error('categorydoesnotexist', 'question', $origin);
     }
 }
 
@@ -105,22 +106,18 @@ $categorycontext = context::instance_by_id($category->contextid);
 $question->contextid = $category->contextid;
 $addpermission = has_capability('moodle/question:add', $categorycontext);
 
-$question->formoptions->canedit = question_has_capability_on($question, 'edit');
-$question->formoptions->canmove = (question_has_capability_on($question, 'move') && $addpermission);
+$question->formoptions->canedit = true;
+$question->formoptions->canmove = false;
 $question->formoptions->cansaveasnew = false;
 $question->formoptions->repeatelements = true;
 $formeditable = true;
 
-$question->formoptions->mustbeusable = (bool) $appendqnumstring;
-
 $PAGE->set_pagetype('question-type-' . $question->qtype);
-$mform = new fastcreatequestionform('simplequestion.php', $question, $category, $formeditable);
+$mform = new fastcreatequestionform($url, $question, $category, $formeditable);
 
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
 
-$toform->appendqnumstring = $appendqnumstring;
-$toform->makecopy = $makecopy;
 if ($cm !== null) {
     $toform->cmid = $cm->id;
     $toform->courseid = $cm->course;
@@ -128,26 +125,12 @@ if ($cm !== null) {
     $toform->courseid = $COURSE->id;
 }
 
-$toform->inpopup = $inpopup;
-
 $mform->set_data($toform);
 
 if ($mform->is_cancelled()) {
-    if ($inpopup) {
-        close_window();
-    } else {
-        redirect($returnurl);
-    }
-
+    redirect($origin);
 } else if ($fromform = $mform->get_data()) {
-    list($newcatid, $newcontextid) = explode(',', $fromform->category);
-    if (!empty($question->id) && $newcatid != $question->category) {
-        $contextid = $newcontextid;
-    } else {
-        $contextid = $category->contextid;
-    }
-
-    $returnurl->param('category', $fromform->category);
+    $contextid = $category->contextid;
 
     $question = $qtypeobj->save_question($question, $fromform);
     if (isset($fromform->tags)) {
@@ -163,18 +146,7 @@ if ($mform->is_cancelled()) {
     question_bank::notify_question_edited($question->id);
 
     if ($qtypeobj->finished_edit_wizard($fromform)) {
-        if ($inpopup) {
-            echo $OUTPUT->notification(get_string('changessaved'), '');
-            close_window(3);
-        } else {
-            $returnurl->param('lastchanged', $question->id);
-            if ($appendqnumstring) {
-                $returnurl->param($appendqnumstring, $question->id);
-                $returnurl->param('sesskey', sesskey());
-                $returnurl->param('cmid', $cmid);
-            }
-            redirect($returnurl);
-        }
+        redirect($origin);
     }
 }
 
@@ -185,5 +157,4 @@ $PAGE->navbar->add($streditingquestion);
 
 echo $OUTPUT->header();
 $mform->display();
-print_object($origin);
 echo $OUTPUT->footer();
