@@ -79,7 +79,7 @@ if ($id) {
     if (!question_bank::qtype_enabled($qtype)) {
         print_error('cannotenable', 'question', $origin, $qtype);
     }
-
+    $question->options = new stdClass();
 }
 
 $qtypeobj = question_bank::get_qtype($question->qtype);
@@ -117,9 +117,9 @@ if ($mform->is_cancelled()) {
 } else if ($fromform = $mform->get_data()) {
     // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form
     $question->name = $fromform->name;
-    $question->questiontext['text'] = $fromform->questiontext['text'];
-    $question->options = $fromform->options;
-    
+    $question->questiontext = $fromform->questiontext['text'];
+    $question->answer = $fromform->answer;
+
     $question = $qtypeobj->save_question($question, $question);
 
     question_bank::notify_question_edited($question->id);
