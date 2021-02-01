@@ -31,7 +31,7 @@ Feature: As a student I can delete my own questions
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "This is a question"
+    Then I should see "flashcard 1"
     And I log out
     Then I log in as "student"
     And I am on "Course 1" course homepage
