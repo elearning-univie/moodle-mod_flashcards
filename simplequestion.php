@@ -23,7 +23,6 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once(__DIR__ . '/fastcreatequestionform.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/formslib.php');
@@ -113,7 +112,7 @@ $question->formoptions->repeatelements = true;
 $formeditable = true;
 
 $PAGE->set_pagetype('question-type-' . $question->qtype);
-$mform = new fastcreatequestionform($url, $question, $category, $formeditable);
+$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
 
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";

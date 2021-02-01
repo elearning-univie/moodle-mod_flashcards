@@ -21,7 +21,7 @@
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace mod_flashcards\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +34,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class fastcreatequestionform extends moodleform {
+class simplequestionform extends moodleform {
 
     /**
      * Question object with options and answers
@@ -54,7 +54,7 @@ class fastcreatequestionform extends moodleform {
     public $instance;
 
     /**
-     * fastcreatequestionform constructor.
+     * simplequestionform constructor.
      *
      * @param string $submiturl
      * @param object $question
