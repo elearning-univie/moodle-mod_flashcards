@@ -34,7 +34,7 @@ $cmid = required_param('cmid', PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
-if($id) {
+if ($id) {
     $url->param('id', $id);
 }
 $PAGE->set_url($url);
