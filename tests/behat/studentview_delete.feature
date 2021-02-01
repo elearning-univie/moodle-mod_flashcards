@@ -29,7 +29,6 @@ Feature: As a student I can delete my own questions
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
-      | Default mark | 1 |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
     Then I should see "This is a question"

@@ -23,7 +23,6 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
-      | Default mark | 1 |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
     Then I should see "This is a question"
