@@ -15,13 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for student questions
+ * Form for creating flashcards with less information to fill out
  *
  * @package    mod_flashcards
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+namespace mod_flashcards\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -29,12 +29,12 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Student flashcard form definition.
+ * Flashcard form definition with less information.
  *
  * @copyright  2020 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class studentcreatequestionform extends moodleform {
+class simplequestionform extends \moodleform {
 
     /**
      * Question object with options and answers
@@ -54,7 +54,7 @@ class studentcreatequestionform extends moodleform {
     public $instance;
 
     /**
-     * studentcreatequestionform constructor.
+     * simplequestionform constructor.
      *
      * @param string $submiturl
      * @param object $question
@@ -70,7 +70,7 @@ class studentcreatequestionform extends moodleform {
 
         $record = $DB->get_record('question_categories',
                 array('id' => $question->category), 'contextid');
-        $this->context = context::instance_by_id($record->contextid);
+        $this->context = \context::instance_by_id($record->contextid);
 
         $this->editoroptions = array('subdirs' => 1, 'maxfiles' => EDITOR_UNLIMITED_FILES,
                 'context' => $this->context);
@@ -114,19 +114,7 @@ class studentcreatequestionform extends moodleform {
         $mform->addRule('answer', null, 'required', null, 'client');
 
         $this->add_hidden_fields();
-
-        $buttonarray = array();
-        $buttonarray[] = $mform->createElement('submit', 'updatebutton',
-                get_string('savechangesandcontinueediting', 'question'));
-        $mform->addGroup($buttonarray, 'updatebuttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('updatebuttonar');
-
         $this->add_action_buttons(true, get_string('savechanges'));
-
-        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
-                        $this->question->formoptions->cansaveasnew))) {
-            $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
-        }
     }
 
     /**
@@ -139,15 +127,8 @@ class studentcreatequestionform extends moodleform {
      * @throws dml_exception
      */
     public function validation($fromform, $files) {
-        global $DB;
-
         $errors = parent::validation($fromform, $files);
-        if (empty($fromform['makecopy']) && isset($this->question->id)
-                && ($this->question->formoptions->canedit ||
-                        $this->question->formoptions->cansaveasnew)
-                && empty($fromform['usecurrentcat']) && !$this->question->formoptions->canmove) {
-            $errors['currentgrp'] = get_string('nopermissionmove', 'question');
-        }
+
         // Category.
         if (empty($fromform['category'])) {
             // User has provided an invalid category.
@@ -162,23 +143,6 @@ class studentcreatequestionform extends moodleform {
             list($category, $categorycontextid) = explode(',', $fromform['category']);
         } else {
             $category = $fromform['category'];
-        }
-        if (isset($fromform['idnumber']) && ((string) $fromform['idnumber'] !== '')) {
-            if (empty($fromform['usecurrentcat']) && !empty($fromform['categorymoveto'])) {
-                $categoryinfo = $fromform['categorymoveto'];
-            } else {
-                $categoryinfo = $fromform['category'];
-            }
-            list($categoryid, $notused) = explode(',', $categoryinfo);
-            $conditions = 'category = ? AND idnumber = ?';
-            $params = [$categoryid, $fromform['idnumber']];
-            if (!empty($this->question->id)) {
-                $conditions .= ' AND id <> ?';
-                $params[] = $this->question->id;
-            }
-            if ($DB->record_exists_select('question', $conditions, $params)) {
-                $errors['idnumber'] = get_string('idnumbertaken', 'error');
-            }
         }
 
         return $errors;
@@ -197,34 +161,82 @@ class studentcreatequestionform extends moodleform {
         $mform->addElement('hidden', 'generalfeedback');
         $mform->setType('generalfeedback', PARAM_RAW);
 
-        $mform->addElement('hidden', 'idnumber');
-        $mform->setType('idnumber', PARAM_RAW);
-
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
-
-        $mform->addElement('hidden', 'inpopup');
-        $mform->setType('inpopup', PARAM_INT);
 
         $mform->addElement('hidden', 'cmid');
         $mform->setType('cmid', PARAM_INT);
 
-        $mform->addElement('hidden', 'courseid');
-        $mform->setType('courseid', PARAM_INT);
-
-        $mform->addElement('hidden', 'returnurl');
-        $mform->setType('returnurl', PARAM_LOCALURL);
-
-        $mform->addElement('hidden', 'scrollpos');
-        $mform->setType('scrollpos', PARAM_INT);
-
-        $mform->addElement('hidden', 'appendqnumstring');
-        $mform->setType('appendqnumstring', PARAM_ALPHA);
-
         $mform->addElement('hidden', 'qtype');
         $mform->setType('qtype', PARAM_ALPHA);
+    }
 
-        $mform->addElement('hidden', 'makecopy');
-        $mform->setType('makecopy', PARAM_INT);
+    /**
+     * Transforms data from the form into the question db form
+     * @param array|\stdClass $question
+     * @throws \coding_exception
+     */
+    public function set_data($question) {
+        \question_bank::get_qtype($question->qtype)->set_default_options($question);
+
+        // Prepare question text.
+        $draftid = file_get_submitted_draft_itemid('questiontext');
+
+        if (!empty($question->questiontext)) {
+            $questiontext = $question->questiontext;
+        } else {
+            $questiontext = $this->_form->getElement('questiontext')->getValue();
+            $questiontext = $questiontext['text'];
+        }
+        $questiontext = file_prepare_draft_area($draftid, $this->context->id,
+                'question', 'questiontext', empty($question->id) ? null : (int) $question->id,
+                $this->fileoptions, $questiontext);
+
+        $question->questiontext = array();
+        $question->questiontext['text'] = $questiontext;
+        $question->questiontext['format'] = empty($question->questiontextformat) ?
+                editors_get_preferred_format() : $question->questiontextformat;
+        $question->questiontext['itemid'] = $draftid;
+
+        $question = $this->data_preprocessing_answers($question, true);
+        parent::set_data($question);
+    }
+
+    /**
+     * Perform the necessary preprocessing for the fields added by
+     * {@see add_per_answer_fields()}.
+     * @param object $question the data being passed to the form.
+     * @param boolean $withanswerfiles
+     * @return object $question the modified data.
+     */
+    protected function data_preprocessing_answers($question, $withanswerfiles = false) {
+        if (empty($question->options->answers)) {
+            return $question;
+        }
+
+        $key = 0;
+        foreach ($question->options->answers as $answer) {
+            if ($withanswerfiles) {
+                // Prepare the feedback editor to display files in draft area.
+                $draftitemid = file_get_submitted_draft_itemid('answer['.$key.']');
+                $question->answer['text'] = file_prepare_draft_area(
+                        $draftitemid,          // Draftid
+                        $this->context->id,    // context
+                        'question',            // component
+                        'answer',              // filarea
+                        !empty($answer->id) ? (int) $answer->id : null, // itemid
+                        $this->fileoptions,    // options
+                        $answer->answer        // text.
+                );
+                $question->answer['itemid'] = $draftitemid;
+                $question->answer['format'] = $answer->answerformat;
+            } else {
+                $question->answer[$key] = $answer->answer;
+            }
+
+            $key++;
+        }
+
+        return $question;
     }
 }

@@ -54,9 +54,9 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading($flashcards->name);
 
     $templatestablecontext['icons'] = [
-        'deck' => $OUTPUT->image_url('deckicon', 'mod_flashcards'),
-        'phone' => $OUTPUT->image_url('phone', 'mod_flashcards'),
-        'start' => $OUTPUT->image_url('start', 'mod_flashcards')
+            'deck' => $OUTPUT->image_url('deckicon', 'mod_flashcards'),
+            'phone' => $OUTPUT->image_url('phone', 'mod_flashcards'),
+            'start' => $OUTPUT->image_url('start', 'mod_flashcards')
     ];
 
     $templatestablecontext['stores'] = array();
@@ -65,16 +65,16 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $googlestoreurl = get_config('flashcards', 'googlestoreapp');
     if (empty($applestoreurl)) {
         $templatestablecontext['stores'][] = [
-            'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
-            'redirecturl' => $applestoreurl,
-            'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
+                'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
+                'redirecturl' => $applestoreurl,
+                'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
         ];
     }
     if (!empty($googlestoreurl)) {
         $templatestablecontext['stores'][] = [
-            'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
-            'redirecturl' => $googlestoreurl,
-            'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
+                'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
+                'redirecturl' => $googlestoreurl,
+                'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
         ];
     }
     $templatestablecontext['displaymobileapps'] = !empty($templatestablecontext['stores']);
@@ -84,14 +84,14 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
 
     $templatestablecontext['stats'] = [
-        'totalquestioncount' => $totalquestioncount,
-        'cardsavailable' => $totalquestioncount > 0,
-        'boxzeroquestioncount' => $boxzeroquestioncount,
-        'unselectedcardsavailable' => $boxzeroquestioncount > 0,
-        'usedquestioncount' => $usedquestioncount,
-        'halfusedquestioncount' => ceil($usedquestioncount / 2),
-        'selectedcardsavailable' => $usedquestioncount > 0,
-        'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : ( 1 - $boxzeroquestioncount / $totalquestioncount) * 100
+            'totalquestioncount' => $totalquestioncount,
+            'cardsavailable' => $totalquestioncount > 0,
+            'boxzeroquestioncount' => $boxzeroquestioncount,
+            'unselectedcardsavailable' => $boxzeroquestioncount > 0,
+            'usedquestioncount' => $usedquestioncount,
+            'halfusedquestioncount' => ceil($usedquestioncount / 2),
+            'selectedcardsavailable' => $usedquestioncount > 0,
+            'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : (1 - $boxzeroquestioncount / $totalquestioncount) * 100
     ];
 
     $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
@@ -105,7 +105,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
     $templatestablecontext['flashcardsid'] = $flashcards->id;
 
-    $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
+    $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/simplequestion.php',
+            ['cmid' => $cm->id, 'origin' => $templatestablecontext['selectquestionsurl']]);
 
     $renderer = $PAGE->get_renderer('core');
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
@@ -118,6 +119,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
 /**
  * Calculates the number of questions in box zero
+ *
  * @param int $userid
  * @param object $flashcards
  * @return int
@@ -149,6 +151,7 @@ function get_box_zero_count_record($userid, $flashcards) {
 
 /**
  * Calculates the number of cards available for a given flashcard deck and user combination
+ *
  * @param int $userid To query available cards for
  * @param object $flashcards Activity configuration
  * @return int number of totally available cards
@@ -174,9 +177,9 @@ function get_total_card_count_record($userid, $flashcards) {
     return $DB->count_records_sql($sql, $categorieids);
 }
 
-
 /**
  * Calculates the number of questions in each box, ordered by box id
+ *
  * @param int $userid Id of the user we count selected the questions for.
  * @param int $flashcardsid Activity id
  * @return moodle_recordset holding the id of a box and the number of questions it contains
@@ -195,12 +198,12 @@ function get_regular_box_count_records($userid, $flashcardsid) {
             ORDER BY boxid ASC";
 
     return $DB->get_recordset_sql($sql,
-        [
-            'userid' => $userid,
-            'flashcardsid' => $flashcardsid,
-            'useridsub' => $userid,
-            'flashcardsidsub' => $flashcardsid
-        ]);
+            [
+                    'userid' => $userid,
+                    'flashcardsid' => $flashcardsid,
+                    'useridsub' => $userid,
+                    'flashcardsidsub' => $flashcardsid
+            ]);
 }
 
 /**
@@ -225,7 +228,7 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
             3 => '#5b6577',
             4 => '#45648d',
             5 => '#1463a3'
-        ];
+    ];
 
     $boxarray = array();
 
@@ -233,8 +236,8 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
 
         while ($record->boxid != $boxindex) {
             $boxvalues['boxindex'] = $boxindex;
-            $boxvalues['boxheader'] = get_string('boxheader_'.$boxindex, 'mod_flashcards');
-            $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box'.$boxindex.'deco', 'mod_flashcards');
+            $boxvalues['boxheader'] = get_string('boxheader_' . $boxindex, 'mod_flashcards');
+            $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box' . $boxindex . 'deco', 'mod_flashcards');
 
             $boxvalues['count'] = 0;
             $boxvalues['cardsavailable'] = false;
@@ -247,8 +250,8 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
 
         if ($record->boxid = $boxindex) {
             $boxvalues['boxindex'] = $boxindex;
-            $boxvalues['boxheader'] = get_string('boxheader_'.$boxindex, 'mod_flashcards');
-            $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box'.$boxindex.'deco', 'mod_flashcards');
+            $boxvalues['boxheader'] = get_string('boxheader_' . $boxindex, 'mod_flashcards');
+            $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box' . $boxindex . 'deco', 'mod_flashcards');
 
             $boxvalues['count'] = $record->questioncount;
             $boxvalues['cardsavailable'] = $record->questioncount > 0;
@@ -264,8 +267,8 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
 
     while ($boxindex <= $maxboxindex) {
         $boxvalues['boxindex'] = $boxindex;
-        $boxvalues['boxheader'] = get_string('boxheader_'.$boxindex, 'mod_flashcards');
-        $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box'.$boxindex.'deco', 'mod_flashcards');
+        $boxvalues['boxheader'] = get_string('boxheader_' . $boxindex, 'mod_flashcards');
+        $boxvalues['boxdecorationurl'] = $OUTPUT->image_url('box' . $boxindex . 'deco', 'mod_flashcards');
 
         $boxvalues['count'] = 0;
         $boxvalues['cardsavailable'] = false;
@@ -286,13 +289,13 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
         }
 
         $boxarray[$key]['advancedquestionpercent'] = $usedtotalquestioncount <= 0 ?
-            0 : ($relevantquestioncount / $usedtotalquestioncount) * 100;
+                0 : ($relevantquestioncount / $usedtotalquestioncount) * 100;
 
         if (($eachbox['boxindex'] == $maxboxindex && $eachbox['count'] == $usedtotalquestioncount) ||
-            ($eachbox['count'] == 0 && $advancedquestioncount == $usedtotalquestioncount)) {
+                ($eachbox['count'] == 0 && $advancedquestioncount == $usedtotalquestioncount)) {
             $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdone', 'mod_flashcards');
         } else if ($eachbox['count'] > 0 ||
-                  ($eachbox['count'] == 0 && $advancedquestioncount > 0)) {
+                ($eachbox['count'] == 0 && $advancedquestioncount > 0)) {
             $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckwork', 'mod_flashcards');
         } else {
             $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdefault', 'mod_flashcards');

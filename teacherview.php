@@ -36,7 +36,6 @@ if ($node) {
     $node->make_active();
 }
 
-
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
 if ($flashcards->inclsubcats) {
@@ -74,15 +73,8 @@ foreach ($questionstemp as $question) {
     $questions[] = $row;
 }
 
-$params = array(
-    'courseid' => $course->id,
-    'category' => $flashcards->categoryid,
-    'sesskey' => sesskey(),
-    'qtype' => 'flashcard',
-    'returnurl' => $returnurl,
-);
-
-$link = new moodle_url('/question/question.php', $params);
+$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
+$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
@@ -96,7 +88,6 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
 }
 
 echo $OUTPUT->heading($flashcards->name);
-
 
 $templateinfo = ['createbtnlink' => $link->out(false),
     'qlabel' => get_string('question', 'flashcards'),
