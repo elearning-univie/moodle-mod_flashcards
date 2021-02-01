@@ -52,6 +52,7 @@
         {{#displayauthorcolumn}}
             <th class="flashcards_studentview_author header iconcol" scope="col">{{# str }} author, flashcards {{/ str }}</th>
         {{/displayauthorcolumn}}
+        <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} edit, moodle {{/ str }}</th>
         <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} preview, moodle {{/ str }}</th>
         <th class="flashcards_studentview_dc header iconcol" scope="col">{{# str }} delete, moodle {{/ str }}</th>
     </tr>
@@ -68,6 +69,13 @@
             {{#displayauthorcolumn}}
                 <td>{{author}}</td>
             {{/displayauthorcolumn}}
+            <td>
+               {{#editquestionurl}}
+               <a class="mod_flashcards_studentview_delete" href="{{editquestionurl}}" title="{{# str }} edit, moodle {{/ str }}">
+                    <i class="icon fa fa-cog fa-fw iconsmall" title="{{# str }} edit, moodle {{/ str }}" aria-label="{{# str }} edit, moodle {{/ str }}"></i>
+               </a>
+               {{/editquestionurl}}
+            </td>
             <td>
                 <a href="{{qurl}}" target="questionpreview" title="{{# str }} preview, moodle {{/ str }}">
                     <i class="icon fa fa-search-plus fa-fw iconsmall" title="{{# str }} preview, moodle {{/ str }}" aria-label="{{# str }} preview, moodle {{/ str }}"></i>

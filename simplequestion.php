@@ -30,6 +30,7 @@ require_once($CFG->libdir . '/formslib.php');
 
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
+$id = optional_param('id', 0, PARAM_INT); // question id
 $makecopy = optional_param('makecopy', 0, PARAM_BOOL);
 $qtype = 'flashcard';
 $categoryid = optional_param('category', 0, PARAM_INT);
@@ -106,7 +107,15 @@ if (optional_param('addcancel', false, PARAM_BOOL)) {
     redirect($returnurl);
 }
 
-if ($categoryid && $qtype) {
+if ($id) {
+    if (!$question = $DB->get_record('question', array('id' => $id))) {
+        print_error('questiondoesnotexist', 'question', $returnurl);
+    }
+    // We can use $COURSE here because it's been initialised as part of the
+    // require_login above. Passing it as the third parameter tells the function
+    // to filter the course tags by that course.
+    get_question_options($question, true, [$COURSE]);
+} elseif ($categoryid && $qtype) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;

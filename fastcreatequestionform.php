@@ -118,7 +118,7 @@ class fastcreatequestionform extends moodleform {
 
         if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
                         $this->question->formoptions->cansaveasnew))) {
-            $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
+            //$mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
         }
     }
 

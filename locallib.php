@@ -235,6 +235,28 @@ function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $que
     ]);
     return $url->out(false);
 }
+/**
+ * gives back the url to edit a question
+ * @param stdClass $id id of the module
+ * @param stdClass $context module context
+ * @param stdClass $flashcards flashcardsobject
+ * @param stdClass $question the question db-object
+ * @return NULL|string
+ */
+function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cmid, $courseid) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+        return null;
+    }
+    $url = new moodle_url('/mod/flashcards/studentcreatequestion.php', [
+        'action' => 'edit',
+        'id' => $question->id,
+        'cmid' => $cmid,
+        'courseid' => $courseid,
+        'sesskey' => sesskey()
+    ]);
+    return $url->out(false);
+}
+//$createflashcardurl = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
 
 /**
  * /**
