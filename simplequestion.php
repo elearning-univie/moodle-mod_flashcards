@@ -115,7 +115,12 @@ $mform->set_data($toform);
 if ($mform->is_cancelled()) {
     redirect($origin);
 } else if ($fromform = $mform->get_data()) {
-    $question = $qtypeobj->save_question($question, $fromform);
+    // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form
+    $question->name = $fromform->name;
+    $question->questiontext['text'] = $fromform->questiontext['text'];
+    $question->options = $fromform->options;
+    
+    $question = $qtypeobj->save_question($question, $question);
 
     question_bank::notify_question_edited($question->id);
 
