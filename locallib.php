@@ -241,9 +241,11 @@ function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $que
  * @param stdClass $context module context
  * @param stdClass $flashcards flashcardsobject
  * @param stdClass $question the question db-object
+ * @param stdClass $cmid flashcards module id
+ * @param stdClass $origin the url to send the user to afterwads
  * @return NULL|string
  */
-function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cmid, $courseid, $origin) {
+function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cmid, $origin) {
     if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
         return null;
     }
@@ -251,7 +253,6 @@ function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $quest
         'action' => 'edit',
         'id' => $question->id,
         'cmid' => $cmid,
-        'courseid' => $courseid,
         'origin' => $origin
     ]);
     return $url->out(false);

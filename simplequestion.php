@@ -46,9 +46,9 @@ $context = context_module::instance($cmid);
 $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
-if (has_capability('mod/flashcards:teacherview', $context)) {
+if (has_capability('mod/flashcards:editallquestions', $context)) {
     $categoryid = $module->categoryid;
-} else if (has_capability('mod/flashcards:studentview', $context)) {
+} else if (has_capability('mod/flashcards:editownquestion', $context)) {
     if ($module->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
         $PAGE->set_heading($COURSE->fullname);
@@ -71,6 +71,9 @@ if ($id) {
     // require_login above. Passing it as the third parameter tells the function
     // to filter the course tags by that course.
     get_question_options($question, true, [$COURSE]);
+    if ($question->category != $categoryid) {
+        print_error('errornotallowedonpage');
+    }
 } elseif ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
