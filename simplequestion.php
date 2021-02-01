@@ -31,65 +31,31 @@ require_once($CFG->libdir . '/formslib.php');
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
 $id = optional_param('id', 0, PARAM_INT); // question id
-$makecopy = optional_param('makecopy', 0, PARAM_BOOL);
-$qtype = 'flashcard';
-$categoryid = optional_param('category', 0, PARAM_INT);
-$cmid = optional_param('cmid', 0, PARAM_INT);
-$courseid = optional_param('courseid', 0, PARAM_INT);
-$wizardnow = optional_param('wizardnow', '', PARAM_ALPHA);
-$appendqnumstring = optional_param('appendqnumstring', '', PARAM_ALPHA);
-$inpopup = optional_param('inpopup', 0, PARAM_BOOL);
-$origin = optional_param('origin', '', PARAM_URL);
+$cmid = required_param('cmid', PARAM_INT);
+$origin = required_param('origin', PARAM_URL);
 
-$url = new moodle_url('/mod/flashcards/simplequestion.php');
-if ($cmid !== 0) {
+$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
+if ($cmid) {
     $url->param('cmid', $cmid);
 }
-if ($courseid !== 0) {
-    $url->param('courseid', $courseid);
-}
-if ($origin !== 0) {
+if ($origin) {
     $url->param('origin', $origin);
+}
+if($id) {
+    $url->param('id', $id);
 }
 $PAGE->set_url($url);
 
-if ($cmid) {
-    $initboxurl = new moodle_url($origin, array('id' => $cmid));
-} else {
-    $initboxurl = new moodle_url($origin, array('courseid' => $courseid));
-}
-navigation_node::override_active_url($initboxurl);
+list($module, $cm) = get_module_from_cmid($cmid);
+require_login($cm->course, false, $cm);
+$context = context_module::instance($cmid);
 
-$returnurl = $initboxurl;
-print_object($returnurl);
 
-$sql = 'SELECT *
-          FROM {flashcards}
-         WHERE id = (SELECT instance
-                       FROM {course_modules}
-                      WHERE id = :cmid)';
-
-$rec = $DB->get_record_sql($sql, ['cmid' => $cmid]);
-
-if ($cmid) {
-    list($module, $cm) = get_module_from_cmid($cmid);
-    require_login($cm->course, false, $cm);
-    $thiscontext = context_module::instance($cmid);
-} else if ($courseid) {
-    require_login($courseid, false);
-    $thiscontext = context_course::instance($courseid);
-    $module = null;
-    $cm = null;
-} else {
-    print_error('missingcourseorcmid', 'question');
-}
-
-// contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
 if (has_capability('mod/flashcards:teacherview', $context)) {
-    $categoryid = $rec->studentsubcat;
+    $categoryid = $module->studentsubcat;
 } else if (has_capability('mod/flashcards:studentview', $context)) {
     if ($rec->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
@@ -100,22 +66,18 @@ if (has_capability('mod/flashcards:teacherview', $context)) {
         die();
     }
 
-    $categoryid = $rec->studentsubcat;
-}
-
-if (optional_param('addcancel', false, PARAM_BOOL)) {
-    redirect($returnurl);
+    $categoryid = $module->studentsubcat;
 }
 
 if ($id) {
     if (!$question = $DB->get_record('question', array('id' => $id))) {
-        print_error('questiondoesnotexist', 'question', $returnurl);
+        print_error('questiondoesnotexist', 'question', $origin);
     }
     // We can use $COURSE here because it's been initialised as part of the
     // require_login above. Passing it as the third parameter tells the function
     // to filter the course tags by that course.
     get_question_options($question, true, [$COURSE]);
-} elseif ($categoryid && $qtype) {
+} elseif ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;
@@ -125,13 +87,6 @@ if ($id) {
         print_error('cannotenable', 'question', $returnurl, $qtype);
     }
 
-} else if ($categoryid) {
-    $addurl = new moodle_url('/question/addquestion.php', $url->params());
-    $addurl->param('validationerror', 1);
-    redirect($addurl);
-
-} else {
-    print_error('notenoughdatatoeditaquestion', 'question', $returnurl);
 }
 
 $qtypeobj = question_bank::get_qtype($question->qtype);
