@@ -171,6 +171,11 @@ class simplequestionform extends \moodleform {
         $mform->setType('qtype', PARAM_ALPHA);
     }
 
+    /**
+     * Transforms data from the form into the question db form
+     * @param array|\stdClass $question
+     * @throws \coding_exception
+     */
     public function set_data($question) {
         \question_bank::get_qtype($question->qtype)->set_default_options($question);
 
@@ -199,8 +204,9 @@ class simplequestionform extends \moodleform {
 
     /**
      * Perform the necessary preprocessing for the fields added by
-     * {@link add_per_answer_fields()}.
+     * {@see add_per_answer_fields()}.
      * @param object $question the data being passed to the form.
+     * @param boolean $withanswerfiles
      * @return object $question the modified data.
      */
     protected function data_preprocessing_answers($question, $withanswerfiles = false) {
