@@ -105,7 +105,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
     $templatestablecontext['flashcardsid'] = $flashcards->id;
 
-    $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
+    $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cm->id, 'origin' => $PAGE->url]);
 
     $renderer = $PAGE->get_renderer('core');
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);

@@ -34,7 +34,7 @@ $cmid = required_param('cmid', PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
-if($id) {
+if ($id) {
     $url->param('id', $id);
 }
 $PAGE->set_url($url);
@@ -74,7 +74,7 @@ if ($id) {
     if ($question->category != $categoryid) {
         print_error('errornotallowedonpage');
     }
-} elseif ($categoryid) {
+} else if ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;
@@ -82,7 +82,7 @@ if ($id) {
     if (!question_bank::qtype_enabled($qtype)) {
         print_error('cannotenable', 'question', $origin, $qtype);
     }
-
+    $question->options = new stdClass();
 }
 
 $qtypeobj = question_bank::get_qtype($question->qtype);
@@ -103,27 +103,21 @@ $formeditable = true;
 $PAGE->set_pagetype('question-type-flashcard');
 $mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
 
-$toform = fullclone($question);
-$toform->category = "{$category->id},{$category->contextid}";
+$questioncopy = fullclone($question);
+$questioncopy->category = "{$category->id},{$category->contextid}";
+$questioncopy->cmid = $cm->id;
 
-if ($cm !== null) {
-    $toform->cmid = $cm->id;
-    $toform->courseid = $cm->course;
-} else {
-    $toform->courseid = $COURSE->id;
-}
-
-$mform->set_data($toform);
+$mform->set_data($questioncopy);
 
 if ($mform->is_cancelled()) {
     redirect($origin);
 } else if ($fromform = $mform->get_data()) {
     // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form
-    $question->name = $fromform->name;
-    $question->questiontext['text'] = $fromform->questiontext['text'];
-    $question->options = $fromform->options;
-    
-    $question = $qtypeobj->save_question($question, $question);
+    $questioncopy->name = $fromform->name;
+    $questioncopy->questiontext = $fromform->questiontext;
+    $questioncopy->answer = $fromform->answer;
+
+    $question = $qtypeobj->save_question($question, $questioncopy);
 
     question_bank::notify_question_edited($question->id);
 
