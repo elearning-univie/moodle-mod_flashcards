@@ -23,74 +23,33 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once(__DIR__ . '/fastcreatequestionform.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/formslib.php');
 
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
-$makecopy = optional_param('makecopy', 0, PARAM_BOOL);
-$qtype = 'flashcard';
-$categoryid = optional_param('category', 0, PARAM_INT);
-$cmid = optional_param('cmid', 0, PARAM_INT);
-$courseid = optional_param('courseid', 0, PARAM_INT);
-$wizardnow = optional_param('wizardnow', '', PARAM_ALPHA);
-$appendqnumstring = optional_param('appendqnumstring', '', PARAM_ALPHA);
-$inpopup = optional_param('inpopup', 0, PARAM_BOOL);
-$origin = optional_param('origin', '', PARAM_URL);
+$id = optional_param('id', 0, PARAM_INT); // question id
+$cmid = required_param('cmid', PARAM_INT);
+$origin = required_param('origin', PARAM_URL);
 
-$url = new moodle_url('/mod/flashcards/simplequestion.php');
-if ($cmid !== 0) {
-    $url->param('cmid', $cmid);
-}
-if ($courseid !== 0) {
-    $url->param('courseid', $courseid);
-}
-if ($origin !== 0) {
-    $url->param('origin', $origin);
+$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
+if($id) {
+    $url->param('id', $id);
 }
 $PAGE->set_url($url);
 
-if ($cmid) {
-    $initboxurl = new moodle_url($origin, array('id' => $cmid));
-} else {
-    $initboxurl = new moodle_url($origin, array('courseid' => $courseid));
-}
-navigation_node::override_active_url($initboxurl);
+list($module, $cm) = get_module_from_cmid($cmid);
+require_login($cm->course, false, $cm);
+$context = context_module::instance($cmid);
 
-$returnurl = $initboxurl;
-print_object($returnurl);
-
-$sql = 'SELECT *
-          FROM {flashcards}
-         WHERE id = (SELECT instance
-                       FROM {course_modules}
-                      WHERE id = :cmid)';
-
-$rec = $DB->get_record_sql($sql, ['cmid' => $cmid]);
-
-if ($cmid) {
-    list($module, $cm) = get_module_from_cmid($cmid);
-    require_login($cm->course, false, $cm);
-    $thiscontext = context_module::instance($cmid);
-} else if ($courseid) {
-    require_login($courseid, false);
-    $thiscontext = context_course::instance($courseid);
-    $module = null;
-    $cm = null;
-} else {
-    print_error('missingcourseorcmid', 'question');
-}
-
-// contexts = new question_edit_contexts($thiscontext);
 $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
 if (has_capability('mod/flashcards:teacherview', $context)) {
-    $categoryid = $rec->studentsubcat;
+    $categoryid = $module->categoryid;
 } else if (has_capability('mod/flashcards:studentview', $context)) {
-    if ($rec->addfcstudent == 0) {
+    if ($module->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
         $PAGE->set_heading($COURSE->fullname);
         echo $OUTPUT->header();
@@ -99,30 +58,28 @@ if (has_capability('mod/flashcards:teacherview', $context)) {
         die();
     }
 
-    $categoryid = $rec->studentsubcat;
+    $categoryid = $module->studentsubcat;
 }
 
-if (optional_param('addcancel', false, PARAM_BOOL)) {
-    redirect($returnurl);
-}
+$qtype = 'flashcard';
 
-if ($categoryid && $qtype) {
+if ($id) {
+    if (!$question = $DB->get_record('question', array('id' => $id))) {
+        print_error('questiondoesnotexist', 'question', $origin);
+    }
+    // We can use $COURSE here because it's been initialised as part of the
+    // require_login above. Passing it as the third parameter tells the function
+    // to filter the course tags by that course.
+    get_question_options($question, true, [$COURSE]);
+} elseif ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
     $question->qtype = $qtype;
     $question->createdby = $USER->id;
-
     if (!question_bank::qtype_enabled($qtype)) {
-        print_error('cannotenable', 'question', $returnurl, $qtype);
+        print_error('cannotenable', 'question', $origin, $qtype);
     }
 
-} else if ($categoryid) {
-    $addurl = new moodle_url('/question/addquestion.php', $url->params());
-    $addurl->param('validationerror', 1);
-    redirect($addurl);
-
-} else {
-    print_error('notenoughdatatoeditaquestion', 'question', $returnurl);
 }
 
 $qtypeobj = question_bank::get_qtype($question->qtype);
@@ -131,32 +88,21 @@ if (isset($question->categoryobject)) {
     $category = $question->categoryobject;
 } else {
     if (!$category = $DB->get_record('question_categories', array('id' => $question->category))) {
-        print_error('categorydoesnotexist', 'question', $returnurl);
+        print_error('categorydoesnotexist', 'question', $origin);
     }
 }
 
 $question->formoptions = new stdClass();
-
-$categorycontext = context::instance_by_id($category->contextid);
 $question->contextid = $category->contextid;
-$addpermission = has_capability('moodle/question:add', $categorycontext);
 
-$question->formoptions->canedit = question_has_capability_on($question, 'edit');
-$question->formoptions->canmove = (question_has_capability_on($question, 'move') && $addpermission);
-$question->formoptions->cansaveasnew = false;
-$question->formoptions->repeatelements = true;
 $formeditable = true;
 
-$question->formoptions->mustbeusable = (bool) $appendqnumstring;
-
-$PAGE->set_pagetype('question-type-' . $question->qtype);
-$mform = new fastcreatequestionform('simplequestion.php', $question, $category, $formeditable);
+$PAGE->set_pagetype('question-type-flashcard');
+$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
 
 $toform = fullclone($question);
 $toform->category = "{$category->id},{$category->contextid}";
 
-$toform->appendqnumstring = $appendqnumstring;
-$toform->makecopy = $makecopy;
 if ($cm !== null) {
     $toform->cmid = $cm->id;
     $toform->courseid = $cm->course;
@@ -164,53 +110,17 @@ if ($cm !== null) {
     $toform->courseid = $COURSE->id;
 }
 
-$toform->inpopup = $inpopup;
-
 $mform->set_data($toform);
 
 if ($mform->is_cancelled()) {
-    if ($inpopup) {
-        close_window();
-    } else {
-        redirect($returnurl);
-    }
-
+    redirect($origin);
 } else if ($fromform = $mform->get_data()) {
-    list($newcatid, $newcontextid) = explode(',', $fromform->category);
-    if (!empty($question->id) && $newcatid != $question->category) {
-        $contextid = $newcontextid;
-    } else {
-        $contextid = $category->contextid;
-    }
-
-    $returnurl->param('category', $fromform->category);
-
     $question = $qtypeobj->save_question($question, $fromform);
-    if (isset($fromform->tags)) {
-        core_tag_tag::set_item_tags('core_question', 'question', $question->id,
-                context::instance_by_id($contextid), $fromform->tags, 0);
-    }
-
-    if (isset($fromform->coursetags)) {
-        core_tag_tag::set_item_tags('core_question', 'question', $question->id,
-                context_course::instance($fromform->courseid), $fromform->coursetags, 0);
-    }
 
     question_bank::notify_question_edited($question->id);
 
     if ($qtypeobj->finished_edit_wizard($fromform)) {
-        if ($inpopup) {
-            echo $OUTPUT->notification(get_string('changessaved'), '');
-            close_window(3);
-        } else {
-            $returnurl->param('lastchanged', $question->id);
-            if ($appendqnumstring) {
-                $returnurl->param($appendqnumstring, $question->id);
-                $returnurl->param('sesskey', sesskey());
-                $returnurl->param('cmid', $cmid);
-            }
-            redirect($returnurl);
-        }
+        redirect($origin);
     }
 }
 
@@ -221,5 +131,4 @@ $PAGE->navbar->add($streditingquestion);
 
 echo $OUTPUT->header();
 $mform->display();
-print_object($origin);
 echo $OUTPUT->footer();

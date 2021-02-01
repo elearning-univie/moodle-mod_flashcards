@@ -73,7 +73,7 @@ foreach ($questionstemp as $question) {
     $questions[] = $row;
 }
 
-$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => '/mod/flashcards/teacherview.php'];
+$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $pagetitle = get_string('pagetitle', 'flashcards');

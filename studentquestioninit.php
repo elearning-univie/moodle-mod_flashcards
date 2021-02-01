@@ -96,6 +96,7 @@ foreach ($questionstemp as $question) {
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
     $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
+    $row['editquestionurl'] = mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cm->id, $course->id, $PAGE->url);
     // Display author group.
     if ($authordisplay) {
         if ($question->createdby) {
@@ -111,7 +112,7 @@ if ($flashcards->addfcstudent == 1) {
     $createbuttonvisibility = 'flashcards_add_btn_visi';
 }
 $createflashcardurl = new moodle_url('/mod/flashcards/simplequestion.php',
-        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => '/mod/flashcards/studentquestioninit.php']);
+        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url]);
 $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
         'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
 $renderer = $PAGE->get_renderer('core');
