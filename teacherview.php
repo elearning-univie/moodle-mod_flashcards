@@ -73,8 +73,8 @@ foreach ($questionstemp as $question) {
     $questions[] = $row;
 }
 
-$params = ['cmid' => $cm->id, 'courseid' => $course->id];
-$link = new moodle_url('/mod/flashcards/teachercreatequestion.php', $params);
+$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => '/mod/flashcards/teacherview.php'];
+$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
@@ -88,7 +88,6 @@ if (!has_capability('mod/flashcards:teacherview', $context) ) {
 }
 
 echo $OUTPUT->heading($flashcards->name);
-
 
 $templateinfo = ['createbtnlink' => $link->out(false),
     'qlabel' => get_string('question', 'flashcards'),

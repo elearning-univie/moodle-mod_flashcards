@@ -54,7 +54,6 @@ if ($action == 'delete') {
     die();
 }
 
-
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
@@ -93,7 +92,7 @@ foreach ($questionstemp as $question) {
     $row = [];
     $row['qid'] = $question->id;
     $qurl = new moodle_url('/mod/flashcards/studentquestionpreview.php',
-        array('id' => $question->id, 'courseid' => $course->id));
+            array('id' => $question->id, 'courseid' => $course->id));
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
     $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
@@ -111,9 +110,10 @@ $createbuttonvisibility = 'flashcards_add_btn_invisi';
 if ($flashcards->addfcstudent == 1) {
     $createbuttonvisibility = 'flashcards_add_btn_visi';
 }
-$createflashcardurl = new moodle_url('/mod/flashcards/studentcreatequestion.php', ['cmid' => $cm->id, 'courseid' => $course->id]);
+$createflashcardurl = new moodle_url('/mod/flashcards/simplequestion.php',
+        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => '/mod/flashcards/studentquestioninit.php']);
 $templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
-    'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
+        'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
