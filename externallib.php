@@ -170,6 +170,8 @@ class mod_flashcards_external extends external_api {
      */
     public static function load_learn_progress($fid, $boxid) {
         global $USER, $PAGE, $_SESSION;
+        list ($course, $cm) = get_course_and_cm_from_instance($fid, 'flashcards');
+        require_login($course, false, $cm);
 
         $params = self::validate_parameters(self::load_learn_progress_parameters(), array('fid' => $fid, 'boxid' => $boxid));
 
@@ -194,6 +196,8 @@ class mod_flashcards_external extends external_api {
      */
     public static function load_next_question($fid, $boxid) {
         global $USER, $PAGE;
+        list ($course, $cm) = get_course_and_cm_from_instance($fid, 'flashcards');
+        require_login($course, false, $cm);
 
         $params = self::validate_parameters(self::load_next_question_parameters(), array('fid' => $fid, 'boxid' => $boxid));
 
