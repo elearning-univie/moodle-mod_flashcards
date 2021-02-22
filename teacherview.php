@@ -107,7 +107,7 @@ foreach ($questionstemp as $question) {
     $eurl = new moodle_url('/question/question.php',
         array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
     $durl = new moodle_url('/mod/flashcards/teacherview.php',
-            array('id' => $id, 'deleteselected' => $question->id, 'qname' => $question->name, 'sesskey' => sesskey()));
+            array('id' => $id, 'deleteselected' => $question->id, 'sesskey' => sesskey()));
     $row = [];
     $row['name'] = $question->name;
     $row['qurl'] = html_entity_decode($qurl->__toString());
