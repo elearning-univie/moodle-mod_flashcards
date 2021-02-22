@@ -90,9 +90,14 @@
                 <p class="card-text mt-0 px-1">{{# str }} carddeckconfigexplained, mod_flashcards {{/ str }}</p>
                 <p class="card-text mt-1 px-1">{{# str }} cardbehaviourexplained, mod_flashcards {{/ str }}</p>
                 <p class="card-text mt-1 px-1">{{# str }} proposecardsexplained, mod_flashcards {{/ str }}</p>
-                <a href="{{{createfcurl}}}" role="button" class="mt-auto btn btn-primary btn-block mb-1 rounded-0">
+                <a href="{{{createfcurl}}}" role="button" class="mt-auto btn btn-primary btn-block mb-1 rounded-0 {{^enablestudentscreatequestions}}disabled{{/enablestudentscreatequestions}}">
                     <span class="btn-label "><i class="fa fa-plus"></i></span>
+                    {{#enablestudentscreatequestions}}
                         {{# str }} proposenewcardbutton, mod_flashcards {{/ str }}
+                    {{/enablestudentscreatequestions}}
+                    {{^enablestudentscreatequestions}}
+                        {{# str }} proposenewcardbuttondisabled, mod_flashcards {{/ str }}
+                    {{/enablestudentscreatequestions}}
                 </a>             
                 <div class="mt-auto text-white progress mod-flashcards-progress-bar rounded-0">
                     <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"

@@ -64,6 +64,7 @@ $string['settingappstoreappletitle'] = 'Apple App Store';
 $string['settingappstoreappledesc'] = 'URL for the flashcards mobile app for iOS devices.';
 $string['settingappstoregoogletitle'] = 'Google Play Store';
 $string['settingappstoregoogledesc'] = 'URL for the flashcards mobile app for Android devices.';
+$string['proposenewcardbuttondisabled'] = 'Proposing flashcards was disabled.';
 
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';
