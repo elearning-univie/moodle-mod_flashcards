@@ -27,13 +27,58 @@ require_once('locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
+$deleteselected = optional_param('deleteselected', null, PARAM_INT);
+$confirm = optional_param('confirm', null, PARAM_ALPHANUM);
+
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
+
 $PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
+}
+
+$pagetitle = get_string('pagetitle', 'flashcards');
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
+
+if (!has_capability('mod/flashcards:teacherview', $context) ) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
+    echo $OUTPUT->footer();
+    die();
+}
+
+if ($deleteselected) {
+    if (!$DB->record_exists('question', ['id' => $deleteselected])) {
+        redirect($PAGE->url);
+    }
+
+    if ($confirm == md5($deleteselected)) {
+        $questionid = $deleteselected;
+        question_require_capability_on($questionid, 'edit');
+
+        if (questions_in_use(array($questionid))) {
+            $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
+        } else {
+            question_delete_question($questionid);
+        }
+        $DB->delete_records('flashcards_q_stud_rel', ['questionid' => $questionid]);
+        redirect($PAGE->url);
+    } else {
+        $deleteurl = new moodle_url('/mod/flashcards/teacherview.php',
+                array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+
+        $continue = new \single_button($deleteurl, get_string('delete'), 'post');
+        $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
+
+        echo $OUTPUT->header();
+        echo $OUTPUT->confirm(get_string('deletequestionscheck', 'question', $questionname), $continue, $PAGE->url);
+        echo $OUTPUT->footer();
+        die();
+    }
 }
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
@@ -61,8 +106,8 @@ foreach ($questionstemp as $question) {
     $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id));
     $eurl = new moodle_url('/question/question.php',
         array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
-    $durl = new moodle_url('/question/edit.php', array('returnurl' => $returnurl, 'courseid' => $course->id,
-        'deleteselected' => $question->id, 'q'.$question->id => 1, 'sesskey' => sesskey()));
+    $durl = new moodle_url('/mod/flashcards/teacherview.php',
+            array('id' => $id, 'deleteselected' => $question->id, 'sesskey' => sesskey()));
     $row = [];
     $row['name'] = $question->name;
     $row['qurl'] = html_entity_decode($qurl->__toString());
@@ -76,17 +121,7 @@ foreach ($questionstemp as $question) {
 $params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
-
-if (!has_capability('mod/flashcards:teacherview', $context) ) {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
-}
-
 echo $OUTPUT->heading($flashcards->name);
 
 $templateinfo = ['createbtnlink' => $link->out(false),
