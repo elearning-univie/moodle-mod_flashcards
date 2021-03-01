@@ -63,7 +63,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     $applestoreurl = get_config('flashcards', 'applestoreapp');
     $googlestoreurl = get_config('flashcards', 'googlestoreapp');
-    if (empty($applestoreurl)) {
+    if (!empty($applestoreurl)) {
         $templatestablecontext['stores'][] = [
                 'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
                 'redirecturl' => $applestoreurl,
@@ -95,6 +95,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     ];
 
     $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
+    $templatestablecontext['enablestudentscreatequestions'] = $flashcards->addfcstudent == 1;
 
     $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
     $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);

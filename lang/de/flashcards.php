@@ -64,6 +64,7 @@ $string['settingappstoreappletitle'] = 'Apple App Store';
 $string['settingappstoreappledesc'] = 'URL für die Flashcards Mobile App für iOS-Geräte.';
 $string['settingappstoregoogletitle'] = 'Google Play Store';
 $string['settingappstoregoogledesc'] = 'URL für die Flashcards Mobile App für Android-Geräte.';
+$string['proposenewcardbuttondisabled'] = 'Vorschlagen von Lernkarten wurde deaktiviert.';
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
 $string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
