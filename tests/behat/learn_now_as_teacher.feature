@@ -23,13 +23,17 @@ Feature: As a teacher i want to test the learn now function
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
+    And I log out
+    And I log in as "admin"
 
   @javascript
   Scenario: I switch role to student and test learn now
-    Given I am on "Course 1" course homepage with editing mode on
-    And I click on "Actions menu" "link"
-    And I click on "Freeze this context" "link"
+    Given I am on the "Course 1" "Course" page logged in as "admin"
+    When I follow "Freeze this context"
     And I click on "Continue" "button"
+    And I log out
+    And I log in as "teacher"
+    And I am on "Course 1" course homepage
     And I follow "Switch role to..." in the user menu
     And I press "Student"
     And I follow "Test flash cards"
