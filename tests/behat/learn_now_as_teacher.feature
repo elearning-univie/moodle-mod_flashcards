@@ -23,10 +23,9 @@ Feature: As a teacher i want to test the learn now function
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "flashcard 1"
     And I follow "Course 1"
 
-  @Javascript
+  @javascript
   Scenario: I switch role to student and test learn now
     When I follow "Switch role to..." in the user menu
     And I press "Student"
