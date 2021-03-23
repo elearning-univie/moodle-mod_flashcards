@@ -6,7 +6,6 @@ Feature: As a teacher i want to test the learn now function
     Given the following "users" exist:
       | username | firstname | lastname | email               |
       | teacher  | John   | Doe  | teacher@example.com |
-      | student  | Student   | Student  | student@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
@@ -25,7 +24,6 @@ Feature: As a teacher i want to test the learn now function
       | Solution | This is a solution |
     And I click on "Save changes" "button"
     Then I should see "flashcard 1"
-    And I follow "Dashboard"
     And I follow "Course 1"
 
   Scenario: I switch role to student and test learn now
