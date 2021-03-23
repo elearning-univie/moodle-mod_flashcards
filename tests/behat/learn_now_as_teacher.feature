@@ -1,4 +1,4 @@
-@mod @mod_flashcards @amc @mod_flashcards
+@mod @mod_flashcards @amc
 
 Feature: As a teacher i want to test the learn now function
 
