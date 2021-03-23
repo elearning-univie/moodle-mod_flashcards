@@ -23,12 +23,14 @@ Feature: As a teacher i want to test the learn now function
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    And I follow "Course 1"
 
   @javascript
   Scenario: I switch role to student and test learn now
-    When I follow "Switch role to..." in the user menu
+    Given I am on "Course 1" course homepage with editing mode on
+    And I follow "Freeze this context"
+    And I click on "Continue" "button"
+    And I follow "Switch role to..." in the user menu
     And I press "Student"
     And I follow "Test flash cards"
-    And I follow "Start Learn"
+    And I click on "Start Learn" "button"
     Then I should see "This is a question"
