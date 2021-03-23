@@ -27,7 +27,8 @@ Feature: As a teacher i want to test the learn now function
   @javascript
   Scenario: I switch role to student and test learn now
     Given I am on "Course 1" course homepage with editing mode on
-    And I follow "Freeze this context"
+    And I click on "Actions menu" "link"
+    And I click on "Freeze this context" "link"
     And I click on "Continue" "button"
     And I follow "Switch role to..." in the user menu
     And I press "Student"
