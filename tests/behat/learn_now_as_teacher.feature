@@ -28,7 +28,7 @@ Feature: As a teacher i want to test the learn now function
 
   @javascript
   Scenario: I switch role to student and test learn now
-    Given I am on the "Course 1" "Course" page logged in as "admin"
+    Given I am on the "C1" "Course" page logged in as "admin"
     When I follow "Freeze this context"
     And I click on "Continue" "button"
     And I log out
