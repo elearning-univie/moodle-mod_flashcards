@@ -14,7 +14,7 @@ Feature: As a teacher i want to test the learn now function
       | teacher | C1     | editingteacher |
     And I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    When I add a "Flash cards" to section "1" and I fill the form with:
+    And I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
     And I follow "Test flash cards"
     And I click on "Create flash card" "button"
