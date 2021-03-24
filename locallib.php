@@ -44,8 +44,10 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
 
-    if (!$course->visible || !$cm->visible) {
-        throw new require_login_exception("Course or course module not visible.");
+    if (!is_role_switched($course->id) && !has_capability('mod/flashcards:editallquestions', $context)) {
+        if (!$course->visible || !$cm->visible) {
+            throw new require_login_exception("Course or course module not visible.");
+        }
     }
 
     require_login($course, false, $cm);
