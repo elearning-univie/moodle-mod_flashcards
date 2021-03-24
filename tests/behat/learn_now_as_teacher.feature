@@ -37,5 +37,8 @@ Feature: As a teacher i want to test the learn now function
     When I follow "Switch role to..." in the user menu
     And I press "Student"
     And I follow "Test flash cards"
+    And I follow "Customize your flashcard deck"
+    And I click on "selectall" "checkbox"
+    And I click on "Add flash card" "button"
     And I click on "Start Learn" "button"
     Then I should see "This is a question"
