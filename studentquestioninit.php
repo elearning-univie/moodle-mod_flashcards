@@ -107,7 +107,7 @@ foreach ($questionstemp as $question) {
     }
     $row['teachercheck'] = '';
     $row['peerreview'] = '5/-2';
-    
+
     $questions[] = $row;
 }
 $createbuttonvisibility = 'flashcards_add_btn_invisi';
