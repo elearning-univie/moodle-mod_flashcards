@@ -41,6 +41,8 @@
     <tr>
         <th class="header name">{{qlabel}}</th>
         <th class="flashcards_teacherview_author header">{{# str }} author, flashcards {{/ str }}</th>
+        <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} teachercheck, flashcards {{/ str }}</th>
+        <th class="flashcards_studentview_ec header iconcol" scope="col">{{# str }} peerreview, flashcards {{/ str }}</th>
         <th class="flashcards_teacherview_ec header iconcol editaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol previewaction" scope="col">&#160;</th>
         <th class="flashcards_teacherview_ec header iconcol deleteaction" scope="col">&#160;</th>
@@ -54,6 +56,12 @@
             </td>
             <td class="table-row">
                 {{author}}
+            </td>
+            <td>
+                {{{teachercheck}}}
+            </td>
+            <td>
+                {{{peerreview}}}
             </td>
             <td class="iconcol editaction">
                 <a title="Edit" href="{{editurl}}">
