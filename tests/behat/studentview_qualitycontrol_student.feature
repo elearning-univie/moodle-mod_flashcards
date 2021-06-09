@@ -41,5 +41,5 @@ Feature: As a student I want to see the quality control info in the overview tab
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should see "Teacher check" in the ".flashcardsstudenttable" "css_element"
-    And I should see "Peer review" in the ".flashcardsstudenttable" "css_element"
+    Then I should see "Teacher check"
+    And I should see "Peer review"
