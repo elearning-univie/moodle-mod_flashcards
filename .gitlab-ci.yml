@@ -52,7 +52,7 @@ variables:
     - moodle-plugin-ci grunt
     - moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
-    - moodle-plugin-ci behat -profile chrome
+    - moodle-plugin-ci behat
 
 code_checker_pgsql:
   extends: .postgres
