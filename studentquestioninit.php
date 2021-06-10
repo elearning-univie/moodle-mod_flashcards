@@ -106,7 +106,7 @@ foreach ($questionstemp as $question) {
         }
     }
     $row['teachercheck'] = '';
-    $row['peerreview'] = '5/-2';
+    $row['peerreview'] = '';
 
     $questions[] = $row;
 }

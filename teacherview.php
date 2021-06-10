@@ -115,8 +115,8 @@ foreach ($questionstemp as $question) {
 
     $row['deleteurl'] = html_entity_decode($durl->__toString());
     $row['author'] = $authors[$question->createdby];
-    $row['teachercheck'] = 'herbert';
-    $row['peerreview'] = 'trudbert';
+    $row['teachercheck'] = '';
+    $row['peerreview'] = '';
     $questions[] = $row;
 }
 
