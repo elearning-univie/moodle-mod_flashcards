@@ -72,7 +72,9 @@
                 <td>{{author}}</td>
             {{/displayauthorcolumn}}
             <td>
-                {{{teachercheck}}}
+                <div style ="color:{{teachercheckcolor}};">
+                    {{# pix }} {{teachercheck.key}}, {{teachercheck.component}}, {{teachercheck.title}} {{/ pix }}
+                </div>
             </td>
             <td>
                 {{{peerreview}}}

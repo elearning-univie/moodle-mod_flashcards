@@ -330,3 +330,35 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
     }
     return $authors;
 }
+
+/**
+ * Returns an array with the pix_icon and color for the teacher check info column
+ * 
+ * @param int $teachercheckresult
+ * @return string[]|\pix_icon[]
+ */
+function mod_flashcard_teacher_check_info($teachercheckresult) {
+
+    $checkinfo = array();
+    if ($teachercheckresult == 2) {
+        $checkicon = new \pix_icon('t/check', get_string('yes'));
+        $checkinfo['color'] = 'green';
+    } else if ($teachercheckresult == 1) {
+        $checkicon = new \pix_icon('e/cancel', get_string('no'));
+        $checkinfo['color'] = 'red';
+    } else {
+        $checkicon = new \pix_icon('e/question', get_string('question'));
+        $checkinfo['color'] = 'orange';
+    }
+    $checkinfo['icon'] = $checkicon->export_for_pix();
+    return $checkinfo;
+}
+
+/**
+ * Returns the peer review information displayed int the student/teacher overview list.
+ * 
+ * @return string
+ */
+function mod_flashcard_peer_review_info_overview() {
+    return '-/-';
+}
