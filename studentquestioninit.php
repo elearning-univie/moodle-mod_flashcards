@@ -106,12 +106,12 @@ foreach ($questionstemp as $question) {
         }
     }
 
-    $teachercheckresult = rand(0,2); //TODO change with proper function as soon as available
+    $teachercheckresult = rand(0, 2); // TODO change with proper function as soon as available
     $checkinfo = mod_flashcard_teacher_check_info($teachercheckresult);
 
     $row['teachercheckcolor'] = $checkinfo['color'];
     $row['teachercheck'] = $checkinfo['icon'];
-    $row['peerreview'] = mod_flashcard_peer_review_info_overview(); //TODO
+    $row['peerreview'] = mod_flashcard_peer_review_info_overview(); // TODO
 
     $questions[] = $row;
 }

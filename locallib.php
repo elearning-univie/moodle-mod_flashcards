@@ -333,7 +333,7 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
 
 /**
  * Returns an array with the pix_icon and color for the teacher check info column
- * 
+ *
  * @param int $teachercheckresult
  * @return string[]|\pix_icon[]
  */
@@ -356,7 +356,7 @@ function mod_flashcard_teacher_check_info($teachercheckresult) {
 
 /**
  * Returns the peer review information displayed int the student/teacher overview list.
- * 
+ *
  * @return string
  */
 function mod_flashcard_peer_review_info_overview() {
