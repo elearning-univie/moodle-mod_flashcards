@@ -98,6 +98,18 @@ img.mod-flashcards-appstore-badge {
     max-height: 2em;
 }
 
+.mod-flashcards-color-declined {
+    color: red;
+}
+
+.mod-flashcards-color-approved {
+    color: green;
+}
+
+.mod-flashcards-color-pending {
+    color: orange;
+}
+
 .mod-flashcards-decoration-icon {
     max-width: 2.5em;
     max-height: 2.5em;

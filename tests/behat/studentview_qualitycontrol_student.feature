@@ -1,6 +1,6 @@
 @mod @mod_flashcards @amc @mod_flashcards
 
-Feature: As a student I want to see the students name, if a student creates a flashcard
+Feature: As a student I want to see the quality control info in the overview table
 
   Background:
     Given the following "users" exist:
@@ -34,34 +34,12 @@ Feature: As a student I want to see the students name, if a student creates a fl
     Then I log out
 
   @javascript
-  Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
-    Given the following config values are set as admin:
-      | authordisplay | 0 | flashcards |
-    When I log in as "student2"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
-    Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Student" in the ".flashcardsstudenttablebody" "css_element"
-
-  @javascript
-  Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
+  Scenario: Peer Review and Teacher check column are shown in overview
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should see "Student" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
-
-  @javascript
-  Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
-    Given the following config values are set as admin:
-      | authordisplay | 2 | flashcards |
-    When I log in as "student2"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
-    Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Student" in the ".flashcardsstudenttablebody" "css_element"
+    Then I should see "Teacher check"
+    And I should see "Peer review"
