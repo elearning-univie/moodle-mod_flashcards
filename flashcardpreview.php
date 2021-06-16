@@ -46,7 +46,15 @@ $maxvariant = 1;
 $options = new question_preview_options($question);
 $options->load_user_defaults();
 $options->set_from_request();
-$prevurl = q_prev_form_url($question->id, $context);
+
+$params = array('id' => $question->id);
+if ($context->contextlevel == CONTEXT_MODULE) {
+    $params['cmid'] = $context->instanceid;
+} else if ($context->contextlevel == CONTEXT_COURSE) {
+    $params['courseid'] = $context->instanceid;
+}
+
+$prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);
 
 // Get and validate existing preview, or start a new one.
@@ -55,7 +63,6 @@ $previewid = optional_param('previewid', 0, PARAM_INT);
 if ($previewid) {
     try {
         $quba = question_engine::load_questions_usage_by_activity($previewid);
-
     } catch (Exception $e) {
         // This may not seem like the right error message to display, but
         // actually from the user point of view, it makes sense.
@@ -101,31 +108,7 @@ $params = array(
         'previewid' => $quba->get_id(),
 );
 $params['courseid'] = $context->instanceid;
-$actionurl = new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
-
-// Process any actions from the buttons at the bottom of the form.
-if (data_submitted() && confirm_sesskey()) {
-
-    try {
-        $quba->process_all_actions();
-        $transaction = $DB->start_delegated_transaction();
-        question_engine::save_questions_usage_by_activity($quba);
-        $transaction->allow_commit();
-        redirect($actionurl);
-    } catch (question_out_of_sequence_exception $e) {
-        print_error('submissionoutofsequencefriendlymessage', 'question', $actionurl);
-
-    } catch (Exception $e) {
-        // This sucks, if we display our own custom error message, there is no way
-        // to display the original stack trace.
-        $debuginfo = '';
-        if (!empty($e->debuginfo)) {
-            $debuginfo = $e->debuginfo;
-        }
-        print_error('errorprocessingresponses', 'question', $actionurl,
-                $e->getMessage(), $debuginfo);
-    }
-}
+$actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 
 if ($question->length) {
     $displaynumber = '1';
@@ -143,22 +126,13 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
-// Start the question form.
-echo html_writer::start_tag('form', array('method' => 'post', 'action' => $actionurl,
-        'enctype' => 'multipart/form-data', 'id' => 'responseform'));
-echo html_writer::start_tag('div');
-echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
-echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'slots', 'value' => $slot));
-echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'scrollpos', 'value' => '', 'id' => 'scrollpos'));
-echo html_writer::end_tag('div');
+$templatecontent['actionurl'] = $actionurl;
+$templatecontent['sesskey'] = sesskey();
+$templatecontent['slot'] = $slot;
+$templatecontent['question'] = $quba->render_question($slot, $options, $displaynumber);
 
-// Output the question.
-echo $quba->render_question($slot, $options, $displaynumber);
-
-// Finish the question form.
-echo html_writer::start_tag('div', array('id' => 'previewcontrols', 'class' => 'controls'));
-echo html_writer::end_tag('div');
-echo html_writer::end_tag('form');
+$renderer = $PAGE->get_renderer('core');
+echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
 
 // Log the preview of this question.
 $event = \core\event\question_viewed::create_from_question_instance($question, $context);
@@ -170,27 +144,3 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 echo $OUTPUT->footer();
-
-/**
- * Creates a moodle preview url for the question
- *
- * @param int $questionid
- * @param object $context
- * @param null $previewid
- * @return moodle_url
- * @throws moodle_exception
- */
-function q_prev_form_url($questionid, $context, $previewid = null) {
-    $params = array(
-            'id' => $questionid,
-    );
-    if ($context->contextlevel == CONTEXT_MODULE) {
-        $params['cmid'] = $context->instanceid;
-    } else if ($context->contextlevel == CONTEXT_COURSE) {
-        $params['courseid'] = $context->instanceid;
-    }
-    if ($previewid) {
-        $params['previewid'] = $previewid;
-    }
-    return new moodle_url('/mod/flashcards/studentquestionpreview.php', $params);
-}

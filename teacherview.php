@@ -103,7 +103,7 @@ $authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLAS
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
 $questions = array();
 foreach ($questionstemp as $question) {
-    $qurl = new moodle_url('/question/preview.php', array('id' => $question->id, 'courseid' => $course->id));
+    $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $question->id, 'courseid' => $course->id));
     $eurl = new moodle_url('/question/question.php',
         array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
     $durl = new moodle_url('/mod/flashcards/teacherview.php',
