@@ -332,18 +332,40 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
 }
 
 /**
+ * Returns the teacher check result from the DB
+ *
+ * @param int $questionid
+ * @param int $fcid
+ * @return number
+ */
+
+function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
+    global $DB;
+
+    $bla = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid'=>$questionid, 'fcid'=>$fcid]);
+
+    $tcresult = 0;
+
+    if($bla) {
+        return $bla->teachercheck;
+    }
+
+    return $tcresult;
+}
+
+/**
  * Returns an array with the pix_icon and color for the teacher check info column
  *
  * @param int $teachercheckresult
  * @return string[]|\pix_icon[]
  */
-function mod_flashcard_teacher_check_info($teachercheckresult) {
+function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 
     $checkinfo = array();
-    if ($teachercheckresult == 2) {
+    if ($teachercheckresult == 1) {
         $checkicon = new \pix_icon('t/check', get_string('yes'));
         $checkinfo['color'] = 'mod-flashcards-color-approved';
-    } else if ($teachercheckresult == 1) {
+    } else if ($teachercheckresult == -1) {
         $checkicon = new \pix_icon('e/cancel', get_string('no'));
         $checkinfo['color'] = 'mod-flashcards-color-declined';
     } else {

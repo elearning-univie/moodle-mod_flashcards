@@ -112,7 +112,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020120900, 'flashcards');
     }
 
-    if ($oldversion < 2021061500) {
+    if ($oldversion < 2021061603) {
 
         // Define table flashcards_q_status to be created.
         $table = new xmldb_table('flashcards_q_status');
@@ -121,7 +121,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('fcid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('teachercheck', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('teachercheck', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table flashcards_q_status.
@@ -134,7 +134,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         }
 
         // Flashcards savepoint reached.
-        upgrade_mod_savepoint(true, 2021061500, 'flashcards');
+        upgrade_mod_savepoint(true, 2021061603, 'flashcards');
     }
 
     return true;
