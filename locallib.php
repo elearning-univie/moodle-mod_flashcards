@@ -342,11 +342,11 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
 function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
     global $DB;
 
-    $tcdata = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid'=>$questionid, 'fcid'=>$fcid]);
+    $tcdata = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid' => $questionid, 'fcid' => $fcid]);
 
     $tcresult = 0;
 
-    if($tcdata) {
+    if ($tcdata) {
         return $tcdata->teachercheck;
     }
 
