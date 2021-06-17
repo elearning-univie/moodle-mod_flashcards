@@ -30,6 +30,7 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/previewlib.php');
+require_once('locallib.php');
 
 global $PAGE, $DB, $OUTPUT;
 
@@ -130,6 +131,11 @@ $templatecontent['actionurl'] = $actionurl;
 $templatecontent['sesskey'] = sesskey();
 $templatecontent['slot'] = $slot;
 $templatecontent['question'] = $quba->render_question($slot, $options, $displaynumber);
+$templatecontent['upvotes'] = 'XX';
+$templatecontent['downvotes'] = 'XX';
+
+$checkinfo = mod_flashcard_teacher_check_info(0);
+$templatecontent['checkicon'] = $checkinfo['icon'];
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);

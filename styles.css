@@ -141,3 +141,12 @@ div.progress.mod-flashcards-progress-bar {
     max-height: 23em;
 }
 
+.mod-flashcards-preview-box {
+    border: 1px solid #cad0d7;
+    padding: 1em;
+    margin-bottom: 1.5em;
+}
+
+.mod-flashcards-upsidedown i{
+    transform: rotate(180deg);
+}
