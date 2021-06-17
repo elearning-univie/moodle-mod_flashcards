@@ -338,7 +338,6 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
  * @param int $fcid
  * @return number
  */
-
 function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
     global $DB;
 
