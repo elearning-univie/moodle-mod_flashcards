@@ -29,3 +29,5 @@ Feature: As a teacher I close the flashcard preview
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
     Then I should see "Flip card"
+    And I should see "Teacher check"
+    And I should see "Peer review"
