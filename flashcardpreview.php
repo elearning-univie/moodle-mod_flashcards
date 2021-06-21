@@ -134,7 +134,7 @@ $templatecontent['question'] = $quba->render_question($slot, $options, $displayn
 $templatecontent['upvotes'] = 'XX';
 $templatecontent['downvotes'] = 'XX';
 
-$checkinfo = mod_flashcard_teacher_check_info(0);
+$checkinfo = mod_flashcard_get_teacher_check_info(0);
 $templatecontent['checkicon'] = $checkinfo['icon'];
 
 $renderer = $PAGE->get_renderer('core');
