@@ -116,8 +116,8 @@ foreach ($questionstemp as $question) {
     $row['deleteurl'] = html_entity_decode($durl->__toString());
     $row['author'] = $authors[$question->createdby];
 
-    $teachercheckresult = rand(0, 2); // TODO change with proper function as soon as available
-    $checkinfo = mod_flashcard_teacher_check_info($teachercheckresult);
+    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id);
+    $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
 
     $row['teachercheckcolor'] = $checkinfo['color'];
     $row['teachercheck'] = $checkinfo['icon'];
