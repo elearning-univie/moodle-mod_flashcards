@@ -126,3 +126,6 @@ $string['flashcards:teacherview'] = 'View for teachers';
 $string['flashcards:addinstance'] = 'Add a new flashcard activity';
 $string['flashcards:webservice'] = 'Use flashcard services to update the learn progress';
 $string['flashcards:view'] = 'View the initial flashcard page where the user will be redirected to the teacher or student view';
+$string['flashcards:deleteownquestion'] = 'Delete own questions';
+$string['flashcards:editallquestions'] = 'Edit all questions';
+$string['flashcards:editownquestion'] = 'Edit own questions';
