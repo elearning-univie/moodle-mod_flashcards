@@ -126,3 +126,6 @@ $string['flashcards:teacherview'] = 'Lehrendenansicht anzeigen';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
 $string['flashcards:webservice'] = 'Lernfortschritt durch die Lernkartei aktualisieren';
 $string['flashcards:view'] = 'Initiale Ansicht der Lernkartei anzeigen. Nutzer/innen werden direkt auf die Lehrenden- oder Teilnehmer/innenansicht weitergeleitet.';
+$string['flashcards:deleteownquestion'] = 'Eigene Fragen löschen';
+$string['flashcards:editallquestions'] = 'Alle Fragen bearbeiten';
+$string['flashcards:editownquestion'] = 'Eigene Fragen bearbeiten';
