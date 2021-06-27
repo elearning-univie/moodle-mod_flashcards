@@ -28,72 +28,88 @@
     }
 }}
 <div class="flex-container">
-    <div class="row">
-        <div class="col-9">
-            <form method="post" action="{{{actionurl}}}" enctype="multipart/form-data" id="responseform">
+    <form method="post" action="{{{actionurl}}}" enctype="multipart/form-data" id="responseform">
+        <div class="row">
+            <div class="col-9">
                 <div>
-                    <input type="hidden" name="sesskey" value="{{sesskey}}" />
-                    <input type="hidden" name="slots" value="{{slot}}" />
-                    <input type="hidden" name="scrollpos" value="" id="scrollpos" />
+                    <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+                    <input type="hidden" name="slots" value="{{slot}}"/>
+                    <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
                 {{{question}}}
-                <div id="previewcontrols" class="controls"></div>
-            </form>
+                <div id="previewcontrols" class="controls">
+                {{#isteacher}}
+                    <input type="submit" id="id_finish_question_preview" class="btn btn-secondary" name="finish" vaule="{{# str }} submitandfinish, question {{/ str }}"/>
+                {{/isteacher}}
+                </div>
+            </div>
+            <div class="col">
+                <div class="mod-flashcards-preview-box">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{# str }} peerreview, mod_flashcards {{/ str }}</h5>
+                            {{# str }} peerreviewtext, mod_flashcards {{/ str }}
+                        </div>
+                        <div class="col-4">
+                            {{# pix }} t/approve, core {{/ pix }}<br>
+                            <div class="mod-flashcards-color-approved">
+                                {{upvotes}}
+                            </div>
+                            <div class="mod-flashcards-color-declined">
+                                {{downvotes}}
+                            </div>
+                            <div class="mod-flashcards-upsidedown">
+                                {{# pix }} t/approve, core {{/ pix }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mod-flashcards-preview-box">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{# str }} report, mod_flashcards {{/ str }}</h5>
+                            {{# str }} reporttext, mod_flashcards {{/ str }}
+                        </div>
+                        <div class="col-4 mod-flashcards-color-declined">
+                            {{# pix }} i/bullhorn, core {{/ pix }}
+                        </div>
+                    </div>
+                </div>
+                <div class="mod-flashcards-preview-box">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
+                            {{# str }} teacherchecktext, mod_flashcards {{/ str }}
+                        </div>
+                        {{#isteacher}}
+                        <div class="col-6">
+                            <select id="teachercheck" name="teachercheck">
+                                <option value="0" {{#selected0}}selected{{/selected0}}>uncheck</option>
+                                <option value="1" {{#selected1}}selected{{/selected1}}>accept</option>
+                                <option value="2" {{#selected2}}selected{{/selected2}}>decline</option>
+                            </select>
+                        {{/isteacher}}
+                        {{^isteacher}}
+                        <div class="col-4">
+                            <div class="{{teachercheckcolor}}">
+                                {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
+                            </div>
+                        {{/isteacher}}
+                        </div>
+                    </div>
+                </div>
+                <div class="mod-flashcards-preview-box">
+                    <div class="row">
+                        <div class="col">
+                            <h5>{{# str }} discussion, mod_flashcards {{/ str }}</h5>
+                            {{# str }} discussiontext, mod_flashcards {{/ str }}
+                        </div>
+                        <div class="col-4">
+                            {{# pix }} t/messages, core {{/ pix }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <div class="mod-flashcards-preview-box">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{# str }} peerreview, mod_flashcards {{/ str }}</h5>
-                        {{# str }} peerreviewtext, mod_flashcards {{/ str }}
-                    </div>
-                    <div class="col-4">
-                        {{# pix }} t/approve, core {{/ pix }}<br>
-                        <div class="mod-flashcards-color-approved">
-                            {{upvotes}}
-                        </div>
-                        <div class="mod-flashcards-color-declined">
-                            {{downvotes}}
-                        </div>
-                        <div class="mod-flashcards-upsidedown">
-                            {{# pix }} t/approve, core {{/ pix }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mod-flashcards-preview-box">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{# str }} report, mod_flashcards {{/ str }}</h5>
-                        {{# str }} reporttext, mod_flashcards {{/ str }}
-                    </div>
-                    <div class="col-4 mod-flashcards-color-declined">
-                        {{# pix }} i/bullhorn, core {{/ pix }}
-                    </div>
-                </div>
-            </div>
-            <div class="mod-flashcards-preview-box">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
-                        {{# str }} teacherchecktext, mod_flashcards {{/ str }}
-                    </div>
-                    <div class="col-4">
-                        {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
-                    </div>
-                </div>
-            </div>
-            <div class="mod-flashcards-preview-box">
-                <div class="row">
-                    <div class="col">
-                        <h5>{{# str }} discussion, mod_flashcards {{/ str }}</h5>
-                        {{# str }} discussiontext, mod_flashcards {{/ str }}
-                    </div>
-                    <div class="col-4">
-                        {{# pix }} t/messages, core {{/ pix }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </form>
 </div>

@@ -343,13 +343,11 @@ function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
 
     $tcdata = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid' => $questionid, 'fcid' => $fcid]);
 
-    $tcresult = 0;
-
     if ($tcdata) {
         return $tcdata->teachercheck;
     }
 
-    return $tcresult;
+    return 0;
 }
 
 /**
@@ -364,7 +362,7 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
     if ($teachercheckresult == 1) {
         $checkicon = new \pix_icon('t/check', get_string('yes'));
         $checkinfo['color'] = 'mod-flashcards-color-approved';
-    } else if ($teachercheckresult == -1) {
+    } else if ($teachercheckresult == 2) {
         $checkicon = new \pix_icon('e/cancel', get_string('no'));
         $checkinfo['color'] = 'mod-flashcards-color-declined';
     } else {
