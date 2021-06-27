@@ -122,57 +122,57 @@ if ($statusrec === false) {
     $statusval = $statusrec->teachercheck;
 }
 
-if (has_capability('mod/flashcards:teacherview', $context)) {
-    $isteacher = true;
-} else {
+if (!has_capability('mod/flashcards:teacherview', $context)) {
     $isteacher = false;
-}
+} else {
+    $isteacher = true;
 
-// Process any actions from the buttons at the bottom of the form.
-if (data_submitted() && confirm_sesskey()) {
-    try {
-        if (optional_param('finish', null, PARAM_BOOL)) {
-            $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
-            if ($nostatus) {
-                $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
-            } elseif ($statusrec->teachercheck != $teachercheck) {
-                $statusrec->teachercheck = $teachercheck;
-                $DB->update_record('flashcards_q_status', $statusrec);
+    // Process any actions from the buttons at the bottom of the form.
+    if (data_submitted() && confirm_sesskey()) {
+        try {
+            if (optional_param('finish', null, PARAM_BOOL)) {
+                $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
+                if ($nostatus) {
+                    $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                } else if ($statusrec->teachercheck != $teachercheck) {
+                    $statusrec->teachercheck = $teachercheck;
+                    $DB->update_record('flashcards_q_status', $statusrec);
+                }
+
+                $quba->process_all_actions();
+                $quba->finish_all_questions();
+
+                $transaction = $DB->start_delegated_transaction();
+                question_engine::save_questions_usage_by_activity($quba);
+                $transaction->allow_commit();
+                redirect($actionurl);
+            } else {
+                $quba->process_all_actions();
+
+                $transaction = $DB->start_delegated_transaction();
+                question_engine::save_questions_usage_by_activity($quba);
+                $transaction->allow_commit();
+
+                $scrollpos = optional_param('scrollpos', '', PARAM_RAW);
+                if ($scrollpos !== '') {
+                    $actionurl->param('scrollpos', (int) $scrollpos);
+                }
+                redirect($actionurl);
             }
 
-            $quba->process_all_actions();
-            $quba->finish_all_questions();
+        } catch (question_out_of_sequence_exception $e) {
+            print_error('submissionoutofsequencefriendlymessage', 'question', $actionurl);
 
-            $transaction = $DB->start_delegated_transaction();
-            question_engine::save_questions_usage_by_activity($quba);
-            $transaction->allow_commit();
-            redirect($actionurl);
-        } else {
-            $quba->process_all_actions();
-
-            $transaction = $DB->start_delegated_transaction();
-            question_engine::save_questions_usage_by_activity($quba);
-            $transaction->allow_commit();
-
-            $scrollpos = optional_param('scrollpos', '', PARAM_RAW);
-            if ($scrollpos !== '') {
-                $actionurl->param('scrollpos', (int) $scrollpos);
+        } catch (Exception $e) {
+            // This sucks, if we display our own custom error message, there is no way
+            // to display the original stack trace.
+            $debuginfo = '';
+            if (!empty($e->debuginfo)) {
+                $debuginfo = $e->debuginfo;
             }
-            redirect($actionurl);
+            print_error('errorprocessingresponses', 'question', $actionurl,
+                    $e->getMessage(), $debuginfo);
         }
-
-    } catch (question_out_of_sequence_exception $e) {
-        print_error('submissionoutofsequencefriendlymessage', 'question', $actionurl);
-
-    } catch (Exception $e) {
-        // This sucks, if we display our own custom error message, there is no way
-        // to display the original stack trace.
-        $debuginfo = '';
-        if (!empty($e->debuginfo)) {
-            $debuginfo = $e->debuginfo;
-        }
-        print_error('errorprocessingresponses', 'question', $actionurl,
-                $e->getMessage(), $debuginfo);
     }
 }
 
@@ -220,5 +220,7 @@ $PAGE->requires->strings_for_js(array(
         'closepreview'
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
-$PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
+if ($isteacher) {
+    $PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
+}
 echo $OUTPUT->footer();

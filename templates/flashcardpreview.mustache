@@ -24,7 +24,9 @@
         "slot":"1",
         "question":"<div>sometext</div>",
         "upvotes":"133",
-        "downvotes":"10"
+        "downvotes":"10",
+        "isteacher":"true",
+        "teachercheckcolor":"red"
     }
 }}
 <div class="flex-container">
@@ -84,9 +86,9 @@
                         {{#isteacher}}
                         <div class="col-6">
                             <select id="teachercheck" name="teachercheck">
-                                <option value="0" {{#selected0}}selected{{/selected0}}>uncheck</option>
-                                <option value="1" {{#selected1}}selected{{/selected1}}>accept</option>
-                                <option value="2" {{#selected2}}selected{{/selected2}}>decline</option>
+                                <option value="0" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
+                                <option value="1" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
+                                <option value="2" {{#selected2}}selected{{/selected2}}>{{# str }} decline, mod_flashcards {{/ str }}</option>
                             </select>
                         {{/isteacher}}
                         {{^isteacher}}
