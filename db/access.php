@@ -102,4 +102,14 @@ $capabilities = array(
             'user' => CAP_ALLOW
         )
     ),
+    'mod/flashcards:editreview' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_PROHIBIT,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    )
 );

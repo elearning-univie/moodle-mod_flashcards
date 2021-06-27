@@ -25,7 +25,7 @@
         "question":"<div>sometext</div>",
         "upvotes":"133",
         "downvotes":"10",
-        "isteacher":"true",
+        "canedit":"true",
         "teachercheckcolor":"red"
     }
 }}
@@ -40,9 +40,9 @@
                 </div>
                 {{{question}}}
                 <div id="previewcontrols" class="controls">
-                {{#isteacher}}
+                {{#canedit}}
                     <input type="submit" id="id_finish_question_preview" class="btn btn-secondary" name="finish"/>
-                {{/isteacher}}
+                {{/canedit}}
                 </div>
             </div>
             <div class="col">
@@ -83,20 +83,20 @@
                             <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
                             {{# str }} teacherchecktext, mod_flashcards {{/ str }}
                         </div>
-                        {{#isteacher}}
+                        {{#canedit}}
                         <div class="col-6">
                             <select id="teachercheck" name="teachercheck">
                                 <option value="0" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
                                 <option value="1" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
                                 <option value="2" {{#selected2}}selected{{/selected2}}>{{# str }} decline, mod_flashcards {{/ str }}</option>
                             </select>
-                        {{/isteacher}}
-                        {{^isteacher}}
+                        {{/canedit}}
+                        {{^canedit}}
                         <div class="col-4">
                             <div class="{{teachercheckcolor}}">
                                 {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
                             </div>
-                        {{/isteacher}}
+                        {{/canedit}}
                         </div>
                     </div>
                 </div>

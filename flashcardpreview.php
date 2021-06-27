@@ -122,10 +122,10 @@ if ($statusrec === false) {
     $statusval = $statusrec->teachercheck;
 }
 
-if (!has_capability('mod/flashcards:teacherview', $context)) {
-    $isteacher = false;
+if (!has_capability('mod/flashcards:editreview', $context)) {
+    $canedit = false;
 } else {
-    $isteacher = true;
+    $canedit = true;
 
     // Process any actions from the buttons at the bottom of the form.
     if (data_submitted() && confirm_sesskey()) {
@@ -199,8 +199,8 @@ $templatecontent['question'] = $quba->render_question($slot, $options, $displayn
 $templatecontent['upvotes'] = 'XX';
 $templatecontent['downvotes'] = 'XX';
 
-if ($isteacher) {
-    $templatecontent['isteacher'] = $isteacher;
+if ($canedit) {
+    $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
 } else {
     $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
@@ -220,7 +220,7 @@ $PAGE->requires->strings_for_js(array(
         'closepreview'
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
-if ($isteacher) {
+if ($canedit) {
     $PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
 }
 echo $OUTPUT->footer();
