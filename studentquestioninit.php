@@ -106,7 +106,7 @@ foreach ($questionstemp as $question) {
         }
     }
 
-    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id);
+    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id, $course->id);
     $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
 
     $row['teachercheckcolor'] = $checkinfo['color'];

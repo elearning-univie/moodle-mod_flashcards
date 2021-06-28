@@ -52,11 +52,7 @@ $options->load_user_defaults();
 $options->set_from_request();
 
 $params = array('id' => $question->id);
-if ($context->contextlevel == CONTEXT_MODULE) {
-    $params['cmid'] = $context->instanceid;
-} else if ($context->contextlevel == CONTEXT_COURSE) {
-    $params['courseid'] = $context->instanceid;
-}
+$params['cmid'] = $context->instanceid;
 
 $prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);

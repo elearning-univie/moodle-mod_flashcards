@@ -116,7 +116,7 @@ foreach ($questionstemp as $question) {
     $row['deleteurl'] = html_entity_decode($durl->__toString());
     $row['author'] = $authors[$question->createdby];
 
-    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id);
+    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id, $course->id);
     $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
 
     $row['teachercheckcolor'] = $checkinfo['color'];
