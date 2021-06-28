@@ -32,7 +32,7 @@
 <div class="flex-container">
     <form method="post" action="{{{actionurl}}}" enctype="multipart/form-data" id="responseform">
         <div class="row">
-            <div class="col-9">
+            <div class="col">
                 <div>
                     <input type="hidden" name="sesskey" value="{{sesskey}}"/>
                     <input type="hidden" name="slots" value="{{slot}}"/>
@@ -41,18 +41,18 @@
                 {{{question}}}
                 <div id="previewcontrols" class="controls">
                 {{#canedit}}
-                    <input type="submit" id="id_finish_question_preview" class="btn btn-secondary" name="finish"/>
+                    <input type="submit" id="id_finish_question_preview" class="btn btn-secondary" name="finish" value="{{# str }} save, mod_flashcards {{/ str }}"/>
                 {{/canedit}}
                 </div>
             </div>
-            <div class="col">
+            <div class="col-12 col-xl-3">
                 <div class="mod-flashcards-preview-box">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-8">
                             <h5>{{# str }} peerreview, mod_flashcards {{/ str }}</h5>
                             {{# str }} peerreviewtext, mod_flashcards {{/ str }}
                         </div>
-                        <div class="col-4">
+                        <div class="col">
                             {{# pix }} t/approve, core {{/ pix }}<br>
                             <div class="mod-flashcards-color-approved">
                                 {{upvotes}}
@@ -68,23 +68,23 @@
                 </div>
                 <div class="mod-flashcards-preview-box">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-8">
                             <h5>{{# str }} report, mod_flashcards {{/ str }}</h5>
                             {{# str }} reporttext, mod_flashcards {{/ str }}
                         </div>
-                        <div class="col-4 mod-flashcards-color-declined">
+                        <div class="col mod-flashcards-color-declined">
                             {{# pix }} i/bullhorn, core {{/ pix }}
                         </div>
                     </div>
                 </div>
                 <div class="mod-flashcards-preview-box">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-8">
                             <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
                             {{# str }} teacherchecktext, mod_flashcards {{/ str }}
                         </div>
+                        <div class="col">
                         {{#canedit}}
-                        <div class="col-6">
                             <select id="teachercheck" name="teachercheck">
                                 <option value="0" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
                                 <option value="1" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
@@ -92,7 +92,6 @@
                             </select>
                         {{/canedit}}
                         {{^canedit}}
-                        <div class="col-4">
                             <div class="{{teachercheckcolor}}">
                                 {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
                             </div>
@@ -102,11 +101,11 @@
                 </div>
                 <div class="mod-flashcards-preview-box">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-8">
                             <h5>{{# str }} discussion, mod_flashcards {{/ str }}</h5>
                             {{# str }} discussiontext, mod_flashcards {{/ str }}
                         </div>
-                        <div class="col-4">
+                        <div class="col">
                             {{# pix }} t/messages, core {{/ pix }}
                         </div>
                     </div>

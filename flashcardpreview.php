@@ -35,12 +35,14 @@ require_once('locallib.php');
 global $PAGE, $DB, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-$courseid = required_param('courseid', PARAM_INT);
+$cmid = required_param('cmid', PARAM_INT);
 $flashcardsid = required_param('fcid', PARAM_INT);
-require_login($courseid);
+
+list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
+$context = context_module::instance($cm->id);
+require_login($course, false, $cm);
 
 $question = question_bank::load_question($id);
-$context = context_course::instance($courseid);
 $PAGE->set_pagelayout('popup');
 
 // Get and validate display options.
@@ -107,6 +109,7 @@ $options->maxmark = $quba->get_question_max_mark($slot);
 
 $params = array(
         'id' => $question->id,
+        'cmid' => $cmid,
         'previewid' => $quba->get_id(),
         'fcid' => $flashcardsid
 );

@@ -92,7 +92,7 @@ foreach ($questionstemp as $question) {
     $row = [];
     $row['qid'] = $question->id;
     $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
-            array('id' => $question->id, 'courseid' => $course->id, 'fcid' => $flashcards->id));
+            array('id' => $question->id, 'cmid' => $cm->id, 'fcid' => $flashcards->id));
     $row['qurl'] = html_entity_decode($qurl->__toString());
     $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
     $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
