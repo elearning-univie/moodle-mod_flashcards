@@ -358,11 +358,11 @@ function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid, int 
             $params['courseid'] = $courseid;
             $params['questionid'] = $questionid;
 
-            $sql = "SELECT 'X' FROM {question} q, 
-                                    {role_assignments} ra, 
-                                    {context} c 
-                              WHERE q.id = :questionid 
-                                AND q.createdby = ra.userid  
+            $sql = "SELECT 'X' FROM {question} q,
+                                    {role_assignments} ra,
+                                    {context} c
+                              WHERE q.id = :questionid
+                                AND q.createdby = ra.userid
                                 AND ra.contextid = c.id
                                 AND c.contextlevel = 50
                                 AND c.instanceid = :courseid
