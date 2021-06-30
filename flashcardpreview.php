@@ -35,11 +35,14 @@ require_once('locallib.php');
 global $PAGE, $DB, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-$courseid = required_param('courseid', PARAM_INT);
-require_login($courseid);
+$cmid = required_param('cmid', PARAM_INT);
+$flashcardsid = required_param('fcid', PARAM_INT);
+
+list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
+$context = context_module::instance($cm->id);
+require_login($course, false, $cm);
 
 $question = question_bank::load_question($id);
-$context = context_course::instance($courseid);
 $PAGE->set_pagelayout('popup');
 
 // Get and validate display options.
@@ -49,11 +52,7 @@ $options->load_user_defaults();
 $options->set_from_request();
 
 $params = array('id' => $question->id);
-if ($context->contextlevel == CONTEXT_MODULE) {
-    $params['cmid'] = $context->instanceid;
-} else if ($context->contextlevel == CONTEXT_COURSE) {
-    $params['courseid'] = $context->instanceid;
-}
+$params['cmid'] = $context->instanceid;
 
 $prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);
@@ -106,10 +105,75 @@ $options->maxmark = $quba->get_question_max_mark($slot);
 
 $params = array(
         'id' => $question->id,
+        'cmid' => $cmid,
         'previewid' => $quba->get_id(),
+        'fcid' => $flashcardsid
 );
 $params['courseid'] = $context->instanceid;
 $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
+$nostatus = false;
+
+$statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid]);
+if ($statusrec === false) {
+    $nostatus = true;
+    $statusval = 0;
+} else {
+    $statusval = $statusrec->teachercheck;
+}
+
+if (!has_capability('mod/flashcards:editreview', $context)) {
+    $canedit = false;
+} else {
+    $canedit = true;
+
+    // Process any actions from the buttons at the bottom of the form.
+    if (data_submitted() && confirm_sesskey()) {
+        try {
+            if (optional_param('finish', null, PARAM_BOOL)) {
+                $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
+                if ($nostatus) {
+                    $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                } else if ($statusrec->teachercheck != $teachercheck) {
+                    $statusrec->teachercheck = $teachercheck;
+                    $DB->update_record('flashcards_q_status', $statusrec);
+                }
+
+                $quba->process_all_actions();
+                $quba->finish_all_questions();
+
+                $transaction = $DB->start_delegated_transaction();
+                question_engine::save_questions_usage_by_activity($quba);
+                $transaction->allow_commit();
+                redirect($actionurl);
+            } else {
+                $quba->process_all_actions();
+
+                $transaction = $DB->start_delegated_transaction();
+                question_engine::save_questions_usage_by_activity($quba);
+                $transaction->allow_commit();
+
+                $scrollpos = optional_param('scrollpos', '', PARAM_RAW);
+                if ($scrollpos !== '') {
+                    $actionurl->param('scrollpos', (int) $scrollpos);
+                }
+                redirect($actionurl);
+            }
+
+        } catch (question_out_of_sequence_exception $e) {
+            print_error('submissionoutofsequencefriendlymessage', 'question', $actionurl);
+
+        } catch (Exception $e) {
+            // This sucks, if we display our own custom error message, there is no way
+            // to display the original stack trace.
+            $debuginfo = '';
+            if (!empty($e->debuginfo)) {
+                $debuginfo = $e->debuginfo;
+            }
+            print_error('errorprocessingresponses', 'question', $actionurl,
+                    $e->getMessage(), $debuginfo);
+        }
+    }
+}
 
 if ($question->length) {
     $displaynumber = '1';
@@ -134,8 +198,14 @@ $templatecontent['question'] = $quba->render_question($slot, $options, $displayn
 $templatecontent['upvotes'] = 'XX';
 $templatecontent['downvotes'] = 'XX';
 
-$checkinfo = mod_flashcard_get_teacher_check_info(0);
-$templatecontent['checkicon'] = $checkinfo['icon'];
+if ($canedit) {
+    $templatecontent['canedit'] = $canedit;
+    $templatecontent['selected' . $statusval] = true;
+} else {
+    $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
+    $templatecontent['checkicon'] = $checkinfo['icon'];
+    $templatecontent['teachercheckcolor'] = $checkinfo['color'];
+}
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
@@ -149,4 +219,7 @@ $PAGE->requires->strings_for_js(array(
         'closepreview'
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
+if ($canedit) {
+    $PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
+}
 echo $OUTPUT->footer();

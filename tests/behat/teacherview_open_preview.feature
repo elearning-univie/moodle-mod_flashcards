@@ -1,4 +1,4 @@
-@mod @mod_flashcards @amc
+@mod @mod_flashcards
 
 Feature: As a teacher I close the flashcard preview
 
@@ -26,8 +26,17 @@ Feature: As a teacher I close the flashcard preview
 
   @javascript
   Scenario: Close Flashcard preview as Teacher
-    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
+    When I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
     Then I should see "Flip card"
     And I should see "Teacher check"
     And I should see "Peer review"
+
+  @javascript
+  Scenario: Set Flashcard Review as Teacher
+    When I click on ".mod_flashcards_questionpreviewlink" "css_element"
+    And I switch to the browser tab opened by the app
+    And I should see "accept"
+    And I select "unchecked" from the "teachercheck" singleselect
+    And I click on "Save" "button"
+    Then I should see "unchecked"

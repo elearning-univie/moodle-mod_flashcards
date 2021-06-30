@@ -31,6 +31,10 @@ define('FLASHCARDS_LN_UNKNOWN', 'mod_flashcards_ln_unknown_');
 define('FLASHCARDS_AUTHOR_NONE', 0);
 define('FLASHCARDS_AUTHOR_GROUP', 1);
 define('FLASHCARDS_AUTHOR_NAME', 2);
+
+define('FLASHCARDS_CHECK_NONE', 0);
+define('FLASHCARDS_CHECK_POS', 1);
+define('FLASHCARDS_CHECK_NEG', 2);
 /**
  * Checks if the user has the right to view the course
  *
@@ -336,20 +340,45 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
  *
  * @param int $questionid
  * @param int $fcid
+ * @param int $courseid
  * @return number
  */
-function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
+function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid, int $courseid) {
     global $DB;
 
     $tcdata = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid' => $questionid, 'fcid' => $fcid]);
 
-    $tcresult = 0;
-
     if ($tcdata) {
         return $tcdata->teachercheck;
-    }
+    } else {
+        $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+        if (count($roleids) > 0) {
+            list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+            $params = $roleparams;
+            $params['courseid'] = $courseid;
+            $params['questionid'] = $questionid;
 
-    return $tcresult;
+            $sql = "SELECT 'X' FROM {question} q,
+                                    {role_assignments} ra,
+                                    {context} c
+                              WHERE q.id = :questionid
+                                AND q.createdby = ra.userid
+                                AND ra.contextid = c.id
+                                AND c.contextlevel = 50
+                                AND c.instanceid = :courseid
+                                AND ra.roleid $inrolesql";
+
+            if ($DB->record_exists_sql($sql, $params)) {
+                $dataobject = ['questionid' => $questionid, 'fcid' => $fcid, 'teachercheck' => FLASHCARDS_CHECK_POS];
+                $DB->insert_record('flashcards_q_status', $dataobject);
+                return FLASHCARDS_CHECK_POS;
+            } else {
+                $dataobject = ['questionid' => $questionid, 'fcid' => $fcid, 'teachercheck' => FLASHCARDS_CHECK_NONE];
+                $DB->insert_record('flashcards_q_status', $dataobject);
+            }
+        }
+    }
+    return FLASHCARDS_CHECK_NONE;
 }
 
 /**
@@ -361,10 +390,10 @@ function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid) {
 function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 
     $checkinfo = array();
-    if ($teachercheckresult == 1) {
+    if ($teachercheckresult == FLASHCARDS_CHECK_POS) {
         $checkicon = new \pix_icon('t/check', get_string('yes'));
         $checkinfo['color'] = 'mod-flashcards-color-approved';
-    } else if ($teachercheckresult == -1) {
+    } else if ($teachercheckresult == FLASHCARDS_CHECK_NEG) {
         $checkicon = new \pix_icon('e/cancel', get_string('no'));
         $checkinfo['color'] = 'mod-flashcards-color-declined';
     } else {

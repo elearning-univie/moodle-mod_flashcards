@@ -103,7 +103,7 @@ $authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLAS
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
 $questions = array();
 foreach ($questionstemp as $question) {
-    $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $question->id, 'courseid' => $course->id));
+    $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $question->id, 'cmid' => $cm->id, 'fcid' => $flashcards->id));
     $eurl = new moodle_url('/question/question.php',
         array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
     $durl = new moodle_url('/mod/flashcards/teacherview.php',
@@ -116,7 +116,7 @@ foreach ($questionstemp as $question) {
     $row['deleteurl'] = html_entity_decode($durl->__toString());
     $row['author'] = $authors[$question->createdby];
 
-    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id);
+    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id, $course->id);
     $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
 
     $row['teachercheckcolor'] = $checkinfo['color'];
