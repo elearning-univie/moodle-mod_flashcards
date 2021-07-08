@@ -39,14 +39,14 @@ class mod_flashcards_observer {
         global $DB;
 
         $tc = 0;
-        $record = $DB->get_record('flashcards_q_status', array('questionid'=>$event->objectid));
+        $record = $DB->get_record('flashcards_q_status', array('questionid' => $event->objectid));
         if (!$record) {
             return;
         }
 
         // reset teachercheck only when a student-authored card is changed.
         if (has_capability('mod/flashcards:studentview', $event->get_context(), $event->userid)) {
-            $DB->update_record('flashcards_q_status', array('id'=>$record->id, 'teachercheck'=>$tc));
+            $DB->update_record('flashcards_q_status', array('id'=> $record->id, 'teachercheck'=> $tc));
         }
 
         // reset peer review for all roles
