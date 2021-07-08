@@ -46,7 +46,7 @@ class mod_flashcards_observer {
 
         // reset teachercheck only when a student-authored card is changed.
         if (has_capability('mod/flashcards:studentview', $event->get_context(), $event->userid)) {
-            $DB->update_record('flashcards_q_status', array('id'=> $record->id, 'teachercheck'=> $tc));
+            $DB->update_record('flashcards_q_status', array('id' => $record->id, 'teachercheck' => $tc));
         }
 
         // reset peer review for all roles
