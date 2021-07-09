@@ -114,7 +114,7 @@ $capabilities = array(
     ),
     'mod/flashcards:editcardwithouttcreset' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW
