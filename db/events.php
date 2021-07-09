@@ -26,6 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 $observers = array(
     array(
         'eventname'   => '\core\event\question_updated',
-        'callback'    => 'mod_flashcards_observer::question_updated',
+        'callback'    => '\mod_flashcards\event\observer::question_updated',
     ),
 );
