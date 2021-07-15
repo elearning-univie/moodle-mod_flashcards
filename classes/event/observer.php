@@ -39,17 +39,20 @@ class observer {
     public static function question_updated(\core\event\question_updated $event) {
         global $DB;
 
-        $tc = 0;
-        $record = $DB->get_record('flashcards_q_status', array('questionid' => $event->objectid));
-        if (!$record) {
-            return;
-        }
-
+        $sql = "SELECT fcqstatus.id AS id,
+                       cm.id AS coursemodule
+                  FROM {flashcards_q_status} fcqstatus
+                  JOIN {modules} m ON m.name = 'flashcards'
+                  JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
+                 WHERE fcqstatus.questionid = :questionid";
+        $records = $DB->get_records_sql($sql,['questionid' => $event->objectid]);
+        foreach ($records as $record) {
         // reset teachercheck only when a student-authored card is changed.
-        if (has_capability('mod/flashcards:editcardwithouttcreset', $event->get_context(), $event->userid)) {
-            $DB->update_record('flashcards_q_status', array('id' => $record->id, 'teachercheck' => $tc));
+        $context = \context_module::instance($record->coursemodule, MUST_EXIST);
+            if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
+                $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
+            }
         }
-
         // reset peer review for all roles
     }
 
