@@ -47,13 +47,13 @@ class observer {
                  WHERE fcqstatus.questionid = :questionid";
         $records = $DB->get_records_sql($sql,['questionid' => $event->objectid]);
         foreach ($records as $record) {
-        // reset teachercheck only when a student-authored card is changed.
-        $context = \context_module::instance($record->coursemodule, MUST_EXIST);
+            // Reset teachercheck only when a the editor doesn't have the right to (normally students).
+            $context = \context_module::instance($record->coursemodule, MUST_EXIST);
             if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
                 $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
             }
         }
-        // reset peer review for all roles
+        // Reset peer review for all roles. TODO
     }
 
 }
