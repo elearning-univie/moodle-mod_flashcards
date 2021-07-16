@@ -45,7 +45,7 @@ class observer {
                   JOIN {modules} m ON m.name = 'flashcards'
                   JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
                  WHERE fcqstatus.questionid = :questionid";
-        $records = $DB->get_records_sql($sql,['questionid' => $event->objectid]);
+        $records = $DB->get_records_sql($sql, ['questionid' => $event->objectid]);
         foreach ($records as $record) {
             // Reset teachercheck only when a the editor doesn't have the right to (normally students).
             $context = \context_module::instance($record->coursemodule, MUST_EXIST);
