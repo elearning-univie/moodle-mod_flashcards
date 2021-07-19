@@ -1,10 +1,8 @@
-#mod-flashcards-question .que .info {
-    visibility: hidden;
-    width: 0;
-    padding: 0;
+.path-mod-flashcards .que .info {
+    display: none;
 }
 
-#mod-flashcards-question .que .content {
+.path-mod-flashcards .que .content {
     margin: 0;
 }
 
@@ -98,15 +96,15 @@ img.mod-flashcards-appstore-badge {
     max-height: 2em;
 }
 
-.mod-flashcards-color-declined {
+.path-mod-flashcards .color-declined {
     color: red;
 }
 
-.mod-flashcards-color-approved {
+.path-mod-flashcards .color-approved {
     color: green;
 }
 
-.mod-flashcards-color-pending {
+.path-mod-flashcards .color-pending {
     color: orange;
 }
 
@@ -147,6 +145,12 @@ div.progress.mod-flashcards-progress-bar {
     margin-bottom: 1.5em;
 }
 
-.mod-flashcards-upsidedown i {
+.path-mod-flashcards .upsidedown i {
     transform: rotate(180deg);
+}
+
+.path-mod-flashcards .iconsize i {
+    font-size: 2em;
+    width: auto;
+    height: auto;
 }

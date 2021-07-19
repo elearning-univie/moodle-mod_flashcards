@@ -198,13 +198,13 @@ $templatecontent['question'] = $quba->render_question($slot, $options, $displayn
 $templatecontent['upvotes'] = 'XX';
 $templatecontent['downvotes'] = 'XX';
 
+$checkinfo = mod_flashcard_get_teacher_check_info($statusval);
+$templatecontent['checkicon'] = $checkinfo['icon'];
+$templatecontent['teachercheckcolor'] = $checkinfo['color'];
+
 if ($canedit) {
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
-} else {
-    $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
-    $templatecontent['checkicon'] = $checkinfo['icon'];
-    $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
 $renderer = $PAGE->get_renderer('core');

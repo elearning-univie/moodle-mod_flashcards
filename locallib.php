@@ -392,13 +392,13 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
     $checkinfo = array();
     if ($teachercheckresult == FLASHCARDS_CHECK_POS) {
         $checkicon = new \pix_icon('t/check', get_string('yes'));
-        $checkinfo['color'] = 'mod-flashcards-color-approved';
+        $checkinfo['color'] = 'color-approved';
     } else if ($teachercheckresult == FLASHCARDS_CHECK_NEG) {
         $checkicon = new \pix_icon('e/cancel', get_string('no'));
-        $checkinfo['color'] = 'mod-flashcards-color-declined';
+        $checkinfo['color'] = 'color-declined';
     } else {
         $checkicon = new \pix_icon('e/question', get_string('question'));
-        $checkinfo['color'] = 'mod-flashcards-color-pending';
+        $checkinfo['color'] = 'color-pending';
     }
     $checkinfo['icon'] = $checkicon->export_for_pix();
     return $checkinfo;
