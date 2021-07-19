@@ -36,7 +36,7 @@ Feature: As a teacher I close the flashcard preview
   Scenario: Set Flashcard Review as Teacher
     When I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
-    And I should see "accept"
-    And I select "unchecked" from the "teachercheck" singleselect
+    And I should see "correct"
+    And I select "not yet evaluated" from the "teachercheck" singleselect
     And I click on "Save" "button"
-    Then I should see "unchecked"
+    Then I should see "not yet evaluated"
