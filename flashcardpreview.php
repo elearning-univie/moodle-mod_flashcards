@@ -202,17 +202,11 @@ if ($canedit) {
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
 
-    $checkinfo = mod_flashcard_get_teacher_check_info(1);
-    $templatecontent['checkicon1'] = $checkinfo['icon'];
-    $templatecontent['teachercheckcolor1'] = $checkinfo['color'];
-
-    $checkinfo = mod_flashcard_get_teacher_check_info(2);
-    $templatecontent['checkicon2'] = $checkinfo['icon'];
-    $templatecontent['teachercheckcolor2'] = $checkinfo['color'];
-
-    $checkinfo = mod_flashcard_get_teacher_check_info(0);
-    $templatecontent['checkicon0'] = $checkinfo['icon'];
-    $templatecontent['teachercheckcolor0'] = $checkinfo['color'];
+    for($i=0; $i < 3; $i++) {
+        $checkinfo = mod_flashcard_get_teacher_check_info($i);
+        $templatecontent['checkicon' . $i] = $checkinfo['icon'];
+        $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
+    }
 
     $templatecontent['icon' . $statusval] = 1;
 } else {
