@@ -202,7 +202,7 @@ if ($canedit) {
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
 
-    for($i=0; $i < 3; $i++) {
+    for($i = 0; $i < 3; $i++) {
         $checkinfo = mod_flashcard_get_teacher_check_info($i);
         $templatecontent['checkicon' . $i] = $checkinfo['icon'];
         $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
