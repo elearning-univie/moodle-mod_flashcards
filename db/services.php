@@ -35,7 +35,8 @@ $services = array(
                     'mod_flashcards_load_next_question',
                     'mod_flashcards_load_learn_progress',
                     'mod_flashcards_init_questions',
-                    'mod_flashcards_start_learn_now'),
+                    'mod_flashcards_start_learn_now',
+                    'mod_flashcards_set_preview_status'),
                 'shortname' => MOD_FLASHCARDS_SERVICE_SHORTNAME,
                 'requiredcapability' => 'mod/flashcards:webservice',
                 'restrictedusers' => 0,
@@ -85,6 +86,15 @@ $functions = array(
             'methodname' => 'start_learn_now',
             'classpath' => 'mod/flashcards/externallib.php',
             'description' => 'Initializes the learn now session',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        ),
+        'mod_flashcards_set_preview_status' => array(
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'set_preview_status',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Sets the status of a flashcard',
             'type' => 'write',
             'ajax' => true,
             'loginrequired' => true

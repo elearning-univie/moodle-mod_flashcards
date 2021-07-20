@@ -38,5 +38,5 @@ Feature: As a teacher I close the flashcard preview
     And I switch to the browser tab opened by the app
     And I should see "correct"
     And I select "not yet evaluated" from the "teachercheck" singleselect
-    And I click on "Save" "button"
+    And I reload the page
     Then I should see "not yet evaluated"

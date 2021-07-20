@@ -39,11 +39,7 @@
                     <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
                 {{{question}}}
-                <div id="previewcontrols" class="controls">
-                {{#canedit}}
-                    <input type="submit" id="id_finish_question_preview" class="btn btn-secondary" name="finish" value="{{# str }} save, mod_flashcards {{/ str }}"/>
-                {{/canedit}}
-                </div>
+                <div id="previewcontrols" class="controls"></div>
             </div>
             <div class="col-12 col-xl-3">
                 <div class="mod-flashcards-preview-box">
@@ -109,9 +105,22 @@
                         </div>
                         {{/canedit}}
                         <div class="col-3">
+                            {{#canedit}}
+                            <div id="tcicon1" class="{{teachercheckcolor1}} iconsize" {{^icon1}} style="display: none;" {{/icon1}}>
+                                {{# pix }} {{checkicon1.key}}, {{checkicon1.component}}, {{checkicon1.title}} {{/ pix }}
+                            </div>
+                            <div id="tcicon2" class="{{teachercheckcolor2}} iconsize" {{^icon2}} style="display: none;" {{/icon2}}>
+                                {{# pix }} {{checkicon2.key}}, {{checkicon2.component}}, {{checkicon2.title}} {{/ pix }}
+                            </div>
+                            <div id="tcicon0" class="{{teachercheckcolor0}} iconsize" {{^icon0}} style="display: none;" {{/icon0}}>
+                                {{# pix }} {{checkicon0.key}}, {{checkicon0.component}}, {{checkicon0.title}} {{/ pix }}
+                            </div>
+                            {{/canedit}}
+                            {{^canedit}}
                             <div class="{{teachercheckcolor}} iconsize">
                                 {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
                             </div>
+                            {{/canedit}}
                         </div>
                     </div>
                 </div>

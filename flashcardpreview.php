@@ -198,13 +198,21 @@ $templatecontent['question'] = $quba->render_question($slot, $options, $displayn
 $templatecontent['upvotes'] = 'XX';
 $templatecontent['downvotes'] = 'XX';
 
-$checkinfo = mod_flashcard_get_teacher_check_info($statusval);
-$templatecontent['checkicon'] = $checkinfo['icon'];
-$templatecontent['teachercheckcolor'] = $checkinfo['color'];
-
 if ($canedit) {
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
+
+    for ($i = 0; $i < 3; $i++) {
+        $checkinfo = mod_flashcard_get_teacher_check_info($i);
+        $templatecontent['checkicon' . $i] = $checkinfo['icon'];
+        $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
+    }
+
+    $templatecontent['icon' . $statusval] = 1;
+} else {
+    $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
+    $templatecontent['checkicon'] = $checkinfo['icon'];
+    $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
 $renderer = $PAGE->get_renderer('core');
@@ -220,6 +228,6 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 if ($canedit) {
-    $PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
+    $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init', [$question->id, $flashcardsid]);
 }
 echo $OUTPUT->footer();
