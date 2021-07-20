@@ -300,6 +300,8 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Sets the review status of a flashcard
+     *
      * @param int $flashcardsid
      * @param int $questionid
      * @param int $status
