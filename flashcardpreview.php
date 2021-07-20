@@ -220,6 +220,6 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 if ($canedit) {
-    $PAGE->requires->js_call_amd('core_form/submit', 'init', ['id_finish_question_preview']);
+    $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init', [$question->id, $flashcardsid]);
 }
 echo $OUTPUT->footer();

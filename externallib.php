@@ -111,6 +111,21 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function set_preview_status_parameters() {
+        return new external_function_parameters(
+                array(
+                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                        'questionid' => new external_value(PARAM_INT, 'id of question'),
+                        'status' => new external_value(PARAM_INT, 'number of questions to learn')
+                )
+        );
+    }
+
+    /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
      * @param int $fid
@@ -285,6 +300,33 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * @param int $flashcardsid
+     * @param int $questionid
+     * @param int $status
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     */
+    public static function set_preview_status($flashcardsid, $questionid, $status) {
+        global $DB;
+
+        $params = self::validate_parameters(self::set_preview_status_parameters(),
+                array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'status' => $status));
+
+        if ($params['status'] != FLASHCARDS_CHECK_NONE && $params['status'] != FLASHCARDS_CHECK_POS && $params['status'] != FLASHCARDS_CHECK_NEG) {
+            return;
+        }
+
+        $statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['flashcardsid']]);
+
+        if ($statusrec === false) {
+            $DB->insert_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['flashcardsid'], 'teachercheck' => $params['status']]);
+        } else {
+            $statusrec->teachercheck = $params['status'];
+            $DB->update_record('flashcards_q_status', $statusrec);
+        }
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
@@ -327,5 +369,14 @@ class mod_flashcards_external extends external_api {
      */
     public static function start_learn_now_returns() {
         return new external_value(PARAM_RAW, 'learn now url');
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function set_preview_status_returns() {
+        return null;
     }
 }
