@@ -154,3 +154,11 @@ div.progress.mod-flashcards-progress-bar {
     width: auto;
     height: auto;
 }
+
+.path-mod-flashcards .texticon {
+    display: inline;
+}
+
+.path-mod-flashcards .texticon i {
+    margin: 0em;
+}

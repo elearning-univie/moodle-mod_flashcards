@@ -90,7 +90,15 @@
                     <div class="row">
                         <div class="col">
                             <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
-                            {{# str }} teacherchecktext, mod_flashcards {{/ str }}
+                            {{# str }}
+                                teacherchecktext,
+                                mod_flashcards,
+                                {
+                                "correct" : {{# quote }}<div class='{{teachercheckcolor1}} texticon'>{{# pix }} {{checkicon1.key}}, {{checkicon1.component}}, {{checkicon1.title}} {{/ pix }}</div>{{/ quote }},
+                                "wrong" : {{# quote }}<div class='{{teachercheckcolor2}} texticon'>{{# pix }} {{checkicon2.key}}, {{checkicon2.component}}, {{checkicon2.title}} {{/ pix }}</div>{{/ quote }},
+                                "notyet" : {{# quote }}<div class='{{teachercheckcolor0}} texticon'>{{# pix }} {{checkicon0.key}}, {{checkicon0.component}}, {{checkicon0.title}} {{/ pix }}</div>{{/ quote }}
+                                }
+                            {{/ str }}
                         </div>
                     </div>
                     <br>
