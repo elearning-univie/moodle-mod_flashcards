@@ -138,7 +138,7 @@ class mod_flashcards_external extends external_api {
                 'userid' => new external_value(PARAM_INT, 'id of user'),
                 'vote' => new external_value(PARAM_INT, 'peer review vote')
             )
-       );
+        );
     }
 
     /**
