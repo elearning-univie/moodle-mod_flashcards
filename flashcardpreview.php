@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/previewlib.php');
 require_once('locallib.php');
 
-global $PAGE, $DB, $OUTPUT;
+global $PAGE, $DB, $OUTPUT, $USER;
 
 $id = required_param('id', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
@@ -195,8 +195,11 @@ $templatecontent['actionurl'] = $actionurl;
 $templatecontent['sesskey'] = sesskey();
 $templatecontent['slot'] = $slot;
 $templatecontent['question'] = $quba->render_question($slot, $options, $displaynumber);
-$templatecontent['upvotes'] = 'XX';
-$templatecontent['downvotes'] = 'XX';
+$templatecontent['upvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, true);
+$templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, false);
+$templatecontent['questionid'] = $id;
+$templatecontent['fcid'] = $flashcardsid;
+$templatecontent['userid'] = $USER->id;
 
 if ($canedit) {
     $templatecontent['canedit'] = $canedit;
@@ -215,6 +218,10 @@ if ($canedit) {
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
+$peerreviewvote = mod_flashcard_get_peer_review_vote($question->id, $flashcardsid, $USER->id);
+$templatecontent['prbtncolorinfoup'] = mod_flashcard_get_peer_review_info($peerreviewvote, true);
+$templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($peerreviewvote, false);
+
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
 
@@ -227,7 +234,5 @@ $PAGE->requires->strings_for_js(array(
         'closepreview'
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
-if ($canedit) {
-    $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init', [$question->id, $flashcardsid]);
-}
+$PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');
 echo $OUTPUT->footer();

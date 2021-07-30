@@ -50,16 +50,16 @@
                         </div>
                         <div class="col-3">
                             <div class="iconsize">
-                                {{# pix }} t/approve, core, {{# str }} yes, core {{/ str }} {{/ pix }}
+                                <button type="button" class="{{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review_up({{questionid}}, {{fcid}}, {{userid}})">{{# pix }} t/approve, core, {{# str }} yes, core {{/ str }} {{/ pix }}</button>
                             </div>
-                            <div class="color-approved">
+                            <div id="upvotes" name="upvotes" class="color-approved">
                                 {{upvotes}}
                             </div>
-                            <div class="color-declined">
+                            <div id="downvotes" name="downvotes" class="color-declined">
                                 {{downvotes}}
                             </div>
                             <div class="upsidedown iconsize">
-                                {{# pix }} t/approve, core, {{# str }} no, core{{/ str }} {{/ pix }}
+                                <button type="button" class="{{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review_down({{questionid}}, {{fcid}}, {{userid}})">{{# pix }} t/approve, core, {{# str }} no, core{{/ str }} {{/ pix }}</button>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                     <div class="row justify-content-between">
                         {{#canedit}}
                         <div class="col">
-                            <select id="teachercheck" name="teachercheck">
+                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, this.value)">
                                 <option value="0" title="{{# str }} uncheck, mod_flashcards {{/ str }}" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
                                 <option value="1" title="{{# str }} accept, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
                                 <option value="2" title="{{# str }} decline, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} decline, mod_flashcards {{/ str }}</option>

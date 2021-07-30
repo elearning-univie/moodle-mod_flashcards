@@ -126,6 +126,22 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function set_peer_review_vote_parameters() {
+        return new external_function_parameters(
+            array(
+                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'questionid' => new external_value(PARAM_INT, 'id of question'),
+                'userid' => new external_value(PARAM_INT, 'id of user'),
+                'vote' => new external_value(PARAM_INT, 'peer review vote')
+            )
+       );
+    }
+
+    /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
      * @param int $fid
@@ -329,6 +345,40 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Sets the users peer review vote of a flashcard
+     *
+     * @param int $flashcardsid
+     * @param int $questionid
+     * @param int $userid
+     * @param int $vote
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     */
+    public static function set_peer_review_vote($flashcardsid, $questionid, $userid, $vote) {
+        global $DB;
+
+        $params = self::validate_parameters(self::set_peer_review_vote_parameters(),
+            array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'userid' => $userid, 'vote' => $vote));
+
+        if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP && $params['vote'] != FLASHCARDS_PEER_REVIEW_DOWN) {
+            return;
+        }
+
+        $statusrec = $DB->get_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'], 'flashcardsid' => $params['flashcardsid'], 'studentid' => $params['userid']]);
+
+        if ($statusrec === false) {
+            $DB->insert_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'],
+                'flashcardsid' => $params['flashcardsid'],
+                'studentid' => $params['userid'],
+                'active' => 0,
+                'peerreview' => $params['vote']]);
+        } else {
+            $statusrec->peerreview = $params['vote'];
+            $DB->update_record('flashcards_q_stud_rel', $statusrec);
+        }
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
@@ -379,6 +429,15 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function set_preview_status_returns() {
+        return null;
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function set_peer_review_vote_returns() {
         return null;
     }
 }

@@ -162,3 +162,21 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards .texticon i {
     margin: 0em;
 }
+
+.btn-mod-flashcards-peerreview {
+    background-color: transparent;
+    border: none;
+    color: black;
+}
+
+.btn-mod-flashcards-peerreview-up {
+    background-color: transparent;
+    border: none;
+    color: green;
+}
+
+.btn-mod-flashcards-peerreview-down {
+    background-color: transparent;
+    border: none;
+    color: red;
+}
