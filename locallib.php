@@ -415,7 +415,6 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
  * @param bool $isup
  * @return string
  */
-
 function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
 
     if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_UP && $isup) {
