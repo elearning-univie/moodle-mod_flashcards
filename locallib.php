@@ -487,7 +487,7 @@ function mod_flashcard_get_peer_review_votes(int $questionid, int $fcid, bool $u
  * @return string
  */
 function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
-   
+
     $noup = mod_flashcard_get_peer_review_votes($questionid, $fcid, true);
     $nodown = mod_flashcard_get_peer_review_votes($questionid, $fcid, false);
 
