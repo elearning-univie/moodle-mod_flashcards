@@ -409,12 +409,13 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 }
 
 /**
- * Returns a string for the class attribute of the respectiveup/downvote buttons
+ * Returns a string for the class attribute of the respectiveup/downvote buttons.
  *
- * @param int $teachercheckresult
+ * @param int $peerreviewvote
  * @param bool $isup
  * @return string
  */
+
 function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
 
     if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_UP && $isup) {
