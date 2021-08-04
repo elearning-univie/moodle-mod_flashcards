@@ -3,7 +3,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
         init: function() {
             $.mod_flashcards_teacher_check = function (questionid, fcid, valueselected) {
                 var oldval = $("#teachercheck").val();
-                alert(oldval + ' - ' + valueselected);
                 $("#teachercheck").change(function() {
                     //var valueselected = this.value;
                     ajax.call([{
