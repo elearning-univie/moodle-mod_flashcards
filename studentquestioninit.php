@@ -79,12 +79,13 @@ $sql = "SELECT id,
           FROM {question} q
          WHERE category $sqlwhere
            AND qtype = 'flashcard'
-           AND q.hidden <> 1
-           AND id IN (SELECT questionid
-                            FROM {flashcards_q_stud_rel}
-                           WHERE flashcardsid = :fid
-                             AND currentbox IS NULL)";
-
+           AND q.hidden <> 1";
+//            AND id IN (SELECT questionid
+//                             FROM {flashcards_q_stud_rel}
+//                            WHERE flashcardsid = :fid
+//                              AND currentbox IS NULL)";
+print_object($sql);
+print_object($USER->id);
 $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
 $questions = [];
 $authors = mod_flashcards_get_question_authors($questionstemp, $course->id);
