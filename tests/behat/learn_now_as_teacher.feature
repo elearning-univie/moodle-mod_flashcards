@@ -40,5 +40,5 @@ Feature: As a teacher i want to test the learn now function
     And I follow "Customize your flashcard deck"
     And I click on "selectall" "checkbox"
     And I click on "Add flash card" "button"
-    And I click on "Start learning" "button"
+    And I click on " Start learning " "button"
     Then I should see "This is a question"
