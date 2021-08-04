@@ -105,7 +105,7 @@
                     <div class="row justify-content-between">
                         {{#canedit}}
                         <div class="col">
-                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, this.value)">
+                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, {{statval}}, this.value)">
                                 <option value="0" title="{{# str }} uncheck, mod_flashcards {{/ str }}" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
                                 <option value="1" title="{{# str }} accept, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
                                 <option value="2" title="{{# str }} decline, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} decline, mod_flashcards {{/ str }}</option>

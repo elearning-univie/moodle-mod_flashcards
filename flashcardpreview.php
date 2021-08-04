@@ -201,16 +201,15 @@ $templatecontent['questionid'] = $id;
 $templatecontent['fcid'] = $flashcardsid;
 $templatecontent['userid'] = $USER->id;
 
+for ($i = 0; $i < 3; $i++) {
+    $checkinfo = mod_flashcard_get_teacher_check_info($i);
+    $templatecontent['checkicon' . $i] = $checkinfo['icon'];
+    $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
+}
+
 if ($canedit) {
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
-
-    for ($i = 0; $i < 3; $i++) {
-        $checkinfo = mod_flashcard_get_teacher_check_info($i);
-        $templatecontent['checkicon' . $i] = $checkinfo['icon'];
-        $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
-    }
-
     $templatecontent['icon' . $statusval] = 1;
 } else {
     $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
@@ -221,6 +220,7 @@ if ($canedit) {
 $peerreviewvote = mod_flashcard_get_peer_review_vote($question->id, $flashcardsid, $USER->id);
 $templatecontent['prbtncolorinfoup'] = mod_flashcard_get_peer_review_info($peerreviewvote, true);
 $templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($peerreviewvote, false);
+$templatecontent['statval'] = $statusval;
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);

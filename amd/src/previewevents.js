@@ -1,21 +1,18 @@
 define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notification){
     return {
         init: function() {
-            $.mod_flashcards_teacher_check = function (questionid, fcid, valueselected) {
-                var oldval = $("#teachercheck").val();
-                $("#teachercheck").change(function() {
-                    //var valueselected = this.value;
+            $.mod_flashcards_teacher_check = function (questionid, fcid, oldval, valueselected) {
                     ajax.call([{
                         methodname: 'mod_flashcards_set_preview_status',
                         args: {flashcardsid: fcid, questionid: questionid, status: valueselected},
                         done: function() {
-                            $("#tcicon" + oldval).hide();
+                            for (let i = 0; i < 3; i++) {
+                                $("#tcicon" + i).hide();
+                              }
                             $("#tcicon" + valueselected).show();
-                            oldval = valueselected;
                          },
                          fail: notification.exception
                     }]);
-                });
             };
             $.mod_flashcards_peer_review_up = function (questionid, fcid, userid) {
                 var up = 1;
