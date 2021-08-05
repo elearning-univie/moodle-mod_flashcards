@@ -69,11 +69,11 @@ class teacherviewtable extends table_sql {
     /**
      * teacherviewtable constructor.
      *
-     * @param $uniqueid
-     * @param $cmid
-     * @param $courseid
-     * @param $fcid
-     * @param $authordisplay
+     * @param int $uniqueid
+     * @param int $cmid
+     * @param int $courseid
+     * @param int $fcid
+     * @param string $authordisplay
      * @throws \coding_exception
      */
     public function __construct($uniqueid, $cmid, $courseid, $fcid, $authordisplay) {
