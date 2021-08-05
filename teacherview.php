@@ -96,7 +96,7 @@ if ($flashcards->inclsubcats) {
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
 
-$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id);
+$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id, FLASHCARDS_AUTHOR_NAME);
 
 $table->set_sql('id, name, createdby', "{question}", $sqlwhere, $qcategories);
 $table->define_baseurl($baseurl);

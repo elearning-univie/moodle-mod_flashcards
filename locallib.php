@@ -341,11 +341,11 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
 
 /**
  * /**
- * Find all authors to a set of questions
- * @param array $questions the questions for which the authors are searched
+ * Get the username of a question creator
+ * @param int $userid the userid of the author
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
  * @param int $authordisplay The type of how the author is displayed
- * @return string[]
+ * @return string
  */
 function mod_flashcards_get_author_display_name($userid, $courseid, $authordisplay = null) {
     global $DB, $USER;
