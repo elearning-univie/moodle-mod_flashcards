@@ -56,18 +56,22 @@ class teacherviewtable extends table_sql {
     /** @var array array to save previously looked up authors */
     private $authors;
 
+    /** @var string setting for how to display the author name in the list */
+    private $authordisplay;
+
     /**
      * Constructor
      * @param int $uniqueid all tables have to have a unique id, this is used
      *      as a key when storing table properties like sort order in the session.
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcid) {
+    public function __construct($uniqueid, $cmid, $courseid, $fcid, $authordisplay) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcid = $fcid;
         $this->returnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
         $this->authors = array();
+        $this->authordisplay = $authordisplay;
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
@@ -107,7 +111,7 @@ class teacherviewtable extends table_sql {
      */
     public function col_createdby($values) {
         if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, $this->authordisplay);
             $this->authors[$values->createdby] = $author;
         } else {
             $author = $this->authors[$values->createdby];
