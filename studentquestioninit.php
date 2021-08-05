@@ -79,7 +79,12 @@ $sql = "SELECT id,
           FROM {question} q
          WHERE category $sqlwhere
            AND qtype = 'flashcard'
-           AND q.hidden <> 1";
+           AND q.hidden <> 1
+           AND id NOT IN (SELECT questionid
+                            FROM {flashcards_q_stud_rel}
+                           WHERE studentid = :userid
+                             AND flashcardsid = 1
+                             AND currentbox IS NOT NULL)";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
 $questions = [];

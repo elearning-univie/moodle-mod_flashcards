@@ -55,5 +55,4 @@ class observer {
         // Reset peer review for all roles.
         $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
     }
-
 }
