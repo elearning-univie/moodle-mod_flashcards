@@ -183,7 +183,7 @@ class teacherviewtable extends table_sql {
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
 
-        return html_writer::link($qurl, $OUTPUT->pix_icon('i/preview', $this->previewicontext), ['class' => 'mod_flashcards_questionpreviewlink']);
+        return html_writer::link($qurl, $OUTPUT->pix_icon('i/preview', $this->previewicontext), ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**
