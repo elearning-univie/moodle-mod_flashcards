@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Table class for displaying the flashcard list of an activity for a teacher.
+ *
+ * @package    mod_flashcards
+ * @copyright  2019 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 namespace mod_flashcards\output;
 defined('MOODLE_INTERNAL') || die();
 
@@ -60,9 +67,14 @@ class teacherviewtable extends table_sql {
     private $authordisplay;
 
     /**
-     * Constructor
-     * @param int $uniqueid all tables have to have a unique id, this is used
-     *      as a key when storing table properties like sort order in the session.
+     * teacherviewtable constructor.
+     *
+     * @param $uniqueid
+     * @param $cmid
+     * @param $courseid
+     * @param $fcid
+     * @param $authordisplay
+     * @throws \coding_exception
      */
     public function __construct($uniqueid, $cmid, $courseid, $fcid, $authordisplay) {
         parent::__construct($uniqueid);
