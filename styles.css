@@ -162,3 +162,8 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards .texticon i {
     margin: 0em;
 }
+
+.path-mod-flashcards #teacherviewform {
+    position: absolute;
+    right: 0;
+}
