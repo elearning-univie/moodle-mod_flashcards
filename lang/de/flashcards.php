@@ -108,6 +108,7 @@ $string['newexistingcategory'] = 'Neue oder existierende Kategorie';
 $string['noimagetext'] = 'Für Details Vorschau öffnen';
 $string['noquestion'] = 'Es konnte keine Frage gefunden werden.';
 $string['opencardnumber'] = 'Offen: {{count}} Karten';
+$string['pagesize'] = 'Fragen pro Seite';
 $string['pagetitle'] = 'Moodle Lernkartei';
 $string['peerreview'] = 'Peer-Review';
 $string['peerreviewtext'] = 'Ist die Karte gut gelungen?';

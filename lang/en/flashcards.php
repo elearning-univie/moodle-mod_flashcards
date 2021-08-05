@@ -108,6 +108,7 @@ $string['newexistingcategory'] = 'New or existing category';
 $string['noimagetext'] = 'for more details open preview';
 $string['noquestion'] = 'No question could be found.';
 $string['opencardnumber'] = 'Open: {{count}} Cards';
+$string['pagesize'] = 'Questions shown per page';
 $string['pagetitle'] = 'Moodle Flashcard';
 $string['peerreview'] = 'Peer review';
 $string['peerreviewtext'] = 'Is the card well done?';

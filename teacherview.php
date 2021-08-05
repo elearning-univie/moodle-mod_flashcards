@@ -29,12 +29,15 @@ global $PAGE, $OUTPUT, $DB, $CFG;
 $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
+$perpage = optional_param('perpage', null, PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]));
+$baseurl = new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]);
+
+$PAGE->set_url($baseurl);
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -91,6 +94,42 @@ if ($flashcards->inclsubcats) {
 }
 
 list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
+$sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
+
+$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id);
+
+$table->set_sql('id, name, createdby', "{question}", $sqlwhere, $qcategories);
+$table->define_baseurl($baseurl);
+
+$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
+$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
+
+$renderer = $PAGE->get_renderer('core');
+
+$templateinfo = ['createbtnlink' => $link->out(false)];
+$templateinfo['id'] = $id;
+$templateinfo['sesskey'] = sesskey();
+$templateinfo['actionurl'] = $baseurl;
+
+if ($perpage !== null) {
+    $templateinfo['selected' . $perpage] = true;
+} else {
+    $templateinfo['selected20'] = true;
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading($flashcards->name);
+echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
+$table->out($perpage, false);
+echo $OUTPUT->footer();
+
+
+
+
+
+
+
+/*list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
 $sqlwhere = "category $sqlwhere";
 $sql = "SELECT id, name, createdby
           FROM {question}
@@ -99,10 +138,6 @@ $sql = "SELECT id, name, createdby
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories);
 $authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLASHCARDS_AUTHOR_NAME);
-
-/**/
-$eurln = new moodle_url('/mod/flashcards/teacherviewnew.php', array('id' => $id));
-/**/
 
 $returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
 $questions = array();
@@ -115,11 +150,7 @@ foreach ($questionstemp as $question) {
     $row = [];
     $row['name'] = $question->name;
     $row['qurl'] = html_entity_decode($qurl->__toString());
-    //$row['editurl'] = html_entity_decode($eurl->__toString());
-
-    /**/
-    $row['editurl'] = html_entity_decode($eurln->__toString());
-    /**/
+    $row['editurl'] = html_entity_decode($eurl->__toString());
 
     $row['deleteurl'] = html_entity_decode($durl->__toString());
     $row['author'] = $authors[$question->createdby];
@@ -146,4 +177,4 @@ $templateinfo = ['createbtnlink' => $link->out(false),
 $renderer = $PAGE->get_renderer('core');
 
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
-echo $OUTPUT->footer();
+echo $OUTPUT->footer();*/
