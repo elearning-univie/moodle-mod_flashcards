@@ -439,9 +439,9 @@ function mod_flashcard_get_peer_review_vote(int $questionid, int $fcid) {
     $sql = "SELECT peerreview
               FROM {flashcards_q_stud_rel} sd
              WHERE sd.questionid = :questionid
-               AND sd.flashcardsid = :fcid
-               AND sd.studentid = :userid";
-    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'fcid' => $fcid, 'userid' => $USER->id]);
+               AND sd.flashcardsid = :flashcardsid
+               AND sd.studentid = :studentid";
+    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'flashcardsid' => $fcid, 'studentid' => $USER->id]);
 
     if (!$prvote) {
         return 0;
