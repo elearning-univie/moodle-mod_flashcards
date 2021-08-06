@@ -135,7 +135,6 @@ class mod_flashcards_external extends external_api {
             array(
                 'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
                 'questionid' => new external_value(PARAM_INT, 'id of question'),
-                'userid' => new external_value(PARAM_INT, 'id of user'),
                 'vote' => new external_value(PARAM_INT, 'peer review vote')
             )
         );
@@ -349,27 +348,26 @@ class mod_flashcards_external extends external_api {
      *
      * @param int $flashcardsid
      * @param int $questionid
-     * @param int $userid
      * @param int $vote
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
-    public static function set_peer_review_vote($flashcardsid, $questionid, $userid, $vote) {
-        global $DB;
+    public static function set_peer_review_vote($flashcardsid, $questionid, $vote) {
+        global $DB, $USER;
 
         $params = self::validate_parameters(self::set_peer_review_vote_parameters(),
-            array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'userid' => $userid, 'vote' => $vote));
+            array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'vote' => $vote));
 
         if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP && $params['vote'] != FLASHCARDS_PEER_REVIEW_DOWN) {
             return;
         }
 
-        $statusrec = $DB->get_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'], 'flashcardsid' => $params['flashcardsid'], 'studentid' => $params['userid']]);
+        $statusrec = $DB->get_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'], 'flashcardsid' => $params['flashcardsid'], 'studentid' => $USER->id]);
 
         if ($statusrec === false) {
             $DB->insert_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'],
                 'flashcardsid' => $params['flashcardsid'],
-                'studentid' => $params['userid'],
+                'studentid' => $USER->id,
                 'active' => 0,
                 'peerreview' => $params['vote']]);
         } else {

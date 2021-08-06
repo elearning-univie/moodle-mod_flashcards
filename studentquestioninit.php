@@ -83,7 +83,7 @@ $sql = "SELECT id,
            AND id NOT IN (SELECT questionid
                             FROM {flashcards_q_stud_rel}
                            WHERE studentid = :userid
-                             AND flashcardsid = 1
+                             AND flashcardsid = :fid
                              AND currentbox IS NOT NULL)";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
