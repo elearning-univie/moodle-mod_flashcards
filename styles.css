@@ -178,6 +178,5 @@ div.progress.mod-flashcards-progress-bar {
 }
 
 .path-mod-flashcards #teacherviewform {
-    position: absolute;
-    right: 0;
+    float:right;
 }

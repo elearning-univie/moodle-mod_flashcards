@@ -106,10 +106,10 @@ $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $renderer = $PAGE->get_renderer('core');
 
-$templateinfo = ['createbtnlink' => $link->out(false)];
-$templateinfo['id'] = $id;
-$templateinfo['sesskey'] = sesskey();
-$templateinfo['actionurl'] = $baseurl;
+$templateinfo = ['createbtnlink' => $link->out(false),
+        'id' => $id,
+        'sesskey' => sesskey(),
+        'actionurl' => $baseurl];
 
 if ($perpage !== null) {
     $templateinfo['selected' . $perpage] = true;
@@ -122,59 +122,3 @@ echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 $table->out($perpage, false);
 echo $OUTPUT->footer();
-
-
-
-
-
-
-
-/*list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
-$sqlwhere = "category $sqlwhere";
-$sql = "SELECT id, name, createdby
-          FROM {question}
-         WHERE $sqlwhere
-           AND qtype = 'flashcard'";
-
-$questionstemp = $DB->get_records_sql($sql, $qcategories);
-$authors = mod_flashcards_get_question_authors($questionstemp, $course->id, FLASHCARDS_AUTHOR_NAME);
-
-$returnurl = '/mod/flashcards/teacherview.php?id=' . $id;
-$questions = array();
-foreach ($questionstemp as $question) {
-    $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $question->id, 'cmid' => $cm->id, 'fcid' => $flashcards->id));
-    $eurl = new moodle_url('/question/question.php',
-        array('returnurl' => $returnurl, 'courseid' => $course->id, 'id' => $question->id ));
-    $durl = new moodle_url('/mod/flashcards/teacherview.php',
-            array('id' => $id, 'deleteselected' => $question->id, 'sesskey' => sesskey()));
-    $row = [];
-    $row['name'] = $question->name;
-    $row['qurl'] = html_entity_decode($qurl->__toString());
-    $row['editurl'] = html_entity_decode($eurl->__toString());
-
-    $row['deleteurl'] = html_entity_decode($durl->__toString());
-    $row['author'] = $authors[$question->createdby];
-
-    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id, $course->id);
-    $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
-
-    $row['teachercheckcolor'] = $checkinfo['color'];
-    $row['teachercheck'] = $checkinfo['icon'];
-    $row['peerreview'] = mod_flashcard_peer_review_info_overview($question->id, $flashcards->id);
-    $questions[] = $row;
-}
-
-$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
-$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
-
-echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
-
-$templateinfo = ['createbtnlink' => $link->out(false),
-    'qlabel' => get_string('question', 'flashcards'),
-    'questions' => $questions];
-
-$renderer = $PAGE->get_renderer('core');
-
-echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
-echo $OUTPUT->footer();*/

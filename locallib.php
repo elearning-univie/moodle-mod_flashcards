@@ -340,6 +340,63 @@ function mod_flashcards_get_question_authors($questions, $courseid, $authordispl
 }
 
 /**
+ * /**
+ * Find all authors to a set of questions
+ * @param array $questions the questions for which the authors are searched
+ * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
+ * @param int $authordisplay The type of how the author is displayed
+ * @return string[]
+ */
+function mod_flashcards_get_author_display_name($userid, $courseid, $authordisplay = null) {
+    global $DB, $USER;
+    if (!$authordisplay) {
+        $authordisplay = get_config('flashcards', 'authordisplay');
+    }
+    if ($authordisplay) {
+        if ($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
+            $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+            if (count($roleids) > 0) {
+                list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
+                $params['courseid'] = $courseid;
+                $params['userid'] = $userid;
+                $sql = "SELECT userid
+                          FROM {role_assignments} ra,
+                               {context} c
+                         WHERE c.contextlevel = 50
+                           AND ra.contextid = c.id
+                           AND c.instanceid = :courseid
+                           AND ra.roleid $inrolesql
+                           AND ra.userid = :userid";
+                $isteacher = $DB->record_exists_sql($sql, $params);
+            } else {
+                $isteacher = false;
+            }
+            if ($userid == $USER->id) {
+                $author = get_string('author_me', 'flashcards');
+            } else if ($isteacher) {
+                $author = get_string('author_teacher', 'flashcards');
+            } else {
+                $author = get_string('author_student', 'flashcards');
+            }
+        } else if ($authordisplay == FLASHCARDS_AUTHOR_NAME) {
+            $sql = "SELECT id,
+                           firstname,
+                           lastname,
+                           firstnamephonetic,
+                           lastnamephonetic,
+                           middlename,
+                           alternatename
+                      FROM {user}
+                     WHERE id = :id";
+            $user = $DB->get_record_sql($sql, ['id' => $userid]);
+            $author = fullname($user);
+        }
+
+    }
+    return $author;
+}
+
+/**
  * Returns the teacher check result from the DB
  *
  * @param int $questionid

@@ -53,17 +53,21 @@ class teacherviewtable extends table_sql {
     /** @var string jump back url if a question is getting deleted */
     private $returnurl;
 
+    /** @var array array to save previously looked up authors */
+    private $authors;
+
     /**
      * Constructor
      * @param int $uniqueid all tables have to have a unique id, this is used
      *      as a key when storing table properties like sort order in the session.
      */
-    function __construct($uniqueid, $cmid, $courseid, $fcid) {
+    public function __construct($uniqueid, $cmid, $courseid, $fcid) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcid = $fcid;
         $this->returnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
+        $this->authors = array();
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
@@ -96,12 +100,29 @@ class teacherviewtable extends table_sql {
     }
 
     /**
+     * Prepares column createdby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_createdby($values) {
+        if (!key_exists($values->createdby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->createdby] = $author;
+        } else {
+            $author = $this->authors[$values->createdby];
+        }
+
+        return $author;
+    }
+
+    /**
      * Prepares column teachercheck for display
      *
      * @param object $values
      * @return string
      */
-    function col_teachercheck($values) {
+    public function col_teachercheck($values) {
         global $OUTPUT;
 
         $teachercheckresult = mod_flashcard_get_teacher_check_result($values->id, $this->fcid, $this->courseid);
@@ -116,10 +137,8 @@ class teacherviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    function col_peerreview($values) {
-        $htmlcode = '-/-';
-
-        return $htmlcode;
+    public function col_peerreview($values) {
+        return mod_flashcard_peer_review_info_overview($values->id, $this->fcid);
     }
 
     /**
@@ -128,7 +147,7 @@ class teacherviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    function col_edit($values) {
+    public function col_edit($values) {
         global $OUTPUT;
 
         $eurl = new moodle_url('/question/question.php',
@@ -143,7 +162,7 @@ class teacherviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    function col_preview($values) {
+    public function col_preview($values) {
         global $OUTPUT;
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
@@ -157,7 +176,7 @@ class teacherviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    function col_delete($values) {
+    public function col_delete($values) {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/flashcards/teacherview.php',
