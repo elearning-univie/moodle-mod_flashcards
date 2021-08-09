@@ -176,3 +176,7 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards .btn-peerreview.btn-down {
     color: red;
 }
+
+.path-mod-flashcards #teacherviewform {
+    float: right;
+}
