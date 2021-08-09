@@ -31,6 +31,10 @@ $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', 20, PARAM_INT);
 
+if (!in_array($perpage, [20, 40, 80], true)) {
+    $perpage = 20;
+}
+
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
