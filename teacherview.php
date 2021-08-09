@@ -29,7 +29,7 @@ global $PAGE, $OUTPUT, $DB, $CFG;
 $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
-$perpage = optional_param('perpage', null, PARAM_INT);
+$perpage = optional_param('perpage', 20, PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
@@ -110,12 +110,7 @@ $templateinfo = ['createbtnlink' => $link->out(false),
         'id' => $id,
         'sesskey' => sesskey(),
         'actionurl' => $baseurl];
-
-if ($perpage !== null) {
-    $templateinfo['selected' . $perpage] = true;
-} else {
-    $templateinfo['selected20'] = true;
-}
+$templateinfo['selected' . $perpage] = true;
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
