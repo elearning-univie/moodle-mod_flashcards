@@ -83,7 +83,8 @@ $sql = "SELECT id,
            AND id NOT IN (SELECT questionid
                             FROM {flashcards_q_stud_rel}
                            WHERE studentid = :userid
-                             AND flashcardsid = :fid)";
+                             AND flashcardsid = :fid
+                             AND currentbox IS NOT NULL)";
 
 $questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
 $questions = [];
@@ -111,7 +112,7 @@ foreach ($questionstemp as $question) {
 
     $row['teachercheckcolor'] = $checkinfo['color'];
     $row['teachercheck'] = $checkinfo['icon'];
-    $row['peerreview'] = mod_flashcard_peer_review_info_overview(); // TODO
+    $row['peerreview'] = mod_flashcard_peer_review_info_overview($question->id, $flashcards->id);
 
     $questions[] = $row;
 }

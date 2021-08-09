@@ -25,7 +25,6 @@ namespace mod_flashcards\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-
 /**
  * Event observer for mod_flashcards.
  */
@@ -53,7 +52,7 @@ class observer {
                 $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
             }
         }
-        // Reset peer review for all roles. TODO
+        // Reset peer review for all roles.
+        $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
     }
-
 }

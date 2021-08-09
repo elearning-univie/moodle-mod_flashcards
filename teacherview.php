@@ -121,7 +121,7 @@ foreach ($questionstemp as $question) {
 
     $row['teachercheckcolor'] = $checkinfo['color'];
     $row['teachercheck'] = $checkinfo['icon'];
-    $row['peerreview'] = mod_flashcard_peer_review_info_overview(); // TODO
+    $row['peerreview'] = mod_flashcard_peer_review_info_overview($question->id, $flashcards->id);
     $questions[] = $row;
 }
 

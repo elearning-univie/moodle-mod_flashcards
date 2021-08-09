@@ -35,6 +35,10 @@ define('FLASHCARDS_AUTHOR_NAME', 2);
 define('FLASHCARDS_CHECK_NONE', 0);
 define('FLASHCARDS_CHECK_POS', 1);
 define('FLASHCARDS_CHECK_NEG', 2);
+
+define('FLASHCARDS_PEER_REVIEW_NONE', 0);
+define('FLASHCARDS_PEER_REVIEW_UP', 1);
+define('FLASHCARDS_PEER_REVIEW_DOWN', 2);
 /**
  * Checks if the user has the right to view the course
  *
@@ -405,10 +409,86 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 }
 
 /**
- * Returns the peer review information displayed int the student/teacher overview list.
+ * Returns a string for the class attribute of the respectiveup/downvote buttons.
  *
+ * @param int $peerreviewvote
+ * @param bool $isup
  * @return string
  */
-function mod_flashcard_peer_review_info_overview() {
-    return '-/-';
+function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
+
+    if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_UP && $isup) {
+        return 'btn-up';
+    } else if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_DOWN && !$isup) {
+        return 'btn-down';
+    } else {
+        return '';
+    }
+}
+
+/**
+ * Returns the peer review vote of the current user for a certain question and flashcard.
+ *
+ * @param int $questionid
+ * @param int $fcid
+ * @return int
+ */
+function mod_flashcard_get_peer_review_vote(int $questionid, int $fcid) {
+    global $DB, $USER;
+
+    $sql = "SELECT peerreview
+              FROM {flashcards_q_stud_rel} sd
+             WHERE sd.questionid = :questionid
+               AND sd.flashcardsid = :flashcardsid
+               AND sd.studentid = :studentid";
+    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'flashcardsid' => $fcid, 'studentid' => $USER->id]);
+
+    if (!$prvote) {
+        return 0;
+    }
+
+    return $prvote;
+}
+/**
+ * Returns string with the number of up/down votes for the a flashcard in a certain flashcards activity.
+ *
+ * @param int $questionid
+ * @param int $fcid
+ * @param bool $upvotes
+ * @return int
+ */
+function mod_flashcard_get_peer_review_votes(int $questionid, int $fcid, bool $upvotes) {
+    global $DB;
+
+    $params['questionid'] = $questionid;
+    $params['fcid'] = $fcid;
+    $params['vote'] = 2;
+    if ($upvotes) {
+        $params['vote'] = 1;
+    }
+
+    $sql = "SELECT COUNT(id)
+              FROM {flashcards_q_stud_rel} sd
+             WHERE sd.questionid = :questionid
+               AND sd.flashcardsid = :fcid
+               AND sd.peerreview = :vote";
+
+    $votes = $DB->count_records_sql($sql, $params);
+
+    return $votes;
+}
+
+/**
+ * Returns the peer review information displayed int the student/teacher overview list.
+ *
+ * @param int $questionid
+ * @param int $fcid
+ * @return string
+ */
+function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
+
+    $noup = mod_flashcard_get_peer_review_votes($questionid, $fcid, true);
+    $nodown = mod_flashcard_get_peer_review_votes($questionid, $fcid, false);
+
+    return $noup.'/'.$nodown;
 }

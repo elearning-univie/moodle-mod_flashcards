@@ -137,5 +137,20 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021061603, 'flashcards');
     }
 
+    if ($oldversion < 2021072600) {
+
+        // Define field peerreview to be added to flashcards_q_stud_rel.
+        $table = new xmldb_table('flashcards_q_stud_rel');
+        $field = new xmldb_field('peerreview', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'wronganswercount');
+
+        // Conditionally launch add field peerreview.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2021072600, 'flashcards');
+    }
+
     return true;
 }
