@@ -26,20 +26,26 @@ require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG;
 
+define('DEFAULT_PAGE_SIZE', 20);
+
 $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
-$perpage = optional_param('perpage', 20, PARAM_INT);
+$perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
+
+$params = array();
+$params['id'] = $id;
 
 if (!in_array($perpage, [20, 40, 80], true)) {
-    $perpage = 20;
+    $perpage = DEFAULT_PAGE_SIZE;
 }
+$params['perpage'] = $perpage;
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
-$baseurl = new moodle_url("/mod/flashcards/teacherview.php", ['id' => $id]);
+$baseurl = new moodle_url("/mod/flashcards/teacherview.php", $params);
 
 $PAGE->set_url($baseurl);
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
