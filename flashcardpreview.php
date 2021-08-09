@@ -199,7 +199,6 @@ $templatecontent['upvotes'] = mod_flashcard_get_peer_review_votes($question->id,
 $templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, false);
 $templatecontent['questionid'] = $id;
 $templatecontent['fcid'] = $flashcardsid;
-$templatecontent['userid'] = $USER->id;
 
 for ($i = 0; $i < 3; $i++) {
     $checkinfo = mod_flashcard_get_teacher_check_info($i);
@@ -217,10 +216,12 @@ if ($canedit) {
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
-$peerreviewvote = mod_flashcard_get_peer_review_vote($question->id, $flashcardsid, $USER->id);
+$peerreviewvote = mod_flashcard_get_peer_review_vote($question->id, $flashcardsid);
 $templatecontent['prbtncolorinfoup'] = mod_flashcard_get_peer_review_info($peerreviewvote, true);
 $templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($peerreviewvote, false);
 $templatecontent['statval'] = $statusval;
+$templatecontent['upvote'] = FLASHCARDS_PEER_REVIEW_UP;
+$templatecontent['downvote'] = FLASHCARDS_PEER_REVIEW_DOWN;
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);

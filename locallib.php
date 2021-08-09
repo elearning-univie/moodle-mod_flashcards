@@ -418,31 +418,30 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
 
     if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_UP && $isup) {
-        return'btn-mod-flashcards-peerreview-up';
+        return 'btn-up';
     } else if ($peerreviewvote == FLASHCARDS_PEER_REVIEW_DOWN && !$isup) {
-        return 'btn-mod-flashcards-peerreview-down';
+        return 'btn-down';
     } else {
-        return 'btn-mod-flashcards-peerreview';
+        return '';
     }
 }
 
 /**
- * Returns the peer review vote for a certain question, flashcard and user.
+ * Returns the peer review vote of the current user for a certain question and flashcard.
  *
  * @param int $questionid
  * @param int $fcid
- * @param int $userid
  * @return int
  */
-function mod_flashcard_get_peer_review_vote(int $questionid, int $fcid, int $userid) {
-    global $DB;
+function mod_flashcard_get_peer_review_vote(int $questionid, int $fcid) {
+    global $DB, $USER;
 
     $sql = "SELECT peerreview
               FROM {flashcards_q_stud_rel} sd
              WHERE sd.questionid = :questionid
-               AND sd.flashcardsid = :fcid
-               AND sd.studentid = :userid";
-    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'flashcardsid' => $fcid, 'studentid' => $userid]);
+               AND sd.flashcardsid = :flashcardsid
+               AND sd.studentid = :studentid";
+    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'flashcardsid' => $fcid, 'studentid' => $USER->id]);
 
     if (!$prvote) {
         return 0;

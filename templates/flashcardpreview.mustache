@@ -50,7 +50,9 @@
                         </div>
                         <div class="col-3">
                             <div class="iconsize">
-                                <button type="button" class="{{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review_up({{questionid}}, {{fcid}}, {{userid}})">{{# pix }} t/approve, core, {{# str }} yes, core {{/ str }} {{/ pix }}</button>
+                                <button type="button" id="upvotebtn" class="btn btn-peerreview {{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{upvote}})">
+                                    {{# pix }} t/approve, core, {{# str }} yes, core {{/ str }} {{/ pix }}
+                                </button>
                             </div>
                             <div id="upvotescount" class="color-approved">
                                 {{upvotes}}
@@ -59,7 +61,9 @@
                                 {{downvotes}}
                             </div>
                             <div class="upsidedown iconsize">
-                                <button type="button" class="{{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review_down({{questionid}}, {{fcid}}, {{userid}})">{{# pix }} t/approve, core, {{# str }} no, core{{/ str }} {{/ pix }}</button>
+                                <button type="button" id="downvotebtn" class="btn btn-peerreview {{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{downvote}})">
+                                    {{# pix }} t/approve, core, {{# str }} no, core{{/ str }} {{/ pix }}
+                                </button>
                             </div>
                         </div>
                     </div>

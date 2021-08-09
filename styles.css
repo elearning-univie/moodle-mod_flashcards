@@ -163,20 +163,16 @@ div.progress.mod-flashcards-progress-bar {
     margin: 0em;
 }
 
-.btn-mod-flashcards-peerreview {
+.path-mod-flashcards .btn-peerreview {
     background-color: transparent;
     border: none;
-    color: black;
+    padding: 0em;
 }
 
-.btn-mod-flashcards-peerreview-up {
-    background-color: transparent;
-    border: none;
+.path-mod-flashcards .btn-peerreview.btn-up {
     color: green;
 }
 
-.btn-mod-flashcards-peerreview-down {
-    background-color: transparent;
-    border: none;
+.path-mod-flashcards .btn-peerreview.btn-down {
     color: red;
 }
