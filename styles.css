@@ -180,3 +180,7 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards #teacherviewform {
     float: right;
 }
+
+.path-mod-flashcards .printicon {
+    background: url([[pix:flashcards|viewfc]]) no-repeat center transparent;
+}

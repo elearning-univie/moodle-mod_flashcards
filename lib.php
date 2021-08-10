@@ -236,3 +236,12 @@ function flashcards_update_instance($flashcards) {
 
     return true;
 }
+
+/**
+ * Get icon mapping for font-awesome.
+ */
+function mod_flashcards_get_fontawesome_icon_map() {
+    return [
+        'mod_flashcards:viewfc' => 'fa-window-maximize',
+    ];
+}
