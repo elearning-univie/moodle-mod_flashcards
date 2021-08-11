@@ -178,7 +178,6 @@ class teacherviewtable extends table_sql {
      * @return string
      */
     public function col_timemodified($values) {
-      //  print_object($values);
         return userdate($values->timemodified, get_string('strftimedatetimeshort', 'langconfig'));
     }
 
@@ -208,7 +207,8 @@ class teacherviewtable extends table_sql {
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
 
-        return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'), ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+        return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**
