@@ -92,9 +92,9 @@ class teacherviewtable extends table_sql {
         // Define the list of columns to show.
         $columns = array('name', 'createdby', 'teachercheck', 'peerreview', 'timemodified', 'edit', 'preview', 'delete');
         $this->define_columns($columns);
-        $this->column_class('teachercheck', 'flashcards_teacherview_ec');
-        $this->column_class('peerreview', 'flashcards_teacherview_ec');
-        $this->column_class('timemodified', 'flashcards_teacherview_ec');
+        $this->column_class('teachercheck', 'flashcards_studentview_tc');
+        $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('delete', 'flashcards_teacherview_ec');
@@ -110,6 +110,18 @@ class teacherviewtable extends table_sql {
                 get_string('view'),
                 get_string('delete'));
         $this->define_headers($headers);
+
+        // Define help for columns teachercheck and peer review.
+        $helpforheaders = array(
+            null,
+            null,
+            new \help_icon('teachercheck_help', 'mod_flashcards'),
+            new \help_icon('peerreview_help', 'mod_flashcards'),
+            null,
+            null,
+            null,
+            null);
+        $this->define_help_for_headers($helpforheaders);
 
         $this->collapsible(false);
         $this->sortable(true);

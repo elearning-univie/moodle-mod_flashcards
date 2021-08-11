@@ -11,9 +11,24 @@ th.flashcards_teacherview_ec {
     width: 2%;
 }
 
+th.flashcards_studentview_tc,
+th.flashcards_teacherview_tc {
+    width: 6%;
+    white-space: nowrap;
+    text-align: center !important;
+}
+
 th.flashcards_studentview_all {
     width: 9em;
 }
+
+td.flashcards_studentview_tc,
+td.flashcards_teacherview_tc {
+    width: 6%;
+    white-space: nowrap;
+    text-align: center !important;
+}
+
 div.flashcards_add_btn_visi {
     visibility: visible;
 }
@@ -179,8 +194,4 @@ div.progress.mod-flashcards-progress-bar {
 
 .path-mod-flashcards #teacherviewform {
     float: right;
-}
-
-.path-mod-flashcards .printicon {
-    background: url([[pix:flashcards|viewfc]]) no-repeat center transparent;
 }
