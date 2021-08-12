@@ -98,7 +98,9 @@ $sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
 
 $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id, FLASHCARDS_AUTHOR_NAME);
 
-$table->set_sql('id, name, createdby, timemodified', "{question}", $sqlwhere, $qcategories);
+$table->set_sql('q.id, name, q.createdby, q.timemodified, teachercheck',
+                "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $qcategories);
+
 $table->define_baseurl($baseurl);
 
 $params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
