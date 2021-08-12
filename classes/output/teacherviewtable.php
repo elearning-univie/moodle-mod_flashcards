@@ -128,8 +128,6 @@ class teacherviewtable extends table_sql {
         $this->pageable(true);
         $this->is_downloadable(false);
 
-        //$this->text_sorting('teachercheck');
-        //$this->no_sorting('teachercheck');
         $this->no_sorting('peerreview');
         $this->no_sorting('edit');
         $this->no_sorting('preview');
