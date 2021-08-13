@@ -129,6 +129,7 @@ $string['teacherchecktext'] = 'Die Karte ist inhaltlich korrekt {$a->correct}, f
 $string['timemodified'] = 'Zuletzt geändert';
 $string['uncheck'] = 'noch nicht evaluiert';
 $string['userpreferences'] = 'Benutzereigenschaften';
+$string['fcview'] = 'Anzeigen';
 $string['flashcards:studentview'] = 'Teilnehmer/innenansicht anzeigen';
 $string['flashcards:teacherview'] = 'Lehrendenansicht anzeigen';
 $string['flashcards:addinstance'] = 'Neue Lernkartei hinzufügen';
