@@ -87,7 +87,7 @@ class teacherviewtable extends table_sql {
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
-        $this->previewicontext = get_string('view', 'moodle');
+        $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
         // Define the list of columns to show.
         $columns = array('name', 'createdby', 'teachercheck', 'peerreview', 'timemodified', 'edit', 'preview', 'delete');
