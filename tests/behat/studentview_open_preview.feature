@@ -37,6 +37,5 @@ Feature: As a student I open the flashcard preview
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I click on "Yes" "button"
-    Then I should see ".btn-mod-flashcards-peerreview-up" "css_element"
+    Then I should see "Teacher check"
+    And I should see "Peer review"
