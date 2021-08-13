@@ -127,6 +127,11 @@ class teacherviewtable extends table_sql {
         $this->sortable(true);
         $this->pageable(true);
         $this->is_downloadable(false);
+
+        $this->no_sorting('peerreview');
+        $this->no_sorting('edit');
+        $this->no_sorting('preview');
+        $this->no_sorting('delete');
     }
 
     /**
@@ -155,9 +160,7 @@ class teacherviewtable extends table_sql {
     public function col_teachercheck($values) {
         global $OUTPUT;
 
-        $teachercheckresult = mod_flashcard_get_teacher_check_result($values->id, $this->fcid, $this->courseid);
-        $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
-
+        $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
         return html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']);
     }
 
