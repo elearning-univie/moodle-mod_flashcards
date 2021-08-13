@@ -11,9 +11,24 @@ th.flashcards_teacherview_ec {
     width: 2%;
 }
 
+th.flashcards_studentview_tc,
+th.flashcards_teacherview_tc {
+    width: 6%;
+    white-space: nowrap;
+    text-align: center;
+}
+
 th.flashcards_studentview_all {
     width: 9em;
 }
+
+td.flashcards_studentview_tc,
+td.flashcards_teacherview_tc {
+    width: 6%;
+    white-space: nowrap;
+    text-align: center;
+}
+
 div.flashcards_add_btn_visi {
     visibility: visible;
 }
