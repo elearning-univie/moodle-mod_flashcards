@@ -115,8 +115,8 @@ class teacherviewtable extends table_sql {
         $helpforheaders = array(
             null,
             null,
-            new \help_icon('teachercheck_help', 'mod_flashcards'),
-            new \help_icon('peerreview_help', 'mod_flashcards'),
+            new \help_icon('teachercheck', 'mod_flashcards'),
+            new \help_icon('peerreview', 'mod_flashcards'),
             null,
             null,
             null,
