@@ -107,7 +107,7 @@ class teacherviewtable extends table_sql {
                 get_string('peerreview', 'mod_flashcards'),
                 get_string('timemodified', 'mod_flashcards'),
                 get_string('edit'),
-                get_string('view'),
+                get_string('fcview', 'mod_flashcards'),
                 get_string('delete'));
         $this->define_headers($headers);
 

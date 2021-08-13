@@ -129,6 +129,7 @@ $string['teacherchecktext'] = 'The content of the card is correct {$a->correct},
 $string['timemodified'] = 'Last modified';
 $string['uncheck'] = 'not yet evaluated';
 $string['userpreferences'] = 'User preferences';
+$string['fcview'] = 'View';
 $string['flashcards:studentview'] = 'View for students';
 $string['flashcards:teacherview'] = 'View for teachers';
 $string['flashcards:addinstance'] = 'Add a new flashcard activity';
