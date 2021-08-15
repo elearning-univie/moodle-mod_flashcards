@@ -27,17 +27,31 @@ require_once('locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG, $USER;
 
 $id = required_param('id', PARAM_INT);
-$action = optional_param('action', null, PARAM_ALPHA);
-$questionid = optional_param('questionid', null, PARAM_INT);
+$deleteselected = optional_param('deleteselected', null, PARAM_INT);
+$confirm = optional_param('confirm', null, PARAM_ALPHANUM);
+$perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
+
+$params = array();
+$params['id'] = $id;
+
+if (!in_array($perpage, [20, 40, 80], true)) {
+    $perpage = DEFAULT_PAGE_SIZE;
+}
+$params['perpage'] = $perpage;
+
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/studentquestioninit.php", ['id' => $id]));
+$PAGE->set_url(new moodle_url("/mod/flashcards/studentquestioninit.php", $params));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
 }
+
+$pagetitle = get_string('pagetitle', 'flashcards');
+$PAGE->set_title($pagetitle);
+$PAGE->set_heading($course->fullname);
 
 if (!has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
@@ -47,20 +61,30 @@ if (!has_capability('mod/flashcards:studentview', $context)) {
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
-if ($action == 'delete') {
-    mod_flashcards_delete_student_question($questionid, $flashcards, $context);
-    $redirecturl = new moodle_url('/mod/flashcards/studentquestioninit.php', array('id' => $id));
-    redirect($redirecturl);
-    die();
+if ($deleteselected) {
+    if (!$DB->record_exists('question', ['id' => $deleteselected])) {
+        redirect($PAGE->url);
+    }
+
+    if ($confirm == md5($deleteselected)) {
+        $questionid = $deleteselected;
+        mod_flashcards_delete_student_question($questionid, $flashcards, $context);
+        redirect($PAGE->url);
+    } else {
+        $deleteurl = new moodle_url('/mod/flashcards/studentquestioninit.php',
+                array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+
+        $continue = new \single_button($deleteurl, get_string('delete'), 'post');
+        $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
+
+        echo $OUTPUT->header();
+        echo $OUTPUT->confirm(get_string('deletequestionscheck', 'question', $questionname), $continue, $PAGE->url);
+        echo $OUTPUT->footer();
+        die();
+    }
 }
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($course->fullname);
-echo $OUTPUT->header();
-
 $PAGE->requires->js_call_amd('mod_flashcards/questioninit', 'init');
-echo $OUTPUT->heading($flashcards->name);
 
 if ($flashcards->inclsubcats) {
     require_once($CFG->dirroot . '/lib/questionlib.php');
@@ -69,62 +93,38 @@ if ($flashcards->inclsubcats) {
     $qcategories = $flashcards->categoryid;
 }
 
-list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-$authordisplay = get_config('flashcards', 'authordisplay');
-$sql = "SELECT id,
-               questiontext,
-               createdby,
-               category,
-               qtype
-          FROM {question} q
-         WHERE category $sqlwhere
-           AND qtype = 'flashcard'
-           AND q.hidden <> 1
-           AND id NOT IN (SELECT questionid
-                            FROM {flashcards_q_stud_rel}
-                           WHERE studentid = :userid
-                             AND flashcardsid = :fid
-                             AND currentbox IS NOT NULL)";
+/*list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
+$authordisplay = get_config('flashcards', 'authordisplay');*/
 
-$questionstemp = $DB->get_records_sql($sql, $qcategories + ['userid' => $USER->id, 'fid' => $flashcards->id]);
-$questions = [];
-$authors = mod_flashcards_get_question_authors($questionstemp, $course->id);
-foreach ($questionstemp as $question) {
-    $row = [];
-    $row['qid'] = $question->id;
-    $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
-            array('id' => $question->id, 'cmid' => $cm->id, 'fcid' => $flashcards->id));
-    $row['qurl'] = html_entity_decode($qurl->__toString());
-    $row['text'] = mod_flashcards_get_preview_questiontext($context, $question);
-    $row['deletequestionurl'] = mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question);
-    $row['editquestionurl'] = mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cm->id, $PAGE->url);
-    // Display author group.
-    if ($authordisplay) {
-        if ($question->createdby) {
-            $row['author'] = $authors[$question->createdby];
-        } else {
-            $row['author'] = get_string('author_unknown');
-        }
-    }
 
-    $teachercheckresult = mod_flashcard_get_teacher_check_result($question->id, $flashcards->id, $course->id);
-    $checkinfo = mod_flashcard_get_teacher_check_info($teachercheckresult);
 
-    $row['teachercheckcolor'] = $checkinfo['color'];
-    $row['teachercheck'] = $checkinfo['icon'];
-    $row['peerreview'] = mod_flashcard_peer_review_info_overview($question->id, $flashcards->id);
+list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
+$sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
 
-    $questions[] = $row;
-}
-$createbuttonvisibility = 'flashcards_add_btn_invisi';
-if ($flashcards->addfcstudent == 1) {
-    $createbuttonvisibility = 'flashcards_add_btn_visi';
-}
-$createflashcardurl = new moodle_url('/mod/flashcards/simplequestion.php',
-        ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url]);
-$templateinfo = ['questions' => $questions, 'aid' => $flashcards->id, 'cmid' => $cm->id, 'createfcurl' => $createflashcardurl,
-        'cbvis' => $createbuttonvisibility, 'displayauthorcolumn' => $authordisplay];
+$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
+
+$table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
+        "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $qcategories);
+
+$table->define_baseurl($PAGE->url);
+
+$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
+$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
+
 $renderer = $PAGE->get_renderer('core');
 
+$templateinfo = ['createbtnlink' => $link->out(false),
+        'id' => $id,
+        'sesskey' => sesskey(),
+        'actionurl' => $PAGE->url];
+$templateinfo['selected' . $perpage] = true;
+
+if ($flashcards->addfcstudent == 1) {
+    $templateinfo['cbvis'] = 1;
+}
+
+echo $OUTPUT->header();
+echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
+$table->out($perpage, false);
 echo $OUTPUT->footer();

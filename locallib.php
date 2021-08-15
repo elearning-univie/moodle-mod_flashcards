@@ -39,6 +39,8 @@ define('FLASHCARDS_CHECK_NEG', 2);
 define('FLASHCARDS_PEER_REVIEW_NONE', 0);
 define('FLASHCARDS_PEER_REVIEW_UP', 1);
 define('FLASHCARDS_PEER_REVIEW_DOWN', 2);
+
+define('DEFAULT_PAGE_SIZE', 20);
 /**
  * Checks if the user has the right to view the course
  *
@@ -149,13 +151,14 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
 /**
  * Get the questiontext for a preview (first 30 characters)
  * @param context $context
- * @param stdClass $question
+ * @param int $questionid
+ * @param string $questiontext
  * @return string the first 30 chars of a question
  */
-function mod_flashcards_get_preview_questiontext($context, $question) {
+function mod_flashcards_get_preview_questiontext($context, $questionid, $questiontext) {
     $questiontext =
-        file_rewrite_pluginfile_urls($question->questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
-            $question->id);
+        file_rewrite_pluginfile_urls($questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+            $questionid);
     $questiontext = format_text($questiontext, FORMAT_HTML);
 
     preg_match_all('/<img[^>]+>/i', $questiontext, $images);
@@ -194,8 +197,7 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
         throw new coding_exception('deleting a question requires an id of the question to delete');
     }
     require_once($CFG->dirroot . '/lib/questionlib.php');
-    $question = question_bank::load_question_data($questionid);
-    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid)) {
         print_error('deletion_not_allowed', 'flashcards');
         return;
     }
@@ -211,132 +213,19 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
  * checks if the user has deletion rights for this question
  * @param stdClass $context context of the flashcards module
  * @param stdClass $flashcards flashcards object
- * @param stdClass $question DB-Object of the question
+ * @param stdClass $questionid id of the question
  * @return boolean true if allowed to delete, false if not
  */
-function mod_flashcards_has_delete_rights($context, $flashcards, $question) {
+function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
     global $USER;
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
+    $question = question_bank::load_question_data($questionid);
     if ($question->createdby != $USER->id ||
         $question->category != $flashcards->studentsubcat ||
         $question->qtype != 'flashcard') {
         $result = false;
     }
     return $result;
-}
-
-/**
- * gives back the url to delete a question
- * @param stdClass $id id of the module
- * @param stdClass $context module context
- * @param stdClass $flashcards flashcardsobject
- * @param stdClass $question the question db-object
- * @return NULL|string
- */
-function mod_flashcards_get_question_delete_url($id, $context, $flashcards, $question) {
-    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
-        return null;
-    }
-    $url = new moodle_url('/mod/flashcards/studentquestioninit.php', [
-        'id' => $id,
-        'action' => 'delete',
-        'questionid' => $question->id,
-        'sesskey' => sesskey()
-    ]);
-    return $url->out(false);
-}
-/**
- * gives back the url to edit a question
- * @param stdClass $id id of the module
- * @param stdClass $context module context
- * @param stdClass $flashcards flashcardsobject
- * @param stdClass $question the question db-object
- * @param stdClass $cmid flashcards module id
- * @param stdClass $origin the url to send the user to afterwads
- * @return NULL|string
- */
-function mod_flashcards_get_question_edit_url($id, $context, $flashcards, $question, $cmid, $origin) {
-    if (!mod_flashcards_has_delete_rights($context, $flashcards, $question)) {
-        return null;
-    }
-    $url = new moodle_url('/mod/flashcards/simplequestion.php', [
-        'action' => 'edit',
-        'id' => $question->id,
-        'cmid' => $cmid,
-        'origin' => $origin
-    ]);
-    return $url->out(false);
-}
-
-/**
- * /**
- * Find all authors to a set of questions
- * @param array $questions the questions for which the authors are searched
- * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
- * @param int $authordisplay The type of how the author is displayed
- * @return string[]
- */
-function mod_flashcards_get_question_authors($questions, $courseid, $authordisplay = null) {
-    global $DB, $USER;
-    if (!$authordisplay) {
-        $authordisplay = get_config('flashcards', 'authordisplay');
-    }
-    $authors = [];
-    if ($authordisplay) {
-        $authorids = [];
-        foreach ($questions as $question) {
-            if (!key_exists($question->createdby, $authorids)) {
-                $authorids[$question->createdby] = $question->createdby;
-            }
-        }
-        if (count($authorids) > 0) {
-            if ($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
-                $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
-                if (count($roleids) > 0) {
-                    list($inusersql, $useridparams) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
-                    list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
-                    $params = array_merge($useridparams, $roleparams);
-                    $params['courseid'] = $courseid;
-                    $sql = "SELECT userid
-                              FROM {role_assignments} ra,
-                                   {context} c
-                             WHERE c.contextlevel = 50
-                               AND ra.contextid = c.id
-                               AND c.instanceid = :courseid
-                               AND ra.roleid $inrolesql
-                               AND ra.userid $inusersql";
-                    $teacherids = $DB->get_records_sql($sql, $params);
-                } else {
-                    $teacherids = [];
-                }
-                foreach ($authorids as $author) {
-                    if ($author == $USER->id) {
-                        $authors[$author] = get_string('author_me', 'flashcards');
-                    } else if (key_exists($author, $teacherids)) {
-                        $authors[$author] = get_string('author_teacher', 'flashcards');
-                    } else {
-                        $authors[$author] = get_string('author_student', 'flashcards');
-                    }
-                }
-            } else if ($authordisplay == FLASHCARDS_AUTHOR_NAME) {
-                list($insql, $params) = $DB->get_in_or_equal($authorids, SQL_PARAMS_NAMED, 'userids');
-                $sql = "SELECT id,
-                               firstname,
-                               lastname,
-                               firstnamephonetic,
-                               lastnamephonetic,
-                               middlename,
-                               alternatename
-                          FROM {user}
-                         WHERE id $insql";
-                $users = $DB->get_records_sql($sql, $params);
-                foreach ($users as $author) {
-                    $authors[$author->id] = fullname($author);
-                }
-            }
-        }
-    }
-    return $authors;
 }
 
 /**
@@ -394,52 +283,6 @@ function mod_flashcards_get_author_display_name($userid, $courseid, $authordispl
 
     }
     return $author;
-}
-
-/**
- * Returns the teacher check result from the DB
- *
- * @param int $questionid
- * @param int $fcid
- * @param int $courseid
- * @return number
- */
-function mod_flashcard_get_teacher_check_result(int $questionid, int $fcid, int $courseid) {
-    global $DB;
-
-    $tcdata = $DB->get_record_select('flashcards_q_status', 'questionid =:qid AND fcid =:fcid', ['qid' => $questionid, 'fcid' => $fcid]);
-
-    if ($tcdata) {
-        return $tcdata->teachercheck;
-    } else {
-        $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
-        if (count($roleids) > 0) {
-            list($inrolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'roleids');
-            $params = $roleparams;
-            $params['courseid'] = $courseid;
-            $params['questionid'] = $questionid;
-
-            $sql = "SELECT 'X' FROM {question} q,
-                                    {role_assignments} ra,
-                                    {context} c
-                              WHERE q.id = :questionid
-                                AND q.createdby = ra.userid
-                                AND ra.contextid = c.id
-                                AND c.contextlevel = 50
-                                AND c.instanceid = :courseid
-                                AND ra.roleid $inrolesql";
-
-            if ($DB->record_exists_sql($sql, $params)) {
-                $dataobject = ['questionid' => $questionid, 'fcid' => $fcid, 'teachercheck' => FLASHCARDS_CHECK_POS];
-                $DB->insert_record('flashcards_q_status', $dataobject);
-                return FLASHCARDS_CHECK_POS;
-            } else {
-                $dataobject = ['questionid' => $questionid, 'fcid' => $fcid, 'teachercheck' => FLASHCARDS_CHECK_NONE];
-                $DB->insert_record('flashcards_q_status', $dataobject);
-            }
-        }
-    }
-    return FLASHCARDS_CHECK_NONE;
 }
 
 /**

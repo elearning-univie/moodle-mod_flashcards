@@ -26,8 +26,6 @@ require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG;
 
-define('DEFAULT_PAGE_SIZE', 20);
-
 $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
@@ -45,9 +43,7 @@ list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
-$baseurl = new moodle_url("/mod/flashcards/teacherview.php", $params);
-
-$PAGE->set_url($baseurl);
+$PAGE->set_url(new moodle_url("/mod/flashcards/teacherview.php", $params));
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -111,7 +107,7 @@ $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course
 $table->set_sql('q.id, name, q.createdby, q.timemodified, teachercheck',
                 "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $qcategories);
 
-$table->define_baseurl($baseurl);
+$table->define_baseurl($PAGE->url);
 
 $params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
@@ -121,7 +117,7 @@ $renderer = $PAGE->get_renderer('core');
 $templateinfo = ['createbtnlink' => $link->out(false),
         'id' => $id,
         'sesskey' => sesskey(),
-        'actionurl' => $baseurl];
+        'actionurl' => $PAGE->url];
 $templateinfo['selected' . $perpage] = true;
 
 echo $OUTPUT->header();
