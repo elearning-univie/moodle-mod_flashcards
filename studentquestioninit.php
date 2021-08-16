@@ -93,18 +93,22 @@ if ($flashcards->inclsubcats) {
     $qcategories = $flashcards->categoryid;
 }
 
-/*list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-$authordisplay = get_config('flashcards', 'authordisplay');*/
+$importedfcs = $DB->get_fieldset_sql('SELECT questionid
+                            FROM {flashcards_q_stud_rel}
+                           WHERE studentid = :userid
+                             AND flashcardsid = :fid
+                             AND currentbox IS NOT NULL', ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
+list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories);
+list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_QM, 'param', false);
 
-
-list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
-$sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
+$sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.id $sqlwhereifcs";
+$sqlparams = array_merge($qcategories, $importedfcids);
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
 
 $table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
-        "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $qcategories);
+        "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $sqlparams);
 
 $table->define_baseurl($PAGE->url);
 
@@ -116,7 +120,9 @@ $renderer = $PAGE->get_renderer('core');
 $templateinfo = ['createbtnlink' => $link->out(false),
         'id' => $id,
         'sesskey' => sesskey(),
-        'actionurl' => $PAGE->url];
+        'actionurl' => $PAGE->url,
+        'aid' => $flashcards->id,
+        'cmid' => $cm->id];
 $templateinfo['selected' . $perpage] = true;
 
 if ($flashcards->addfcstudent == 1) {
