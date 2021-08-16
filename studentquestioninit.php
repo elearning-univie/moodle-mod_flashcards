@@ -108,7 +108,7 @@ if (!empty($importedfcs)) {
     $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1";
 }
 
-$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
+$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url);
 $table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
         "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid", $sqlwhere, $qcategories + $importedfcids);
 $table->define_baseurl($PAGE->url);

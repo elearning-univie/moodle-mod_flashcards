@@ -28,7 +28,7 @@ Feature: As a student I open the flashcard preview
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "This is a question"
+    Then I should see "flashcard 1"
     Then I log out
 
   @javascript

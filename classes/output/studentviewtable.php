@@ -66,9 +66,6 @@ class studentviewtable extends table_sql {
     /** @var array array to save previously looked up authors */
     private $authors;
 
-    /** @var string setting for how to display the author name in the list */
-    private $authordisplay;
-
     /** @var object course module context */
     private $context;
 
@@ -78,18 +75,16 @@ class studentviewtable extends table_sql {
      * @param int $cmid
      * @param int $courseid
      * @param object $fcobj
-     * @param string $authordisplay
      * @param string $callbackurl
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $authordisplay, $callbackurl) {
+    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $callbackurl) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcobj = $fcobj;
         $this->returnurl = $callbackurl;
         $this->authors = array();
-        $this->authordisplay = $authordisplay;
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
@@ -195,7 +190,7 @@ class studentviewtable extends table_sql {
      */
     public function col_createdby($values) {
         if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, $this->authordisplay);
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid);
             $this->authors[$values->createdby] = $author;
         } else {
             $author = $this->authors[$values->createdby];
