@@ -241,6 +241,9 @@ function mod_flashcards_get_author_display_name($userid, $courseid, $authordispl
     if (!$authordisplay) {
         $authordisplay = get_config('flashcards', 'authordisplay');
     }
+
+    $author = '';
+
     if ($authordisplay) {
         if ($authordisplay == FLASHCARDS_AUTHOR_GROUP) {
             $roleids = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
