@@ -265,6 +265,6 @@ class studentviewtable extends table_sql {
         $durl = new moodle_url('/mod/flashcards/studentquestioninit.php',
                 array('id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()));
 
-        return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
+        return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext), ['class' => 'mod_flashcards_studentview_delete']);
     }
 }

@@ -28,28 +28,28 @@ Feature: As a student I want to see my name, if I create a flashcard
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "This is a question"
+    Then I should see "flashcard 1"
 
   @javascript
   Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
     And I reload the page
-    Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
-    And I should not see "Me" in the ".flashcardsstudenttable" "css_element"
+    Then I should not see "Derpina Knowsalot"
+    And I should not see "Me"
 
   @javascript
   Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
     And I reload the page
-    Then I should see "Me" in the ".flashcardsstudenttable" "css_element"
-    And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
+    Then I should see "Me"
+    And I should not see "Derpina Knowsalot"
 
   @javascript
   Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
     And I reload the page
-    Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttable" "css_element"
-    And I should not see "Student" in the ".flashcardsstudenttable" "css_element"
+    Then I should see "Derpina Knowsalot"
+    And I should not see "Student"

@@ -30,7 +30,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "This is a question"
+    Then I should see "flashcard 1"
     Then I log out
 
   @javascript
@@ -41,8 +41,8 @@ Feature: As a student I want to see the students name, if a student creates a fl
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should not see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Student" in the ".flashcardsstudenttablebody" "css_element"
+    Then I should not see "Derpina Knowsalot"
+    And I should not see "Student"
 
   @javascript
   Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
@@ -52,8 +52,8 @@ Feature: As a student I want to see the students name, if a student creates a fl
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should see "Student" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
+    Then I should see "Student"
+    And I should not see "Derpina Knowsalot"
 
   @javascript
   Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
@@ -63,5 +63,5 @@ Feature: As a student I want to see the students name, if a student creates a fl
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should see "Derpina Knowsalot" in the ".flashcardsstudenttablebody" "css_element"
-    And I should not see "Student" in the ".flashcardsstudenttablebody" "css_element"
+    Then I should see "Derpina Knowsalot"
+    And I should not see "Student"
