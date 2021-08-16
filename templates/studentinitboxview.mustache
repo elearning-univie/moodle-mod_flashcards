@@ -36,7 +36,10 @@
     </select>
 </form>
 {{#cbvis}}
-<div>
-    <p><button class="btn btn-secondary" onclick="window.location.href = '{{createbtnlink}}';"> {{# str }} createflashcardbutton, mod_flashcards {{/ str }} </button></p>
+<div class="mod-flashcards btn-div">
+    <button class="btn btn-secondary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
 </div>
 {{/cbvis}}
+<div class="mod-flashcards btn-div btn-space">
+    <button class="btn btn-primary" onclick="$.mod_flashcards_init_questions({{aid}}, {{cmid}})">{{# str }} addflashcardbutton, mod_flashcards {{/ str }}</button>
+</div>

@@ -73,13 +73,13 @@ class studentviewtable extends table_sql {
     private $context;
 
     /**
-     * teacherviewtable constructor.
-     *
+     * studentviewtable constructor.
      * @param int $uniqueid
      * @param int $cmid
      * @param int $courseid
      * @param object $fcobj
      * @param string $authordisplay
+     * @param string $callbackurl
      * @throws \coding_exception
      */
     public function __construct($uniqueid, $cmid, $courseid, $fcobj, $authordisplay, $callbackurl) {

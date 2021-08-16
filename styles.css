@@ -195,3 +195,7 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards #teacherviewform {
     float: right;
 }
+
+.path-mod-flashcards .btn-space {
+    padding-left: 1em;
+}
