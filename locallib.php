@@ -233,6 +233,7 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
  * @param int $userid the userid of the author
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
  * @param int $authordisplay The type of how the author is displayed
+ * @param bool $displayteachername to display the teachers name
  * @return string
  */
 function mod_flashcards_get_author_display_name($userid, $courseid, $authordisplay = null, $displayteachername = false) {
