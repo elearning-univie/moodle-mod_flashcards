@@ -256,7 +256,7 @@ function mod_flashcards_get_author_display_name($userid, $courseid, $authordispl
                            AND c.instanceid = :courseid
                            AND ra.roleid $inrolesql
                            AND ra.userid = :userid";
-                $isteacher = $DB->record_exists_sql($sql, $params);
+                $isteacher = $DB->record_exists_sql($sql, $roleparams + $params);
             } else {
                 $isteacher = false;
             }
