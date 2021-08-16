@@ -35,8 +35,7 @@ Feature: As a student I want to see my name, if I create a flashcard
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
     And I reload the page
-    Then I should not see "Derpina Knowsalot"
-    And I should not see "Me"
+    Then I should not see "Me"
 
   @javascript
   Scenario: Authordisplay is set to "Type of Author" and I see a teacher flashcard
@@ -44,12 +43,10 @@ Feature: As a student I want to see my name, if I create a flashcard
       | authordisplay | 1 | flashcards |
     And I reload the page
     Then I should see "Me"
-    And I should not see "Derpina Knowsalot"
 
   @javascript
   Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
     And I reload the page
-    Then I should see "Derpina Knowsalot"
-    And I should not see "Student"
+    Then I should not see "Student"

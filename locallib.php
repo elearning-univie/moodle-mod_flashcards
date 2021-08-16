@@ -229,14 +229,14 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
 }
 
 /**
- * /**
  * Get the username of a question creator
  * @param int $userid the userid of the author
  * @param int $courseid id of the course (needed if setting authordisplay set to "teacher/student")
  * @param int $authordisplay The type of how the author is displayed
+ * @param bool $displayteachername to display the teachers name
  * @return string
  */
-function mod_flashcards_get_author_display_name($userid, $courseid, $authordisplay = null) {
+function mod_flashcards_get_author_display_name($userid, $courseid, $authordisplay = null, $displayteachername = false) {
     global $DB, $USER;
     if (!$authordisplay) {
         $authordisplay = get_config('flashcards', 'authordisplay');
@@ -266,7 +266,21 @@ function mod_flashcards_get_author_display_name($userid, $courseid, $authordispl
             if ($userid == $USER->id) {
                 $author = get_string('author_me', 'flashcards');
             } else if ($isteacher) {
-                $author = get_string('author_teacher', 'flashcards');
+                if ($displayteachername) {
+                    $sql = "SELECT id,
+                           firstname,
+                           lastname,
+                           firstnamephonetic,
+                           lastnamephonetic,
+                           middlename,
+                           alternatename
+                      FROM {user}
+                     WHERE id = :id";
+                    $user = $DB->get_record_sql($sql, ['id' => $userid]);
+                    $author = fullname($user) . ' (' . $author = get_string('author_teacher', 'flashcards') . ')';
+                } else {
+                    $author = get_string('author_teacher', 'flashcards');
+                }
             } else {
                 $author = get_string('author_student', 'flashcards');
             }

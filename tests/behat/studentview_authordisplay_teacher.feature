@@ -36,8 +36,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    Then I should see "Teacher"
-    And I should not see "John Doe"
+    Then I should see "John Doe (Teacher)"
 
   @javascript
   Scenario: Authordisplay is set to "Name of Author" and I see a teacher flashcard
@@ -48,7 +47,6 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
     Then I should see "John Doe"
-    And I should not see "Teacher"
 
   @javascript
   Scenario: Authordisplay is set to "disabled" and I see a teacher flashcard
@@ -59,4 +57,3 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
     Then I should not see "John Doe"
-    And I should not see "Teacher"

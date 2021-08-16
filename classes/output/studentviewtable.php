@@ -190,7 +190,7 @@ class studentviewtable extends table_sql {
      */
     public function col_createdby($values) {
         if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid);
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, null, true);
             $this->authors[$values->createdby] = $author;
         } else {
             $author = $this->authors[$values->createdby];
