@@ -165,20 +165,13 @@ class studentviewtable extends table_sql {
     }
 
     /**
-     * Prepares column createdby for display
+     * Prepares column peerreview for display
      *
      * @param object $values
      * @return string
      */
-    public function col_createdby($values) {
-        if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, $this->authordisplay);
-            $this->authors[$values->createdby] = $author;
-        } else {
-            $author = $this->authors[$values->createdby];
-        }
-
-        return $author;
+    public function col_peerreview($values) {
+        return mod_flashcard_peer_review_info_overview($values->id, $this->fcobj->id);
     }
 
     /**
@@ -195,15 +188,22 @@ class studentviewtable extends table_sql {
     }
 
     /**
-     * Prepares column peerreview for display
+     * Prepares column createdby for display
      *
      * @param object $values
      * @return string
      */
-    public function col_peerreview($values) {
-        return mod_flashcard_peer_review_info_overview($values->id, $this->fcobj->id);
-    }
+    public function col_createdby($values) {
+        if (!key_exists($values->createdby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, $this->authordisplay);
+            $this->authors[$values->createdby] = $author;
+        } else {
+            $author = $this->authors[$values->createdby];
+        }
 
+        return $author;
+    }
+    
     /**
      * Prepares column timemodified for display
      *
