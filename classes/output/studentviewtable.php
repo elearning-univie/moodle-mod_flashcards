@@ -203,7 +203,7 @@ class studentviewtable extends table_sql {
 
         return $author;
     }
-    
+
     /**
      * Prepares column timemodified for display
      *
