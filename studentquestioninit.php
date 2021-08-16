@@ -99,17 +99,18 @@ $importedfcs = $DB->get_fieldset_sql('SELECT questionid
                              AND flashcardsid = :fid
                              AND currentbox IS NOT NULL', ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
-list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories);
-list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_QM, 'param', false);
-
-$sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.id $sqlwhereifcs";
-$sqlparams = array_merge($qcategories, $importedfcids);
+list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED, 'p');
+if (!empty($importedfcs)) {
+    list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false);
+    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+} else {
+    $importedfcids = array();
+    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1";
+}
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
-
 $table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
-        "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $sqlparams);
-
+        "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid", $sqlwhere, $qcategories + $importedfcids);
 $table->define_baseurl($PAGE->url);
 
 $params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
