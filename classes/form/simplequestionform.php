@@ -43,6 +43,8 @@ class simplequestionform extends \moodleform {
     protected $question;
     /** @var string question category */
     protected $category;
+    /** @var string question category context */
+    protected $categorycontext;
 
     /** @var object current context */
     public $context;
@@ -77,6 +79,7 @@ class simplequestionform extends \moodleform {
         $this->fileoptions = array('subdirs' => 1, 'maxfiles' => -1, 'maxbytes' => -1);
 
         $this->category = $category;
+        $this->categorycontext = \context::instance_by_id($category->contextid);
 
         parent::__construct($submiturl, null, 'post', '', null, $formeditable);
     }
@@ -91,8 +94,14 @@ class simplequestionform extends \moodleform {
 
         $mform->addElement('header', 'generalheader', get_string("general", 'form'));
 
-        $mform->addElement('hidden', 'category', get_string('category', 'question'),
-                array('size' => 512));
+        if (!$this->question->formoptions->canaddwithcat) {
+            $mform->addElement('hidden', 'category', get_string('category', 'question'),
+                    array('size' => 512));
+        } else {
+            $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
+                    array('size' => 512, 'contexts' => array($this->categorycontext)));
+        }
+
         $mform->setType('category', PARAM_RAW);
 
         $mform->addElement('text', 'name', get_string('questionname', 'question'),

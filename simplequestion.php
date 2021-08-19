@@ -97,6 +97,7 @@ if (isset($question->categoryobject)) {
 
 $question->formoptions = new stdClass();
 $question->contextid = $category->contextid;
+$question->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
 
 $formeditable = true;
 
