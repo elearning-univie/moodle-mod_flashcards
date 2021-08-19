@@ -100,9 +100,10 @@ function flashcards_check_category($flashcards, $courseid) {
     }
 
     if ($flashcards->newcategory) {
+        $newcategoryname = get_string('modulenameplural', 'flashcards') . '_' . $flashcards->name;
         $qcobject = new question_category_object(0, new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
             $context, 0, $defaultcategoryobj->id, null, null);
-        $categoryid = $qcobject->add_category($newparent, $flashcards->newcategoryname, '', true);
+        $categoryid = $qcobject->add_category($newparent, $newcategoryname, '', true);
         return $categoryid;
     } else {
         return $catid;
