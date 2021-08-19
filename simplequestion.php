@@ -31,6 +31,7 @@ global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
 $id = optional_param('id', 0, PARAM_INT); // question id
 $cmid = required_param('cmid', PARAM_INT);
+$categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
@@ -47,7 +48,9 @@ $PAGE->set_pagelayout('admin');
 $context = context_module::instance($cm->id);
 
 if (has_capability('mod/flashcards:editallquestions', $context)) {
-    $categoryid = $module->categoryid;
+    if ($categoryid === 0) {
+        $categoryid = $module->categoryid;
+    }
 } else if (has_capability('mod/flashcards:editownquestion', $context)) {
     if ($module->addfcstudent == 0) {
         $PAGE->set_title('Errorrrr');
