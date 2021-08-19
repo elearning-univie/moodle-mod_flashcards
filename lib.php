@@ -135,14 +135,12 @@ function flashcards_get_database_object($flashcards) {
     global $COURSE;
     require_once('locallib.php');
 
-    $courseid = $COURSE->id;
-
     $flashcardsdb = new stdClass();
 
-    $flashcardsdb->course = $courseid;
+    $flashcardsdb->course = $COURSE->id;
     $flashcardsdb->name = $flashcards->name;
 
-    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $courseid);
+    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
 
     if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
         $flashcardsdb->inclsubcats = 0;
@@ -170,17 +168,14 @@ function flashcards_get_database_object($flashcards) {
     }
 
     $flashcardsdb->studentsubcat = null;
-    $flashcards->studentsubcat = null;
     if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
-        $subcatid = null;
         if ($flashcards->addfcstudent == 1) {
             $flashcardsdb->inclsubcats = 1;
-            $context = context_course::instance($courseid);
+            $context = context_course::instance($COURSE->id);
             $contextid = $context->id;
             $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid);
-            $flashcards->studentsubcat = $subcatid;
+            $flashcardsdb->studentsubcat = $subcatid;
         }
-        $flashcardsdb->studentsubcat = $subcatid;
     } else {
         if ($flashcardsdb->addfcstudent == 1) {
             $flashcardsdb->studentsubcat = $flashcards->studentsubcat;

@@ -28,13 +28,8 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
 require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir . '/formslib.php');
 
-define('FLASHCARDS_EXISTING', get_string('existingcategory', 'flashcards'));
-define('FLASHCARDS_NEW', get_string('newcategory', 'flashcards'));
-
 /**
  * mod_flashcards_mod_form
- *
- * mod_flashcards_mod_form...
  *
  * @package    mod_flashcards
  * @copyright  2020 University of Vienna
@@ -46,7 +41,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
      *
      */
     public function definition() {
-        global $DB, $PAGE, $COURSE;
+        global $DB, $COURSE;
 
         $mform =& $this->_form;
         $courseid = $COURSE->id;
@@ -58,9 +53,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
 
         // Introduction.
         $this->standard_intro_elements();
-
-        $mform->addElement('hidden', 'newcategory', get_string('newexistingcategory', 'flashcards'));
-        $mform->setType('newcategory', PARAM_INT);
+        $this->add_hidden_fields();
 
         if (optional_param('update', 0, PARAM_INT)) {
             $mform->setDefault('newcategory', 0);
@@ -68,29 +61,34 @@ class mod_flashcards_mod_form extends moodleform_mod {
             $catdefault = "$flashcards->categoryid,$context->id";
             $contexts[] = $context;
             $mform->addElement('hidden', 'category', get_string('category', 'question'), array('contexts' => $contexts));
+            $mform->setType('category', PARAM_RAW);
             $mform->setDefault('category', $catdefault);
         } else {
             $mform->setDefault('newcategory', 1);
         }
 
-        $mform->addElement('hidden', 'inclsubcats', get_string('inclsubcats', 'flashcards'));
-        $mform->setType('inclsubcats', PARAM_INT);
-
         $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'),
             array(1 => get_string('yes'), 0 => get_string('no')));
         $mform->addHelpButton('addfcstudent', 'addfcstudent', 'flashcards');
         $mform->setDefault('addfcstudent', 1);
-        /*$mform->disabledIf('inclsubcats', 'addfcstudent', 'eq', 1);*/
-        // $PAGE->requires->js_call_amd('mod_flashcards/fcstudentsubcat', 'init');*/
-
-        $mform->addElement('hidden', 'studentsubcat', '');
-        $mform->setType('studentsubcat', PARAM_INT);
 
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
+    }
 
-        /*if (empty($this->_instance)) {
-            $PAGE->requires->js_call_amd('mod_flashcards/autofillcatname', 'init', ['fcstring' => $fcstring]);
-        }*/
+    /**
+     * Add all the hidden form fields
+     */
+    protected function add_hidden_fields() {
+        $mform = $this->_form;
+
+        $mform->addElement('hidden', 'newcategory');
+        $mform->setType('newcategory', PARAM_INT);
+
+        $mform->addElement('hidden', 'inclsubcats');
+        $mform->setType('inclsubcats', PARAM_INT);
+
+        $mform->addElement('hidden', 'studentsubcat');
+        $mform->setType('studentsubcat', PARAM_INT);
     }
 }
