@@ -68,7 +68,7 @@ $string['proposenewcardbuttondisabled'] = 'Vorschlagen von Lernkarten wurde deak
 
 $string['accept'] = 'korrekt';
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
-$string['addfcstudent'] = 'Studenten dürfen Lernkarten hinzufügen';
+$string['addfcstudent'] = 'Studierende dürfen Lernkarten hinzufügen';
 $string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
 $string['author'] = 'Hinzugefügt von';
 $string['authordisplay'] = 'Anzeige Flashcard-Autor';
@@ -83,6 +83,7 @@ $string['author_teacher'] = 'Lehrende/r';
 $string['author_unknown'] = 'Unbekannt';
 $string['box'] = 'Fach ';
 $string['boxzero'] = 'Lernkartensammlung';
+$string['categorymissing'] = 'Die Standardkategorie für diese Lernkartei fehlt. Bitte wählen Sie eine Neue aus.';
 $string['configintro'] = 'Lernkartei';
 $string['createflashcardbutton'] = 'Lernkarte erstellen';
 $string['decline'] = 'falsch';
