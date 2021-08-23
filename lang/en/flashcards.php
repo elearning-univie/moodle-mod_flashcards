@@ -83,6 +83,7 @@ $string['author_teacher'] = 'Teacher';
 $string['author_unknown'] = 'Unknown';
 $string['box'] = 'Box ';
 $string['boxzero'] = 'Flash card collection';
+$string['categorymissing'] = 'The default category is missing for this flashcard activity. Please select a new one.';
 $string['configintro'] = 'Flashcards';
 $string['createflashcardbutton'] = 'Create flash card';
 $string['decline'] = 'wrong';

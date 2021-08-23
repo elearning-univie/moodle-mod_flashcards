@@ -91,7 +91,6 @@ function flashcards_check_category($flashcards, $courseid) {
         list($catid, $catcontextid) = explode(",", $flashcards->category);
 
         if (!in_array($catid, $categorylist)) {
-            print_error('invalidcategoryid');
             return;
         }
         $newparent = $flashcards->category;
@@ -141,6 +140,11 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->name = $flashcards->name;
 
     $flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
+
+    if (!isset($flashcardsdb->categoryid)) {
+        print_error('invalidcategoryid');
+        return;
+    }
 
     if (!property_exists($flashcards, 'inclsubcats') || !$flashcards->inclsubcats) {
         $flashcardsdb->inclsubcats = 0;

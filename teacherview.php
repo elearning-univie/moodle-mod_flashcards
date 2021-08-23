@@ -92,6 +92,11 @@ if ($deleteselected) {
 
 $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 
+if (!$DB->record_exists("question_categories", array('id' => $flashcards->categoryid))) {
+    $editpage = new moodle_url('/course/modedit.php', array('update' => $cm->id, 'return' => 0, 'sr' => 0, 'missingcategory' => 1));
+    redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
+}
+
 if ($flashcards->inclsubcats) {
     require_once($CFG->dirroot . '/lib/questionlib.php');
     $qcategories = question_categorylist($flashcards->categoryid);
