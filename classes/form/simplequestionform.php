@@ -62,6 +62,7 @@ class simplequestionform extends \moodleform {
      * @param object $question
      * @param string $category
      * @param bool $formeditable
+     * @param string $action
      * @throws coding_exception
      * @throws dml_exception
      */
