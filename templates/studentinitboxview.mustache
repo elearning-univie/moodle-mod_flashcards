@@ -28,6 +28,7 @@
 <form method="get" action="{{{actionurl}}}" id="teacherviewform">
     <input type="hidden" name="id" value="{{id}}"/>
     <input type="hidden" name="sesskey" value="{{sesskey}}"/>
+    <input type="hidden" name="tab" value="{{tab}}"/>
     <label for="perpage">{{# str }} pagesize, mod_flashcards {{/ str }}</label>
     <select id="perpage" name="perpage" onchange="this.form.submit()">
         <option value="20" title="20" {{#selected20}}selected{{/selected20}}>20</option>

@@ -141,3 +141,8 @@ $string['flashcards:editallquestions'] = 'Alle Fragen bearbeiten';
 $string['flashcards:editownquestion'] = 'Eigene Fragen bearbeiten';
 $string['flashcards:editreview'] = 'Lernkarten annehmen oder ablehnen';
 $string['flashcards:editcardwithouttcreset'] = 'Nutzer/innen mit dieser Berechtigungen setzen beim Bearbeiten einer Lernkarte nicht den Lehrenden check zurück.';
+
+$string['tabflashcardsadded'] = 'Meine Lernkartei';
+$string['tabflashcardsnotadded'] = 'Lernkartensammlung';
+$string['tabflashcardsaddedtip'] = 'Meine Lernkartei';
+$string['tabflashcardsnotaddedtip'] = 'Lernkartensammlung';

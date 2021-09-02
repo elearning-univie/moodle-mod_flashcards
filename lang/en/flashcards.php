@@ -141,3 +141,8 @@ $string['flashcards:editallquestions'] = 'Edit all questions';
 $string['flashcards:editownquestion'] = 'Edit own questions';
 $string['flashcards:editreview'] = 'Accept or deny flashcards';
 $string['flashcards:editcardwithouttcreset'] = 'Users with this capability wont reset the teacher check when editing a flashcard';
+
+$string['tabflashcardsadded'] = 'My flashcards';
+$string['tabflashcardsnotadded'] = 'Flashcards collection';
+$string['tabflashcardsaddedtip'] = 'My flashcards';
+$string['tabflashcardsnotaddedtip'] = 'Flashcards collection';

@@ -30,9 +30,11 @@ $id = required_param('id', PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
+$tab = optional_param('tab', 'notadded', PARAM_ALPHAEXT);
 
 $params = array();
 $params['id'] = $id;
+$params['tab'] = $tab;
 
 if (!in_array($perpage, [20, 40, 80], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
@@ -92,6 +94,7 @@ if ($flashcards->inclsubcats) {
 } else {
     $qcategories = $flashcards->categoryid;
 }
+$equalparam = ($tab == 'added') ? true : false;
 
 $importedfcs = $DB->get_fieldset_sql('SELECT questionid
                             FROM {flashcards_q_stud_rel}
@@ -100,13 +103,8 @@ $importedfcs = $DB->get_fieldset_sql('SELECT questionid
                              AND currentbox IS NOT NULL', ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
 list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED, 'p');
-if (!empty($importedfcs)) {
-    list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false);
-    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
-} else {
-    $importedfcids = array();
-    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1";
-}
+list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
+$sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url);
 $table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
@@ -123,15 +121,29 @@ $templateinfo = ['createbtnlink' => $link->out(false),
         'sesskey' => sesskey(),
         'actionurl' => $PAGE->url,
         'aid' => $flashcards->id,
-        'cmid' => $cm->id];
+        'cmid' => $cm->id,
+        'tab' => $tab];
 $templateinfo['selected' . $perpage] = true;
 
 if ($flashcards->addfcstudent == 1) {
     $templateinfo['cbvis'] = 1;
 }
 
+$tabs = [];
+$tabs['notadded'] = new tabobject('notadded',
+    new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']),
+    get_string('tabflashcardsnotadded', 'flashcards'),
+    get_string('tabflashcardsnotaddedtip', 'flashcards'),
+    false);
+$tabs['added'] = new tabobject('added',
+    new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']),
+    get_string('tabflashcardsadded', 'flashcards'),
+    get_string('tabflashcardsaddedtip', 'flashcards'),
+    false);
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
+echo $OUTPUT->tabtree($tabs, $tab);
 $table->out($perpage, false);
 echo $OUTPUT->footer();
