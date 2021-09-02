@@ -30,8 +30,8 @@ Feature: As a student I edit the an existing flashcard
     And I click on "Save changes" "button"
     Then I should see "flashcard 1"
     And I follow "View"
-    And I click on "Yes"
-    And I click on "Close Preview"
+    And I click on "Yes" button
+    And I click on "Close Preview" button
     Then I log out
 
   @javascript
@@ -42,7 +42,7 @@ Feature: As a student I edit the an existing flashcard
     And I follow "Customize your flashcard deck"
     And I follow "Edit"
     And I select "marginal changes"
-    And I click "Save changes"
+    And I click on "Save changes" button
     Then I should see "1/0"
 
   @javascript
@@ -53,5 +53,5 @@ Feature: As a student I edit the an existing flashcard
     And I follow "Customize your flashcard deck"
     And I follow "Edit"
     And I select "substantial changes"
-    And I click "Save changes"
+    And I click on "Save changes" button
     Then I should see "0/0"
