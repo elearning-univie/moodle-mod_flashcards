@@ -26,6 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/question/editlib.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/formslib.php');
+require_once('locallib.php');
 
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
@@ -33,6 +34,7 @@ $id = optional_param('id', 0, PARAM_INT); // question id
 $cmid = required_param('cmid', PARAM_INT);
 $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
+$action = optional_param('action', 'create',PARAM_ALPHA);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
 if ($id) {
@@ -105,7 +107,7 @@ $question->formoptions->canaddwithcat = question_has_capability_on($question, 'a
 $formeditable = true;
 
 $PAGE->set_pagetype('question-type-flashcard');
-$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable);
+$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable, $action);
 
 $questioncopy = fullclone($question);
 $questioncopy->category = "{$category->id},{$category->contextid}";
@@ -122,6 +124,16 @@ if ($mform->is_cancelled()) {
     $questioncopy->answer = $fromform->answer;
 
     $question = $qtypeobj->save_question($question, $questioncopy);
+
+    $changeextent = 0;
+    if(property_exists($fromform, 'changeextent')) {
+        $changeextent = $fromform->changeextent;
+    }
+    $resetinfo = array(
+        'changeextent' => $changeextent,
+        'questionid' => $question->id,
+        'userid' => $USER->id);
+    mod_flashcard_reset_tc_and_peer_review($resetinfo);
 
     question_bank::notify_question_edited($question->id);
 
