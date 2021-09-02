@@ -29,7 +29,6 @@ Feature: As a student I edit the an existing flashcard
       | Solution | This is a solution |
     And I click on "Save changes" "button"
     And I follow "View"
-    And I click on "upvotebtn" "button"
     And I click on "Close Preview" "button"
     Then I log out
 
