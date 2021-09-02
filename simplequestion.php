@@ -34,7 +34,7 @@ $id = optional_param('id', 0, PARAM_INT); // question id
 $cmid = required_param('cmid', PARAM_INT);
 $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
-$action = optional_param('action', 'create',PARAM_ALPHA);
+$action = optional_param('action', 'create', PARAM_ALPHA);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
 if ($id) {
@@ -126,7 +126,7 @@ if ($mform->is_cancelled()) {
     $question = $qtypeobj->save_question($question, $questioncopy);
 
     $changeextent = 0;
-    if(property_exists($fromform, 'changeextent')) {
+    if (property_exists($fromform, 'changeextent')) {
         $changeextent = $fromform->changeextent;
     }
     $resetinfo = array(

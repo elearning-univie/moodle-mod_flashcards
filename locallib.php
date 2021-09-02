@@ -415,7 +415,7 @@ function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
 function mod_flashcard_reset_tc_and_peer_review(array $data) {
     global $DB;
 
-    if($data['changeextent']) {
+    if ($data['changeextent']) {
         $sql = "SELECT fcqstatus.id AS id,
                            cm.id AS coursemodule
                       FROM {flashcards_q_status} fcqstatus
@@ -435,7 +435,5 @@ function mod_flashcard_reset_tc_and_peer_review(array $data) {
                    SET currentbox = NULL, lastanswered = 0, tries = 0, wronganswercount = 0, peerreview = 0
                  WHERE questionid =:questionid";
         $DB->execute($sql, ['questionid' => $data['questionid']]);
-        //$DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $data->questionid]);
-        
     }
 }

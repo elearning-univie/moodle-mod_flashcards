@@ -123,11 +123,11 @@ class simplequestionform extends \moodleform {
         $mform->setType('answer', PARAM_RAW);
         $mform->addRule('answer', null, 'required', null, 'client');
 
-        if($this->action == 'edit') {
+        if ($this->action == 'edit') {
             $mform->addElement('header', 'radioedithdr',
                 get_string('changeextenttitle', 'mod_flashcards'), '');
             $mform->setExpanded('radioedithdr', 1);
-            $radioarray=array();
+            $radioarray = array();
             $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('minorchange', 'mod_flashcards'), 0);
             $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('majorchange', 'mod_flashcards'), 1);
             $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
