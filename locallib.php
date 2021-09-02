@@ -412,7 +412,7 @@ function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
 
 /**
  * resets teachercheck and peer reviews after substantial edit of flashcard.
- * 
+ *
  * @param array $data
  */
 function mod_flashcard_reset_tc_and_peer_review(array $data) {
