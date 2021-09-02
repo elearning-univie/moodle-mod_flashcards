@@ -28,7 +28,6 @@ Feature: As a student I edit the an existing flashcard
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    And I see "flashcard 1"
     And I follow "View"
     And I click on "Yes" "button"
     And I click on "Close Preview" "button"
