@@ -28,7 +28,8 @@ Feature: As a student I edit the an existing flashcard
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    And I follow "View"
+    And I follow "/mod/flashcards/flashcardpreview.php"
+    And I click on "upvotebtn" "button"
     And I click on "Close Preview" "button"
     Then I log out
 
