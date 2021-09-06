@@ -415,7 +415,7 @@ function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
  *
  * @param array $data
  */
-function mod_flashcard_reset_tc_and_peer_review(array $data) {
+function mod_flashcards_reset_tc_and_peer_review(array $data) {
     global $DB;
 
     if ($data['changeextent']) {

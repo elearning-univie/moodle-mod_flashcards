@@ -34,9 +34,9 @@ $id = optional_param('id', 0, PARAM_INT); // question id
 $cmid = required_param('cmid', PARAM_INT);
 $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
-$action = optional_param('action', 'create', PARAM_ALPHA);
+$action = required_param('action', PARAM_ALPHA);
 
-$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin]);
+$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin, 'action' => $action]);
 if ($id) {
     $url->param('id', $id);
 }
@@ -122,18 +122,18 @@ if ($mform->is_cancelled()) {
     $questioncopy->name = $fromform->name;
     $questioncopy->questiontext = $fromform->questiontext;
     $questioncopy->answer = $fromform->answer;
+    $changeextent = 0;
+    if ($action == 'edit') {
+        $changeextent = $fromform->changeextent;
+    }
 
     $question = $qtypeobj->save_question($question, $questioncopy);
 
-    $changeextent = 0;
-    if (property_exists($fromform, 'changeextent')) {
-        $changeextent = $fromform->changeextent;
-    }
     $resetinfo = array(
         'changeextent' => $changeextent,
         'questionid' => $question->id,
         'userid' => $USER->id);
-    mod_flashcard_reset_tc_and_peer_review($resetinfo);
+    mod_flashcards_reset_tc_and_peer_review($resetinfo);
 
     question_bank::notify_question_edited($question->id);
 
