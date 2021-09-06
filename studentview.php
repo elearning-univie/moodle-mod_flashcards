@@ -43,6 +43,11 @@ if ($node) {
 $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
+
+if (has_capability('mod/flashcards:teacherview', $context) ) {
+    redirect(new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id)));
+}
+
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:studentview', $context)) {
