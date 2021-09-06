@@ -409,3 +409,34 @@ function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
 
     return $noup.'/'.$nodown;
 }
+
+/**
+ * resets teachercheck and peer reviews after substantial edit of flashcard.
+ *
+ * @param array $data
+ */
+function mod_flashcards_reset_tc_and_peer_review(array $data) {
+    global $DB;
+
+    if ($data['changeextent']) {
+        $sql = "SELECT fcqstatus.id AS id,
+                           cm.id AS coursemodule
+                      FROM {flashcards_q_status} fcqstatus
+                      JOIN {modules} m ON m.name = 'flashcards'
+                      JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
+                     WHERE fcqstatus.questionid = :questionid";
+        $records = $DB->get_records_sql($sql, ['questionid' => $data['questionid']]);
+        foreach ($records as $record) {
+            // Reset teachercheck only when a the editor doesn't have the right to (normally students).
+            $context = \context_module::instance($record->coursemodule, MUST_EXIST);
+            if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $data['userid'])) {
+                $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
+            }
+        }
+        // Reset peer review for all roles and move flashcard back to box 0.
+        $sql = "UPDATE {flashcards_q_stud_rel}
+                   SET currentbox = NULL, lastanswered = 0, tries = 0, wronganswercount = 0, peerreview = 0
+                 WHERE questionid =:questionid";
+        $DB->execute($sql, ['questionid' => $data['questionid']]);
+    }
+}

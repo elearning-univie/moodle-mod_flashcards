@@ -62,13 +62,15 @@ class simplequestionform extends \moodleform {
      * @param object $question
      * @param string $category
      * @param bool $formeditable
+     * @param string $action
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function __construct($submiturl, $question, $category, $formeditable = true) {
+    public function __construct($submiturl, $question, $category, $formeditable = true, $action) {
         global $DB;
 
         $this->question = $question;
+        $this->action = $action;
 
         $record = $DB->get_record('question_categories',
                 array('id' => $question->category), 'contextid');
@@ -121,6 +123,18 @@ class simplequestionform extends \moodleform {
                 get_string('correctanswer', 'qtype_flashcard'), array('rows' => 15), $this->editoroptions);
         $mform->setType('answer', PARAM_RAW);
         $mform->addRule('answer', null, 'required', null, 'client');
+
+        if ($this->action == 'edit') {
+            $mform->addElement('header', 'radioedithdr',
+                get_string('changeextenttitle', 'mod_flashcards'), '');
+            $mform->setExpanded('radioedithdr', 1);
+            $radioarray = array();
+            $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('minorchange', 'mod_flashcards'), 0);
+            $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('majorchange', 'mod_flashcards'), 1);
+            $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
+            $mform->addRule('radioar', null, 'required', null, 'client');
+            $mform->setDefault('changeextent', 0);
+        }
 
         $this->add_hidden_fields();
         $this->add_action_buttons(true, get_string('savechanges'));
