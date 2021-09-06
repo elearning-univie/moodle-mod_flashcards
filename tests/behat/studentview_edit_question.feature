@@ -28,8 +28,8 @@ Feature: As a student I edit the an existing flashcard
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    And I follow "/mod/flashcards/flashcardpreview.php"
-    And I click on "upvotebtn" "button"
+    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
+    And I click on "upvotebtn" "css_element"
     And I click on "Close Preview" "button"
     Then I log out
 
@@ -39,7 +39,7 @@ Feature: As a student I edit the an existing flashcard
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    And I follow "Edit"
+    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I select "marginal changes"
     And I click on "Save changes" "button"
     Then I should see "1/0"
@@ -50,7 +50,7 @@ Feature: As a student I edit the an existing flashcard
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
-    And I follow "Edit"
+    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I select "substantial changes"
     And I click on "Save changes" "button"
     Then I should see "0/0"
