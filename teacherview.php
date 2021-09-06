@@ -54,6 +54,10 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
 if (!has_capability('mod/flashcards:teacherview', $context) ) {
+    if (has_capability('mod/flashcards:studentview', $context) ) {
+        redirect(new moodle_url('/mod/flashcards/studentview.php', array('id' => $id)));
+    }
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
