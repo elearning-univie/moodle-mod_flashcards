@@ -434,9 +434,13 @@ function mod_flashcards_reset_tc_and_peer_review(array $data) {
             }
         }
         // Reset peer review for all roles and move flashcard back to box 0.
-        $sql = "UPDATE {flashcards_q_stud_rel}
-                   SET currentbox = NULL, lastanswered = 0, tries = 0, wronganswercount = 0, peerreview = 0
+        $sql = "SELECT id 
+                 FROM {flashcards_q_stud_rel}
                  WHERE questionid =:questionid";
-        $DB->execute($sql, ['questionid' => $data['questionid']]);
+        $records = $DB->get_fieldset_sql($sql, ['questionid' => $data['questionid']]);
+        list($insql, $inparam) = $DB->get_in_or_equal($records, SQL_PARAMS_NAMED, 'id');
+        $sql = "DELETE FROM {flashcards_q_stud_rel}
+                 WHERE id $insql ";
+        $DB->execute($sql, $inparam);
     }
 }

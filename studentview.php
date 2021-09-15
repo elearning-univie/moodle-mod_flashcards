@@ -112,7 +112,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $templatestablecontext['flashcardsid'] = $flashcards->id;
 
     $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/simplequestion.php',
-            ['cmid' => $cm->id, 'origin' => $templatestablecontext['selectquestionsurl']]);
+            ['action' => 'create', 'cmid' => $cm->id, 'origin' => $templatestablecontext['selectquestionsurl']]);
 
     $renderer = $PAGE->get_renderer('core');
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);

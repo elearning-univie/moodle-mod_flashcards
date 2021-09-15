@@ -28,9 +28,6 @@ Feature: As a student I edit the an existing flashcard
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I click on "upvotebtn" "css_element"
-    And I click on "Close Preview" "button"
     Then I log out
 
   @javascript
@@ -40,7 +37,12 @@ Feature: As a student I edit the an existing flashcard
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I select "marginal changes"
+    And I switch to the browser tab opened by the app
+    And I should see "Peer review"
+    And I click on "upvotebtn" "button"
+    And I switch to the main window
+    And I click on ".mod_flashcards_questioneditlink" "css_element"
+    And I click on "marginal changes" "radio"
     And I click on "Save changes" "button"
     Then I should see "1/0"
 
@@ -51,6 +53,11 @@ Feature: As a student I edit the an existing flashcard
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I select "substantial changes"
+    And I switch to the browser tab opened by the app
+    And I should see "Peer review"
+    And I click on "upvotebtn" "button"
+    And I switch to the main window
+    And I click on ".mod_flashcards_questioneditlink" "css_element"
+    And I click on "substantial changes" "radio"
     And I click on "Save changes" "button"
     Then I should see "0/0"

@@ -37,11 +37,21 @@ class observer {
     public static function question_updated(\core\event\question_updated $event) {
         global $DB;
 
-        // Reset peer review for all roles.
-        $context = \context_module::instance($event->contextid, MUST_EXIST);
-        if (has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
-            $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
+        $sql = "SELECT fcqstatus.id AS id,
+                       cm.id AS coursemodule
+                  FROM {flashcards_q_status} fcqstatus
+                  JOIN {modules} m ON m.name = 'flashcards'
+                  JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
+                 WHERE fcqstatus.questionid = :questionid";
+        $records = $DB->get_records_sql($sql, ['questionid' => $event->objectid]);
+        foreach ($records as $record) {
+            // Reset peer review for all roles.
+            $context = \context_module::instance($record->coursemodule, MUST_EXIST);
+            if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
+                $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
+            }
         }
+
     }
 
 }
