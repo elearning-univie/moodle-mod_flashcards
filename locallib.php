@@ -434,7 +434,7 @@ function mod_flashcards_reset_tc_and_peer_review(array $data) {
             }
         }
         // Reset peer review for all roles and move flashcard back to box 0.
-        $sql = "SELECT id 
+        $sql = "SELECT id
                  FROM {flashcards_q_stud_rel}
                  WHERE questionid =:questionid";
         $records = $DB->get_fieldset_sql($sql, ['questionid' => $data['questionid']]);
