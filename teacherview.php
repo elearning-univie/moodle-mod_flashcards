@@ -34,7 +34,7 @@ $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $params = array();
 $params['id'] = $id;
 
-if (!in_array($perpage, [20, 40, 80], true)) {
+if (!in_array($perpage, [10, 20, 50, 100], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 $params['perpage'] = $perpage;
@@ -113,7 +113,7 @@ $sqlwhere = "category $sqlwhere AND qtype = 'flashcard'";
 
 $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id, FLASHCARDS_AUTHOR_NAME);
 
-$table->set_sql('q.id, name, q.createdby, q.timemodified, teachercheck',
+$table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
                 "{question} q LEFT JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere, $qcategories);
 
 $table->define_baseurl($PAGE->url);

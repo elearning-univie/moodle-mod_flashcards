@@ -312,13 +312,13 @@ function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 
     $checkinfo = array();
     if ($teachercheckresult == FLASHCARDS_CHECK_POS) {
-        $checkicon = new \pix_icon('t/check', get_string('yes'));
+        $checkicon = new \pix_icon('t/check', get_string('accept', 'flashcards'));
         $checkinfo['color'] = 'color-approved';
     } else if ($teachercheckresult == FLASHCARDS_CHECK_NEG) {
-        $checkicon = new \pix_icon('e/cancel', get_string('no'));
+        $checkicon = new \pix_icon('e/cancel', get_string('decline', 'flashcards'));
         $checkinfo['color'] = 'color-declined';
     } else {
-        $checkicon = new \pix_icon('e/question', get_string('question'));
+        $checkicon = new \pix_icon('e/question', get_string('uncheck', 'flashcards'));
         $checkinfo['color'] = 'color-pending';
     }
     $checkinfo['icon'] = $checkicon->export_for_pix();

@@ -66,6 +66,9 @@ class teacherviewtable extends table_sql {
     /** @var string setting for how to display the author name in the list */
     private $authordisplay;
 
+    /** @var object course module context */
+    private $context;
+
     /**
      * teacherviewtable constructor.
      *
@@ -84,16 +87,18 @@ class teacherviewtable extends table_sql {
         $this->returnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
         $this->authors = array();
         $this->authordisplay = $authordisplay;
+        $this->context = \context_module::instance($cmid);
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
         // Define the list of columns to show.
-        $columns = array('name', 'createdby', 'teachercheck', 'peerreview', 'timemodified', 'edit', 'preview', 'delete');
+        $columns = array('name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
@@ -102,21 +107,21 @@ class teacherviewtable extends table_sql {
         // Define the titles of columns to show in header.
         $headers = array(
                 get_string('question', 'mod_flashcards'),
-                get_string('author', 'mod_flashcards'),
                 get_string('teachercheck', 'mod_flashcards'),
-                get_string('peerreview', 'mod_flashcards'),
+                get_string('peerreview_tableheader', 'mod_flashcards'),
+                get_string('author', 'mod_flashcards'),
                 get_string('timemodified', 'mod_flashcards'),
-                get_string('edit'),
                 get_string('fcview', 'mod_flashcards'),
+                get_string('edit'),
                 get_string('delete'));
         $this->define_headers($headers);
 
         // Define help for columns teachercheck and peer review.
         $helpforheaders = array(
             null,
-            null,
             new \help_icon('teachercheck', 'mod_flashcards'),
             new \help_icon('peerreview', 'mod_flashcards'),
+            null,
             null,
             null,
             null,
@@ -124,7 +129,7 @@ class teacherviewtable extends table_sql {
         $this->define_help_for_headers($helpforheaders);
 
         $this->collapsible(false);
-        $this->sortable(true);
+        $this->sortable(true, 'timemodified', SORT_DESC);
         $this->pageable(true);
         $this->is_downloadable(false);
 
@@ -134,6 +139,17 @@ class teacherviewtable extends table_sql {
         $this->no_sorting('delete');
     }
 
+    /**
+     * Prepares column name for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_name($values) {
+        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
+            'class' => 'flashcards_qtitle_tooltip']);
+    }
+    
     /**
      * Prepares column createdby for display
      *
@@ -161,7 +177,10 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        return html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']);
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
+        //return html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']);
+        return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**
@@ -171,7 +190,13 @@ class teacherviewtable extends table_sql {
      * @return string
      */
     public function col_peerreview($values) {
-        return mod_flashcard_peer_review_info_overview($values->id, $this->fcid);
+        
+        $peervalues = mod_flashcard_peer_review_info_overview($values->id, $this->fcid);
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
+        
+        return html_writer::link($qurl, $peervalues,
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+         
     }
 
     /**
