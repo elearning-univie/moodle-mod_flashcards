@@ -25,7 +25,7 @@ Feature: As a student I can delete my own questions
     When I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
     And I follow "Test flash cards"
-    And I click on "Create flash card" "button"
+    And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |

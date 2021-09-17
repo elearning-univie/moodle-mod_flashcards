@@ -21,4 +21,4 @@ Feature: As a teacher I want to add an flashcards activity
     When I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
     And I follow "Test flash cards"
-    Then I should see "Create flash card"
+    Then I should see "Create new flash card"
