@@ -152,7 +152,7 @@ class teacherviewtable extends table_sql {
         return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
             'class' => 'flashcards_qtitle_tooltip']);
     }
-    
+
     /**
      * Prepares column createdby for display
      *
@@ -181,7 +181,6 @@ class teacherviewtable extends table_sql {
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
-        //return html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']);
         return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
             ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
@@ -193,13 +192,13 @@ class teacherviewtable extends table_sql {
      * @return string
      */
     public function col_peerreview($values) {
-        
+
         $peervalues = mod_flashcard_peer_review_info_overview($values->id, $this->fcid);
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
-        
+
         return html_writer::link($qurl, $peervalues,
             ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
-         
+
     }
 
     /**
