@@ -17,7 +17,7 @@ Feature: As a teacher i want to test the learn now function
     And I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
     And I follow "Test flash cards"
-    And I click on "Create flash card" "button"
+    And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
