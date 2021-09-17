@@ -118,7 +118,7 @@ $table->set_sql('q.id, name, q.createdby, q.timemodified, teachercheck',
 
 $table->define_baseurl($PAGE->url);
 
-$params = ['cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
+$params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $renderer = $PAGE->get_renderer('core');

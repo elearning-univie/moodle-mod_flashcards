@@ -259,22 +259,21 @@ class mod_flashcards_external extends external_api {
         $sql = "SELECT id
                   FROM {question}
                  WHERE id $inids
-                   AND category $inids2
-                   AND id NOT IN (SELECT questionid
-                                    FROM {flashcards_q_stud_rel}
-                                   WHERE studentid = :userid
-                                     AND flashcardsid = :fid)";
+                   AND category $inids2";
 
         $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
             ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
         $questionarray = [];
-
         foreach ($questionids as $question) {
-            $questionentry =
-                    array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
-                            'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
-
-            $questionarray[] = $questionentry;
+            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
+            if ($recid) {
+                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => 1]);
+            } else {
+                $questionentry =
+                array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
+                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
+                $questionarray[] = $questionentry;
+            }
         }
         $DB->insert_records('flashcards_q_stud_rel', $questionarray);
     }

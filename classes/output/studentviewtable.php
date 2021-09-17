@@ -225,7 +225,8 @@ class studentviewtable extends table_sql {
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
                 array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'origin' => $this->returnurl));
 
-        return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
+        return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext),
+            ['class' => 'mod_flashcards_questioneditlink']);
     }
 
     /**

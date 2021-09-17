@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
  * Event observer for mod_flashcards.
  */
 class observer {
-
     /**
      * Triggered via question_updated event. Resets teachercheck and PeerReview after update of question.
      *
@@ -46,13 +45,13 @@ class observer {
                  WHERE fcqstatus.questionid = :questionid";
         $records = $DB->get_records_sql($sql, ['questionid' => $event->objectid]);
         foreach ($records as $record) {
-            // Reset teachercheck only when a the editor doesn't have the right to (normally students).
+            // Reset peer review for all roles.
             $context = \context_module::instance($record->coursemodule, MUST_EXIST);
-            if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
-                $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
+            if (has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
+                $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
             }
         }
-        // Reset peer review for all roles.
-        $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
+
     }
+
 }
