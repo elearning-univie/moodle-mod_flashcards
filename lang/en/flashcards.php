@@ -111,7 +111,7 @@ $string['noquestion'] = 'No question could be found.';
 $string['opencardnumber'] = 'Open: {{count}} Cards';
 $string['pagesize'] = 'Questions shown per page';
 $string['pagetitle'] = 'Moodle Flashcard';
-$string['peerreview_tableheader'] = 'Peer review <i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>/ <i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
+$string['peerreview_tableheader'] = 'Peer review {$a->thumbsup} / {$a->thumbsdown}';
 $string['peerreview'] = 'Peer review';
 $string['peerreview_help'] = 'Up and down votes of your peers after reviewing the quality of the flashcard (up/down)';
 $string['peerreviewtext'] = 'Is the card well done?';

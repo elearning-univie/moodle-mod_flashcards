@@ -93,6 +93,9 @@ class teacherviewtable extends table_sql {
         $this->deleteicontext = get_string('delete', 'moodle');
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
+        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
+        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
+
         // Define the list of columns to show.
         $columns = array('name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         $this->define_columns($columns);
@@ -106,14 +109,14 @@ class teacherviewtable extends table_sql {
 
         // Define the titles of columns to show in header.
         $headers = array(
-                get_string('question', 'mod_flashcards'),
-                get_string('teachercheck', 'mod_flashcards'),
-                get_string('peerreview_tableheader', 'mod_flashcards'),
-                get_string('author', 'mod_flashcards'),
-                get_string('timemodified', 'mod_flashcards'),
-                get_string('fcview', 'mod_flashcards'),
-                get_string('edit'),
-                get_string('delete'));
+            get_string('question', 'mod_flashcards'),
+            get_string('teachercheck', 'mod_flashcards'),
+            get_string('peerreview_tableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+            get_string('author', 'mod_flashcards'),
+            get_string('timemodified', 'mod_flashcards'),
+            get_string('fcview', 'mod_flashcards'),
+            get_string('edit'),
+            get_string('delete'));
         $this->define_headers($headers);
 
         // Define help for columns teachercheck and peer review.
