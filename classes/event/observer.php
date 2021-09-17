@@ -47,7 +47,7 @@ class observer {
         foreach ($records as $record) {
             // Reset peer review for all roles.
             $context = \context_module::instance($record->coursemodule, MUST_EXIST);
-            if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
+            if (has_capability('mod/flashcards:editcardwithouttcreset', $context, $event->userid)) {
                 $DB->set_field('flashcards_q_stud_rel', 'peerreview', 0, ['questionid' => $event->objectid]);
             }
         }
