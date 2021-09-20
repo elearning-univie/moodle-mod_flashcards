@@ -66,7 +66,7 @@ $string['settingappstoregoogletitle'] = 'Google Play Store';
 $string['settingappstoregoogledesc'] = 'URL for the flashcards mobile app for Android devices.';
 $string['proposenewcardbuttondisabled'] = 'Proposing flashcards was disabled.';
 
-$string['accept'] = 'correct';
+
 $string['addflashcardbutton'] = 'Add flash card';
 $string['addfcstudent'] = 'Allow students to add flashcards';
 $string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
@@ -86,7 +86,6 @@ $string['boxzero'] = 'Flash card collection';
 $string['categorymissing'] = 'The default category is missing for this flashcard activity. Please select a new one.';
 $string['configintro'] = 'Flashcards';
 $string['createflashcardbutton'] = 'Create new flash card';
-$string['decline'] = 'wrong';
 $string['discussion'] = 'Discussion';
 $string['discussiontext'] = 'Discuss the flashcard here.';
 $string['errornotallowedonpage'] = 'Not Allowed';
@@ -117,7 +116,6 @@ $string['pagetitle'] = 'Moodle Flashcard';
 $string['peerreviewtableheader'] = 'Peer review {$a->thumbsup} / {$a->thumbsdown}';
 $string['peerreview'] = 'Peer review';
 $string['peerreview_help'] = 'Up and down votes of your peers after reviewing the quality of the flashcard (up/down)';
-$string['peerreviewtext'] = 'Is the card well done?';
 $string['pluginadministration'] = 'Flashcard administration';
 $string['pluginname'] = 'Flashcard';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
@@ -129,10 +127,8 @@ $string['selectall'] = 'Select all';
 $string['studentsubcatname'] = 'Subcategory name';
 $string['taskqubadelete'] = 'Delete old Question usages';
 $string['teachercheck'] = 'Teacher check';
-$string['teachercheck_help'] = 'The content of the card has been reviewed by a teacher and is either correct, wrong or has not been checked yet.';
-$string['teacherchecktext'] = 'The content of the card is correct {$a->correct}, wrong {$a->wrong} or has not been checked yet {$a->notyet}.';
+$string['teachercheck_help'] = 'The content of the card has been reviewed by a teacher and is either correct (✓), wrong (✗) or has not been checked yet (？).';
 $string['timemodified'] = 'Last modified';
-$string['uncheck'] = 'not yet evaluated';
 $string['userpreferences'] = 'User preferences';
 $string['fcview'] = 'View';
 $string['flashcards:studentview'] = 'View for students';
@@ -145,8 +141,14 @@ $string['flashcards:editallquestions'] = 'Edit all questions';
 $string['flashcards:editownquestion'] = 'Edit own questions';
 $string['flashcards:editreview'] = 'Accept or deny flashcards';
 $string['flashcards:editcardwithouttcreset'] = 'Users with this capability wont reset the teacher check when editing a flashcard';
-
+$string['statusval0'] = 'not yet evaluated';
+$string['statusval1'] = 'correct';
+$string['statusval2'] = 'wrong';
 $string['tabflashcardsadded'] = 'My flashcards';
 $string['tabflashcardsnotadded'] = 'Flashcards collection';
 $string['tabflashcardsaddedtip'] = 'My flashcards';
 $string['tabflashcardsnotaddedtip'] = 'Flashcards collection';
+$string['thumbsdown'] = 'I dislike this';
+$string['thumbsup'] = 'I like this';
+
+

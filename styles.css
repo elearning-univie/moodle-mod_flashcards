@@ -206,3 +206,8 @@ div.progress.mod-flashcards-progress-bar {
 .path-mod-flashcards .btn-space {
     padding-left: 1em;
 }
+
+.path-mod-flashcards .votetext {
+    padding-left: 0.5em;
+    font-size: 1.01rem;
+}
