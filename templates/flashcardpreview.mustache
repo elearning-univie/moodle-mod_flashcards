@@ -43,95 +43,65 @@
             </div>
             <div class="col-12 col-xl-3">
                 <div class="mod-flashcards-preview-box">
-                    <div class="row justify-content-between">
-                        <div class="col-8">
-                            <h5>{{# str }} peerreview, mod_flashcards {{/ str }}</h5>
-                            {{# str }} peerreviewtext, mod_flashcards {{/ str }}
+                    <div class="row justify-content-between no-gutters">
+                        <div class="col">
+                            <h5>{{# str }} peerreview, mod_flashcards {{/ str }}  {{#helppeerreview}}{{>core/help_icon}}{{/helppeerreview}}</h5>
                         </div>
-                        <div class="col-3">
+                        <div class="col-sm-auto">
                             <div class="iconsize">
-                                <button type="button" id="upvotebtn" class="btn btn-peerreview upvotebtn {{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{upvote}})">
-                                    {{# pix }} t/approve, core, {{# str }} yes, core {{/ str }} {{/ pix }}
+                                <button type="button" id="upvotebtn" class="btn btn-peerreview {{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{upvote}})">
+                                    {{# pix }} t/approve, core, {{# str }} thumbsup, mod_flashcards {{/ str }} {{/ pix }}
                                 </button>
                             </div>
-                            <div id="upvotescount" class="color-approved">
+                            <div id="upvotescount" class="color-approved votetext">
                                 {{upvotes}}
                             </div>
-                            <div id="downvotescount" class="color-declined">
-                                {{downvotes}}
-                            </div>
-                            <div class="upsidedown iconsize">
+                        </div>
+                        <div class="col-sm-auto">
+                            <div class="iconsize upsidedown">
                                 <button type="button" id="downvotebtn" class="btn btn-peerreview {{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{downvote}})">
-                                    {{# pix }} t/approve, core, {{# str }} no, core{{/ str }} {{/ pix }}
+                                    {{# pix }} t/approve, core, {{# str }} thumbsdown, mod_flashcards {{/ str }} {{/ pix }}
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mod-flashcards-preview-box">
-                    <div class="row justify-content-between">
-                        <div class="col-8">
-                            <h5>{{# str }} discussion, mod_flashcards {{/ str }}</h5>
-                            {{# str }} discussiontext, mod_flashcards {{/ str }}
-                        </div>
-                        <div class="col-3 iconsize">
-                            {{# pix }} t/messages, core , {{# str }} discussion, mod_flashcards {{/ str }} {{/ pix }}
-                        </div>
-                    </div>
-                </div>
-                <div class="mod-flashcards-preview-box">
-                    <div class="row justify-content-between">
-                        <div class="col-8">
-                            <h5>{{# str }} report, mod_flashcards {{/ str }}</h5>
-                            {{# str }} reporttext, mod_flashcards {{/ str }}
-                        </div>
-                        <div class="col-3 color-declined iconsize">
-                            {{# pix }} i/bullhorn, core, {{# str }} report, mod_flashcards {{/ str }} {{/ pix }}
+                            <div id="downvotescount" class="color-declined votetext">
+                                {{downvotes}}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="mod-flashcards-preview-box">
                     <div class="row">
                         <div class="col">
-                            <h5>{{# str }} teachercheck, mod_flashcards {{/ str }}</h5>
-                            {{# str }}
-                                teacherchecktext,
-                                mod_flashcards,
-                                {
-                                "correct" : {{# quote }}<div class='{{teachercheckcolor1}} texticon'>{{# pix }} {{checkicon1.key}}, {{checkicon1.component}}, {{checkicon1.title}} {{/ pix }}</div>{{/ quote }},
-                                "wrong" : {{# quote }}<div class='{{teachercheckcolor2}} texticon'>{{# pix }} {{checkicon2.key}}, {{checkicon2.component}}, {{checkicon2.title}} {{/ pix }}</div>{{/ quote }},
-                                "notyet" : {{# quote }}<div class='{{teachercheckcolor0}} texticon'>{{# pix }} {{checkicon0.key}}, {{checkicon0.component}}, {{checkicon0.title}} {{/ pix }}</div>{{/ quote }}
-                                }
-                            {{/ str }}
+                            <h5>{{# str }} teachercheck, mod_flashcards {{/ str }} {{#helpteachercheck}}{{>core/help_icon}}{{/helpteachercheck}}</h5>
                         </div>
                     </div>
                     <br>
-                    <div class="row justify-content-between">
-                        {{#canedit}}
+                    <div class="row justify-content-between no-gutters">
                         <div class="col">
-                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, {{statval}}, this.value)">
-                                <option value="0" title="{{# str }} uncheck, mod_flashcards {{/ str }}" {{#selected0}}selected{{/selected0}}>{{# str }} uncheck, mod_flashcards {{/ str }}</option>
-                                <option value="1" title="{{# str }} accept, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} accept, mod_flashcards {{/ str }}</option>
-                                <option value="2" title="{{# str }} decline, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} decline, mod_flashcards {{/ str }}</option>
-                            </select>
-                        </div>
-                        {{/canedit}}
-                        <div class="col-3">
                             {{#canedit}}
-                            <div id="tcicon1" class="{{teachercheckcolor1}} iconsize" {{^icon1}} style="display: none;" {{/icon1}}>
-                                {{# pix }} {{checkicon1.key}}, {{checkicon1.component}}, {{checkicon1.title}} {{/ pix }}
-                            </div>
-                            <div id="tcicon2" class="{{teachercheckcolor2}} iconsize" {{^icon2}} style="display: none;" {{/icon2}}>
-                                {{# pix }} {{checkicon2.key}}, {{checkicon2.component}}, {{checkicon2.title}} {{/ pix }}
-                            </div>
-                            <div id="tcicon0" class="{{teachercheckcolor0}} iconsize" {{^icon0}} style="display: none;" {{/icon0}}>
-                                {{# pix }} {{checkicon0.key}}, {{checkicon0.component}}, {{checkicon0.title}} {{/ pix }}
-                            </div>
+                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, {{statval}}, this.value)">
+                                <option value="0" title="{{# str }} statusval0, mod_flashcards {{/ str }}" {{#selected0}}selected{{/selected0}}>{{# str }} statusval0, mod_flashcards {{/ str }}</option>
+                                <option value="1" title="{{# str }} statusval1, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} statusval1, mod_flashcards {{/ str }}</option>
+                                <option value="2" title="{{# str }} statusval2, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} statusval2, mod_flashcards {{/ str }}</option>
+                            </select>
+                            {{/canedit}}
+                        </div>
+                        <div class="col-xl-auto">
+                            {{#canedit}}
+                                <div id="tcicon1" class="{{teachercheckcolor1}} iconsize" {{^icon1}} style="display: none;" {{/icon1}}>
+                                    {{# pix }} {{checkicon1.key}}, {{checkicon1.component}}, {{checkicon1.title}} {{/ pix }}
+                                </div>
+                                <div id="tcicon2" class="{{teachercheckcolor2}} iconsize" {{^icon2}} style="display: none;" {{/icon2}}>
+                                    {{# pix }} {{checkicon2.key}}, {{checkicon2.component}}, {{checkicon2.title}} {{/ pix }}
+                                </div>
+                                <div id="tcicon0" class="{{teachercheckcolor0}} iconsize" {{^icon0}} style="display: none;" {{/icon0}}>
+                                    {{# pix }} {{checkicon0.key}}, {{checkicon0.component}}, {{checkicon0.title}} {{/ pix }}
+                                </div>
                             {{/canedit}}
                             {{^canedit}}
-                            <div class="{{teachercheckcolor}} iconsize">
-                                {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
-                            </div>
+                                <div class="{{teachercheckcolor}} iconsize">
+                                    {{# pix }} {{checkicon.key}}, {{checkicon.component}}, {{checkicon.title}} {{/ pix }}
+                                </div>
                             {{/canedit}}
                         </div>
                     </div>

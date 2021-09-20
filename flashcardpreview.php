@@ -200,19 +200,21 @@ $templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->i
 $templatecontent['questionid'] = $id;
 $templatecontent['fcid'] = $flashcardsid;
 
-for ($i = 0; $i < 3; $i++) {
-    $checkinfo = mod_flashcard_get_teacher_check_info($i);
-    $templatecontent['checkicon' . $i] = $checkinfo['icon'];
-    $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
-}
-
 if ($canedit) {
+    for ($i = 0; $i < 3; $i++) {
+        $checkinfo = mod_flashcard_get_teacher_check_info($i);
+        $templatecontent['checkicon' . $i] = $checkinfo['icon'];
+        $templatecontent['checkicon' . $i]['title'] = get_string('statusval' . $i, 'mod_flashcards');
+        $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
+    }
+
     $templatecontent['canedit'] = $canedit;
     $templatecontent['selected' . $statusval] = true;
     $templatecontent['icon' . $statusval] = 1;
 } else {
     $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
     $templatecontent['checkicon'] = $checkinfo['icon'];
+    $templatecontent['checkicon']['title'] = get_string('statusval' . $statusval, 'mod_flashcards');
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
@@ -222,6 +224,10 @@ $templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($pee
 $templatecontent['statval'] = $statusval;
 $templatecontent['upvote'] = FLASHCARDS_PEER_REVIEW_UP;
 $templatecontent['downvote'] = FLASHCARDS_PEER_REVIEW_DOWN;
+$helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
+$templatecontent['helppeerreview'] = $helppeerreview->export_for_template($OUTPUT);
+$helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
+$templatecontent['helpteachercheck'] = $helpteachercheck->export_for_template($OUTPUT);
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
