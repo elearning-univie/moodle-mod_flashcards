@@ -57,8 +57,8 @@ class teacherviewtable extends table_sql {
     /** @var string text for the preview icon */
     private $previewicontext;
 
-    /** @var string jump back url if a question is getting deleted */
-    private $returnurl;
+    /** @var string jump back url if a question is getting edited */
+    private $editreturnurl;
 
     /** @var array array to save previously looked up authors */
     private $authors;
@@ -84,7 +84,7 @@ class teacherviewtable extends table_sql {
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcid = $fcid;
-        $this->returnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
+        $this->editreturnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
         $this->authors = array();
         $this->authordisplay = $authordisplay;
         $this->context = \context_module::instance($cmid);
@@ -150,7 +150,7 @@ class teacherviewtable extends table_sql {
      */
     public function col_name($values) {
         return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
-                'class' => 'flashcards_qtitle_tooltip']);
+                'class' => 'qtitle_tooltip']);
     }
 
     /**
@@ -221,7 +221,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $eurl = new moodle_url('/question/question.php',
-                array('returnurl' => $this->returnurl, 'courseid' => $this->courseid, 'id' => $values->id ));
+                array('returnurl' => $this->editreturnurl, 'courseid' => $this->courseid, 'id' => $values->id ));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }
