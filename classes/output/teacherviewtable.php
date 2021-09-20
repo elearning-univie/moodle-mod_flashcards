@@ -93,7 +93,10 @@ class teacherviewtable extends table_sql {
         $this->deleteicontext = get_string('delete', 'moodle');
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
+<<<<<<< HEAD
         //not the most elegant way, but better than in langstrings
+=======
+>>>>>>> 052f2e3b2f7c77696836d577550613c5d34b794a
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
 
