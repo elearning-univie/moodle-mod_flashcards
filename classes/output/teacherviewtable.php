@@ -112,7 +112,7 @@ class teacherviewtable extends table_sql {
         $headers = array(
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
-            get_string('peerreview_tableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+            get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
