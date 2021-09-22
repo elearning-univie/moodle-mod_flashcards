@@ -35,6 +35,7 @@ $services = array(
                     'mod_flashcards_load_next_question',
                     'mod_flashcards_load_learn_progress',
                     'mod_flashcards_init_questions',
+                    'mod_flashcards_remove_questions',
                     'mod_flashcards_start_learn_now',
                     'mod_flashcards_set_preview_status',
                     'mod_flashcards_set_peer_review_vote'),
@@ -78,6 +79,15 @@ $functions = array(
             'methodname' => 'init_questions',
             'classpath' => 'mod/flashcards/externallib.php',
             'description' => 'Load questions for a student',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        ),
+        'mod_flashcards_remove_questions' => array(
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'remove_questions',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Remove questions for a student from box 1',
             'type' => 'write',
             'ajax' => true,
             'loginrequired' => true

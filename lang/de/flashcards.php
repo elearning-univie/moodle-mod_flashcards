@@ -67,6 +67,7 @@ $string['settingappstoregoogledesc'] = 'URL für die Flashcards Mobile App für 
 $string['proposenewcardbuttondisabled'] = 'Vorschlagen von Lernkarten wurde deaktiviert.';
 
 $string['addflashcardbutton'] = 'Lernkarte hinzufügen';
+$string['addflashcardsdonemessage'] = 'Lernkarten wurden in Fach 1 verschoben!';
 $string['addfcstudent'] = 'Studierende dürfen Lernkarten hinzufügen';
 $string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
 $string['author'] = 'Hinzugefügt von';
@@ -119,7 +120,8 @@ $string['pluginadministration'] = 'Lernkartei Administration';
 $string['pluginname'] = 'Lernkartei';
 $string['privacy:metadata'] = 'Das Lernkartei Plugin speichert keine persönlichen Daten.';
 $string['question'] = 'Fragentitel';
-$string['report'] = 'Melden';
+$string['removeflashcardbutton'] = 'Lernkarte entfernen';
+$string['removeflashcardsdonemessage'] = 'Lernkarten wurden aus der Lernkartei entfernt!';
 $string['reporttext'] = 'Ist die Karte offensichtlich falsch oder problematisch?';
 $string['save'] = 'Speichern';
 $string['selectall'] = 'Alle';

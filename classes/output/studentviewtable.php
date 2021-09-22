@@ -78,13 +78,14 @@ class studentviewtable extends table_sql {
      * @param string $callbackurl
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $callbackurl) {
+    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $callbackurl, $tab) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcobj = $fcobj;
         $this->returnurl = $callbackurl;
         $this->authors = array();
+        $this->tab = $tab;
 
         $this->editicontext = get_string('edit', 'moodle');
         $this->deleteicontext = get_string('delete', 'moodle');
@@ -92,31 +93,59 @@ class studentviewtable extends table_sql {
         $this->context = context_module::instance($cmid);
 
         // Define the list of columns to show.
-        $columns = array('select', 'name', 'createdby', 'teachercheck', 'peerreview', 'timemodified', 'edit', 'preview', 'delete');
+        if ($this->tab == 'added') {
+            $columns = array('select','name', 'teachercheck', 'box', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        } else {
+            $columns = array('select', 'name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        }
+
+
         $this->define_columns($columns);
-        $this->column_class('teachercheck', 'flashcards_studentview_tc');
-        $this->column_class('peerreview', 'flashcards_studentview_tc');
-        $this->column_class('timemodified', 'flashcards_studentview_tc');
-        $this->column_class('edit', 'flashcards_teacherview_ec');
-        $this->column_class('preview', 'flashcards_teacherview_ec');
-        $this->column_class('delete', 'flashcards_teacherview_ec');
+        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
+        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
 
-        // Define the titles of columns to show in header.
-        $headers = array(
-                '<input type="checkbox"  name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
+        if ($this->tab == 'added') {
+            // Define the titles of columns to show in header.
+            $headers = array(
+                '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
                 get_string('question', 'mod_flashcards'),
-                get_string('author', 'mod_flashcards'),
                 get_string('teachercheck', 'mod_flashcards'),
-                get_string('peerreview', 'mod_flashcards'),
+                get_string('box', 'mod_flashcards'),
+                get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+                get_string('author', 'mod_flashcards'),
                 get_string('timemodified', 'mod_flashcards'),
-                get_string('edit'),
                 get_string('fcview', 'mod_flashcards'),
+                get_string('edit'),
                 get_string('delete'));
-        $this->define_headers($headers);
-
-        // Define help for columns teachercheck and peer review.
-        $helpforheaders = array(
+            // Define help for columns teachercheck and peer review.
+            $helpforheaders = array(
                 null,
+                null,
+                new \help_icon('teachercheck', 'mod_flashcards'),
+                null,
+                new \help_icon('peerreview', 'mod_flashcards'),
+                null,
+                null,
+                null,
+                null,
+                null);
+            $this->column_class('box', 'flashcards_studentview_tc');
+          //  $this->sortable(true, 'currentbox', SORT_ASC);
+           
+        } else {
+            // Define the titles of columns to show in header.
+            $headers = array(
+                '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
+                get_string('question', 'mod_flashcards'),
+                get_string('teachercheck', 'mod_flashcards'),
+                get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+                get_string('author', 'mod_flashcards'),
+                get_string('timemodified', 'mod_flashcards'),
+                get_string('fcview', 'mod_flashcards'),
+                get_string('edit'),
+                get_string('delete'));
+            // Define help for columns teachercheck and peer review.
+            $helpforheaders = array(
                 null,
                 null,
                 new \help_icon('teachercheck', 'mod_flashcards'),
@@ -124,10 +153,22 @@ class studentviewtable extends table_sql {
                 null,
                 null,
                 null,
+                null,
                 null);
-        $this->define_help_for_headers($helpforheaders);
+            //$this->sortable(true, 'timemodified',SORT_DESC);
+        }
+        $this->column_class('select', 'flashcards_teacherview_ec');
+        $this->column_class('teachercheck', 'flashcards_studentview_tc');
+        $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('createdby', 'flashcards_studentview_tc');
+        $this->column_class('timemodified', 'flashcards_studentview_tc');
+        $this->column_class('edit', 'flashcards_teacherview_ec');
+        $this->column_class('preview', 'flashcards_teacherview_ec');
+        $this->column_class('delete', 'flashcards_teacherview_ec');
 
         $this->collapsible(false);
+        $this->define_headers($headers);
+        $this->define_help_for_headers($helpforheaders);
         $this->sortable(true);
         $this->pageable(true);
         $this->is_downloadable(false);
@@ -146,7 +187,7 @@ class studentviewtable extends table_sql {
      * @return string
      */
     public function col_name($values) {
-        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext)]);
+        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext), 'class' => 'qtitle_tooltip']);
     }
 
     /**
@@ -160,13 +201,26 @@ class studentviewtable extends table_sql {
     }
 
     /**
+     * Prepares column box for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_box($values) {
+        return html_writer::div($values->currentbox);
+    }
+
+    /**
      * Prepares column peerreview for display
      *
      * @param object $values
      * @return string
      */
     public function col_peerreview($values) {
-        return mod_flashcard_peer_review_info_overview($values->id, $this->fcobj->id);
+        $peervalues = mod_flashcard_peer_review_info_overview($values->id, $this->fcobj->id);
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id));
+        return html_writer::link($qurl, $peervalues,
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**
@@ -179,7 +233,9 @@ class studentviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        return html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']);
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id));
+        return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**

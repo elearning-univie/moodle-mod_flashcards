@@ -444,3 +444,34 @@ function mod_flashcards_reset_tc_and_peer_review(array $data) {
         $DB->execute($sql, $inparam);
     }
 }
+    /**
+     * count the number of cards added/notadded to flashcard activity
+     *
+     * @param array $importedfcs
+     * @param array $qcategories
+     * @return array
+     */
+function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, array $qcategories) {
+    global $DB;
+
+    list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED, 'p');
+    list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', true, true);
+    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+
+    $added = $DB->count_records_sql("SELECT COUNT(q.id) 
+                                       FROM {question} q 
+                                  LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+                                  LEFT JOIN mdl_flashcards_q_stud_rel fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby 
+                                      WHERE $sqlwhere", $qcategories + $importedfcids);
+
+    list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false, true);
+    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+
+    $notadded = $DB->count_records_sql("SELECT COUNT(q.id) 
+                                          FROM {question} q 
+                                     LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+                                     LEFT JOIN mdl_flashcards_q_stud_rel fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby 
+                                         WHERE $sqlwhere", $qcategories + $importedfcids);
+
+    return array($notadded, $added);
+}

@@ -12,6 +12,11 @@
     border-bottom: 1px dotted black;
 }
 
+.path-mod-flashcards .add_remove_btn_margins {
+    margin-bottom: 10px;
+    margin-left: 5px;
+}
+
 th.flashcards_studentview_ec,
 th.flashcards_teacherview_ec {
     width: 2%;
