@@ -475,3 +475,28 @@ function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, arra
 
     return array($notadded, $added);
 }
+
+/**
+ * 
+ * @param array $params
+ * @param array $qids
+ * @return array
+ */
+function mod_flashcards_get_selected_qids($params, $qids) {
+    global $DB, $USER;
+
+    $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
+    $categories = question_categorylist($record->categoryid);
+    list($inids, $questionids) = $DB->get_in_or_equal($params['qids'], SQL_PARAMS_NAMED);
+    list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
+
+    $sql = "SELECT id
+                  FROM {question}
+                 WHERE id $inids
+                   AND category $inids2";
+
+    $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
+        ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+
+    return $questionids;
+}

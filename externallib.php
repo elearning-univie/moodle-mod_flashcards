@@ -268,18 +268,10 @@ class mod_flashcards_external extends external_api {
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-        $categories = question_categorylist($record->categoryid);
-        list($inids, $questionids) = $DB->get_in_or_equal($params['qids'], SQL_PARAMS_NAMED);
-        list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
 
-        $sql = "SELECT id
-                  FROM {question}
-                 WHERE id $inids
-                   AND category $inids2";
-
-        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
-            ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+        $questionids = mod_flashcards_get_selected_qids($params, $qids);
         $questionarray = [];
+
         foreach ($questionids as $question) {
             $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
@@ -310,17 +302,7 @@ class mod_flashcards_external extends external_api {
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-        $categories = question_categorylist($record->categoryid);
-        list($inids, $questionids) = $DB->get_in_or_equal($params['qids'], SQL_PARAMS_NAMED);
-        list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
-
-        $sql = "SELECT id
-                  FROM {question}
-                 WHERE id $inids
-                   AND category $inids2";
-
-        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
-            ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+        $questionids = mod_flashcards_get_selected_qids($params, $qids);
         $questionarray = [];
 
         foreach ($questionids as $question) {
