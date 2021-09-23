@@ -461,7 +461,7 @@ function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, arra
     $added = $DB->count_records_sql("SELECT COUNT(q.id)
                                        FROM {question} q
                                   LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
-                                  LEFT JOIN mdl_flashcards_q_stud_rel fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
+                                  LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
                                       WHERE $sqlwhere", $qcategories + $importedfcids);
 
     list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false, true);
@@ -470,7 +470,7 @@ function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, arra
     $notadded = $DB->count_records_sql("SELECT COUNT(q.id)
                                           FROM {question} q
                                      LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
-                                     LEFT JOIN mdl_flashcards_q_stud_rel fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
+                                     LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
                                          WHERE $sqlwhere", $qcategories + $importedfcids);
 
     return array($notadded, $added);
