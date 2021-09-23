@@ -109,7 +109,7 @@ $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
 $table->set_sql('q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck',
         "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
-                      LEFT JOIN mdl_flashcards_q_stud_rel fsr ON fsr.questionid = q.id AND fsr.studentid = $USER->id",
+                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = $USER->id",
                       $sqlwhere, $qcategories + $importedfcids);
 $table->define_baseurl($PAGE->url);
 
