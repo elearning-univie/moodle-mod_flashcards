@@ -322,15 +322,15 @@ class mod_flashcards_external extends external_api {
         $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
             ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
         $questionarray = [];
-        print_object($questionids);
+
         foreach ($questionids as $question) {
             $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
-                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => NULL]);
+                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => null]);
             } else {
                 $questionentry =
                 array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
-                    'currentbox' => NULL, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
+                    'currentbox' => null, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
                 $questionarray[] = $questionentry;
             }
         }

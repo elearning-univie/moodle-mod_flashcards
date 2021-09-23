@@ -150,11 +150,11 @@ echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 echo $OUTPUT->tabtree($tabs, $tab);
 if ($equalparam) {
-    $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .', "'.get_string('removeflashcardsdonemessage','mod_flashcards').'")';
+    $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .', "'.get_string('removeflashcardsdonemessage', 'mod_flashcards').'")';
     echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
     echo get_string('removeflashcardbutton', 'mod_flashcards');
 } else {
-    $addlink = '$.mod_flashcards_init_questions('.$flashcards->id .', "'.get_string('addflashcardsdonemessage','mod_flashcards').'")';
+    $addlink = '$.mod_flashcards_init_questions('.$flashcards->id .', "'.get_string('addflashcardsdonemessage', 'mod_flashcards').'")';
     echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
     echo get_string('addflashcardbutton', 'mod_flashcards');
 }

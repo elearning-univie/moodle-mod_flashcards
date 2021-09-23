@@ -94,11 +94,10 @@ class studentviewtable extends table_sql {
 
         // Define the list of columns to show.
         if ($this->tab == 'added') {
-            $columns = array('select','name', 'teachercheck', 'box', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+            $columns = array('select', 'name', 'teachercheck', 'box', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         } else {
             $columns = array('select', 'name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         }
-
 
         $this->define_columns($columns);
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
@@ -130,8 +129,6 @@ class studentviewtable extends table_sql {
                 null,
                 null);
             $this->column_class('box', 'flashcards_studentview_tc');
-          //  $this->sortable(true, 'currentbox', SORT_ASC);
-           
         } else {
             // Define the titles of columns to show in header.
             $headers = array(
@@ -155,7 +152,6 @@ class studentviewtable extends table_sql {
                 null,
                 null,
                 null);
-            //$this->sortable(true, 'timemodified',SORT_DESC);
         }
         $this->column_class('select', 'flashcards_teacherview_ec');
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
@@ -187,7 +183,8 @@ class studentviewtable extends table_sql {
      * @return string
      */
     public function col_name($values) {
-        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext), 'class' => 'qtitle_tooltip']);
+        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
+            'class' => 'qtitle_tooltip']);
     }
 
     /**
