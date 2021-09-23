@@ -95,6 +95,16 @@ class studentviewtable extends table_sql {
         $columns = array('select', 'name', 'teachercheck', 'currentbox', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
 
         $this->define_columns($columns);
+        $this->column_class('currentbox', 'flashcards_studentview_tc');
+        $this->column_class('select', 'flashcards_teacherview_ec');
+        $this->column_class('teachercheck', 'flashcards_studentview_tc');
+        $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('createdby', 'flashcards_studentview_tc');
+        $this->column_class('timemodified', 'flashcards_studentview_tc');
+        $this->column_class('edit', 'flashcards_teacherview_ec');
+        $this->column_class('preview', 'flashcards_teacherview_ec');
+        $this->column_class('delete', 'flashcards_teacherview_ec');
+
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
 
@@ -110,6 +120,7 @@ class studentviewtable extends table_sql {
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
             get_string('delete'));
+
         // Define help for columns teachercheck and peer review.
         $helpforheaders = array(
             null,
@@ -122,29 +133,20 @@ class studentviewtable extends table_sql {
             null,
             null,
             null);
-        $this->column_class('currentbox', 'flashcards_studentview_tc');
-        $this->column_class('select', 'flashcards_teacherview_ec');
-        $this->column_class('teachercheck', 'flashcards_studentview_tc');
-        $this->column_class('peerreview', 'flashcards_studentview_tc');
-        $this->column_class('createdby', 'flashcards_studentview_tc');
-        $this->column_class('timemodified', 'flashcards_studentview_tc');
-        $this->column_class('edit', 'flashcards_teacherview_ec');
-        $this->column_class('preview', 'flashcards_teacherview_ec');
-        $this->column_class('delete', 'flashcards_teacherview_ec');
-        
+
+        $sortcolumn = 'timemodified';
+        $ascdesc = SORT_DESC;
+        $this->set_hidden_columns(['currentbox']);
         if ($this->tab == 'added') {
             $this->set_hidden_columns([]);
-             $this->sortable(true, 'currentbox', SORT_ASC);
-        } else {
-            $this->set_hidden_columns(['box']);
-             $this->sortable(true, 'timemodified', SORT_DESC);
+            $sortcolumn = 'currentbox';
+            $ascdesc = SORT_ASC;
         }
-
 
         $this->collapsible(false);
         $this->define_headers($headers);
         $this->define_help_for_headers($helpforheaders);
-        $this->sortable(true);
+        $this->sortable(true, $sortcolumn, $ascdesc);
         $this->pageable(true);
         $this->is_downloadable(false);
 
