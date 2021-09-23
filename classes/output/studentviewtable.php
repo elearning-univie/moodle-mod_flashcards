@@ -76,6 +76,7 @@ class studentviewtable extends table_sql {
      * @param int $courseid
      * @param object $fcobj
      * @param string $callbackurl
+     * @param string $tab
      * @throws \coding_exception
      */
     public function __construct($uniqueid, $cmid, $courseid, $fcobj, $callbackurl, $tab) {
