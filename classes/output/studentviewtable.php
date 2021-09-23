@@ -92,67 +92,37 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        // Define the list of columns to show.
-        if ($this->tab == 'added') {
-            $columns = array('select', 'name', 'teachercheck', 'box', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
-        } else {
-            $columns = array('select', 'name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
-        }
+        $columns = array('select', 'name', 'teachercheck', 'currentbox', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
 
         $this->define_columns($columns);
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
 
-        if ($this->tab == 'added') {
-            // Define the titles of columns to show in header.
-            $headers = array(
-                '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
-                get_string('question', 'mod_flashcards'),
-                get_string('teachercheck', 'mod_flashcards'),
-                get_string('box', 'mod_flashcards'),
-                get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
-                get_string('author', 'mod_flashcards'),
-                get_string('timemodified', 'mod_flashcards'),
-                get_string('fcview', 'mod_flashcards'),
-                get_string('edit'),
-                get_string('delete'));
-            // Define help for columns teachercheck and peer review.
-            $helpforheaders = array(
-                null,
-                null,
-                new \help_icon('teachercheck', 'mod_flashcards'),
-                null,
-                new \help_icon('peerreview', 'mod_flashcards'),
-                null,
-                null,
-                null,
-                null,
-                null);
-            $this->column_class('box', 'flashcards_studentview_tc');
-        } else {
-            // Define the titles of columns to show in header.
-            $headers = array(
-                '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
-                get_string('question', 'mod_flashcards'),
-                get_string('teachercheck', 'mod_flashcards'),
-                get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
-                get_string('author', 'mod_flashcards'),
-                get_string('timemodified', 'mod_flashcards'),
-                get_string('fcview', 'mod_flashcards'),
-                get_string('edit'),
-                get_string('delete'));
-            // Define help for columns teachercheck and peer review.
-            $helpforheaders = array(
-                null,
-                null,
-                new \help_icon('teachercheck', 'mod_flashcards'),
-                new \help_icon('peerreview', 'mod_flashcards'),
-                null,
-                null,
-                null,
-                null,
-                null);
-        }
+        // Define the titles of columns to show in header.
+        $headers = array(
+            '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
+            get_string('question', 'mod_flashcards'),
+            get_string('teachercheck', 'mod_flashcards'),
+            get_string('box', 'mod_flashcards'),
+            get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+            get_string('author', 'mod_flashcards'),
+            get_string('timemodified', 'mod_flashcards'),
+            get_string('fcview', 'mod_flashcards'),
+            get_string('edit'),
+            get_string('delete'));
+        // Define help for columns teachercheck and peer review.
+        $helpforheaders = array(
+            null,
+            null,
+            new \help_icon('teachercheck', 'mod_flashcards'),
+            null,
+            new \help_icon('peerreview', 'mod_flashcards'),
+            null,
+            null,
+            null,
+            null,
+            null);
+        $this->column_class('currentbox', 'flashcards_studentview_tc');
         $this->column_class('select', 'flashcards_teacherview_ec');
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('peerreview', 'flashcards_studentview_tc');
@@ -161,6 +131,15 @@ class studentviewtable extends table_sql {
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('delete', 'flashcards_teacherview_ec');
+        
+        if ($this->tab == 'added') {
+            $this->set_hidden_columns([]);
+             $this->sortable(true, 'currentbox', SORT_ASC);
+        } else {
+            $this->set_hidden_columns(['box']);
+             $this->sortable(true, 'timemodified', SORT_DESC);
+        }
+
 
         $this->collapsible(false);
         $this->define_headers($headers);
@@ -203,7 +182,7 @@ class studentviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    public function col_box($values) {
+    public function col_currentbox($values) {
         return html_writer::div($values->currentbox);
     }
 
