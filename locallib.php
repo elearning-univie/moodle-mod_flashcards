@@ -477,7 +477,8 @@ function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, arra
 }
 
 /**
- * 
+ * get qids for selected flashcards
+ *
  * @param array $params
  * @param array $qids
  * @return array
