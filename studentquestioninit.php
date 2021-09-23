@@ -149,6 +149,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 echo $OUTPUT->tabtree($tabs, $tab);
+
 if ($equalparam) {
     $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .', "'.get_string('removeflashcardsdonemessage', 'mod_flashcards').'")';
     echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
