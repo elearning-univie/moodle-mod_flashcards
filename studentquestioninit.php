@@ -36,7 +36,7 @@ $params = array();
 $params['id'] = $id;
 $params['tab'] = $tab;
 
-if (!in_array($perpage, [20, 40, 80], true)) {
+if (!in_array($perpage, [10, 20, 50, 100], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 $params['perpage'] = $perpage;
@@ -106,10 +106,14 @@ list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
 $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
-$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url);
-$table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
-        "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid", $sqlwhere, $qcategories + $importedfcids);
+$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
+$table->set_sql('q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck',
+        "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = $USER->id",
+                      $sqlwhere, $qcategories + $importedfcids);
 $table->define_baseurl($PAGE->url);
+
+list($notadded, $added) = mod_flashcards_count_added_and_not_added_cards($importedfcs, $qcategories);
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
@@ -132,12 +136,12 @@ if ($flashcards->addfcstudent == 1) {
 $tabs = [];
 $tabs['notadded'] = new tabobject('notadded',
     new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']),
-    get_string('tabflashcardsnotadded', 'flashcards'),
+    get_string('tabflashcardsnotadded', 'flashcards', ['nonotadded' => $notadded]),
     get_string('tabflashcardsnotaddedtip', 'flashcards'),
     false);
 $tabs['added'] = new tabobject('added',
     new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']),
-    get_string('tabflashcardsadded', 'flashcards'),
+    get_string('tabflashcardsadded', 'flashcards', ['noadded' => $added]),
     get_string('tabflashcardsaddedtip', 'flashcards'),
     false);
 
@@ -145,5 +149,16 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 echo $OUTPUT->tabtree($tabs, $tab);
+
+if ($equalparam) {
+    $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .', "'.get_string('removeflashcardsdonemessage', 'mod_flashcards').'")';
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
+    echo get_string('removeflashcardbutton', 'mod_flashcards');
+} else {
+    $addlink = '$.mod_flashcards_init_questions('.$flashcards->id .', "'.get_string('addflashcardsdonemessage', 'mod_flashcards').'")';
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
+    echo get_string('addflashcardbutton', 'mod_flashcards');
+}
+echo html_writer::end_tag('button');
 $table->out($perpage, false);
 echo $OUTPUT->footer();

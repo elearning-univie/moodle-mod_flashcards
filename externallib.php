@@ -101,6 +101,22 @@ class mod_flashcards_external extends external_api {
      *
      * @return external_function_parameters
      */
+    public static function remove_questions_parameters() {
+        return new external_function_parameters(
+            array(
+                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'qids' => new external_multiple_structure(
+                    new external_value(PARAM_INT, 'id array of questions')
+                    ),
+            )
+            );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
     public static function start_learn_now_parameters() {
         return new external_function_parameters(
             array(
@@ -252,18 +268,10 @@ class mod_flashcards_external extends external_api {
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-        $categories = question_categorylist($record->categoryid);
-        list($inids, $questionids) = $DB->get_in_or_equal($params['qids'], SQL_PARAMS_NAMED);
-        list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
 
-        $sql = "SELECT id
-                  FROM {question}
-                 WHERE id $inids
-                   AND category $inids2";
-
-        $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
-            ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+        $questionids = mod_flashcards_get_selected_qids($params, $qids);
         $questionarray = [];
+
         foreach ($questionids as $question) {
             $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
@@ -272,6 +280,39 @@ class mod_flashcards_external extends external_api {
                 $questionentry =
                 array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
                       'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
+                $questionarray[] = $questionentry;
+            }
+        }
+        $DB->insert_records('flashcards_q_stud_rel', $questionarray);
+    }
+
+    /**
+     * Reoves all selected questions from box 1 to box 0 for the activity
+     *
+     * @param int $flashcardsid
+     * @param array $qids
+     * @return int
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public static function remove_questions($flashcardsid, $qids) {
+        global $DB, $USER;
+
+        $params = self::validate_parameters(self::remove_questions_parameters(),
+            array('flashcardsid' => $flashcardsid, 'qids' => $qids));
+
+        $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
+        $questionids = mod_flashcards_get_selected_qids($params, $qids);
+        $questionarray = [];
+
+        foreach ($questionids as $question) {
+            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
+            if ($recid) {
+                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => null]);
+            } else {
+                $questionentry =
+                array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
+                    'currentbox' => null, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
                 $questionarray[] = $questionentry;
             }
         }
@@ -408,6 +449,15 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function init_questions_returns() {
+        return null;
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function remove_questions_returns() {
         return null;
     }
 
