@@ -45,7 +45,7 @@ Feature: As a student I want to add flashcards to my deck
     Then I should see "Nothing"
     And I follow "Flashcards collection"
     And I click on "input[class^=mod-flashcards-checkbox]" "css_element" in the "flashcard 1" "table_row"
-    And I click on "Add flashcard" "button"
+    And I click on "Add flashcard(s)" "button"
     And I follow "Test flash cards"
     And I follow "Customize your flashcard deck"
     And I follow "My flashcards"
