@@ -93,8 +93,8 @@ class teacherviewtable extends table_sql {
         $this->deleteicontext = get_string('delete', 'moodle');
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
-        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
-        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
+        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
+        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
         $columns = array('name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');

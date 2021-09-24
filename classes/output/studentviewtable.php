@@ -106,8 +106,8 @@ class studentviewtable extends table_sql {
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('delete', 'flashcards_teacherview_ec');
 
-        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes" style="color:green;"></i>';
-        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No" style="color:red;"></i>';
+        $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
+        $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the titles of columns to show in header.
         $headers = array(
