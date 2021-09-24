@@ -67,7 +67,7 @@ $string['settingappstoregoogledesc'] = 'URL for the flashcards mobile app for An
 $string['proposenewcardbuttondisabled'] = 'Proposing flashcards was disabled.';
 
 
-$string['addflashcardbutton'] = 'Add flashcard';
+$string['addflashcardbutton'] = 'Add flashcard(s)';
 $string['addflashcardsdonemessage'] = 'Flashcards have been added to Box 1!';
 $string['addfcstudent'] = 'Allow students to add flashcards';
 $string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
@@ -121,7 +121,7 @@ $string['pluginadministration'] = 'Flashcard administration';
 $string['pluginname'] = 'Flashcard';
 $string['privacy:metadata'] = 'The Flashcard plugin does not store any personal data.';
 $string['question'] = 'Question title';
-$string['removeflashcardbutton'] = 'Remove flashcard';
+$string['removeflashcardbutton'] = 'Remove flashcard(s)';
 $string['removeflashcardsdonemessage'] = 'Flashcards have been removed from your flashcards!';
 $string['report'] = 'Report';
 $string['reporttext'] = 'Is the card obviously wrong or problematic?';
