@@ -88,6 +88,7 @@ $string['configintro'] = 'Lernkartei';
 $string['createflashcardbutton'] = 'Neue Lernkarte erstellen';
 $string['discussion'] = 'Diskussion';
 $string['discussiontext'] = 'Die Lernkarte kann hier diskutiert werden.';
+$string['editflashcard'] = 'Lernkarte bearbeiten';
 $string['errornotallowedonpage'] = 'Keine Berechtigung';
 $string['existingcategory'] = 'Existiert';
 $string['changeextenttitle'] = 'Ausmaß der Änderung';

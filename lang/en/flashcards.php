@@ -89,6 +89,7 @@ $string['configintro'] = 'Flashcards';
 $string['createflashcardbutton'] = 'Create new flash card';
 $string['discussion'] = 'Discussion';
 $string['discussiontext'] = 'Discuss the flashcard here.';
+$string['editflashcard'] = 'Edit flashcard';
 $string['errornotallowedonpage'] = 'Not Allowed';
 $string['existingcategory'] = 'Existing';
 $string['changeextenttitle'] = 'Extent of Changes';

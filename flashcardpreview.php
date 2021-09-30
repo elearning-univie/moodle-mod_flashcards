@@ -199,6 +199,7 @@ $templatecontent['upvotes'] = mod_flashcard_get_peer_review_votes($question->id,
 $templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, false);
 $templatecontent['questionid'] = $id;
 $templatecontent['fcid'] = $flashcardsid;
+$templatecontent['questiontitle'] = $question->name;
 
 if ($canedit) {
     for ($i = 0; $i < 3; $i++) {
@@ -229,6 +230,17 @@ $templatecontent['helppeerreview'] = $helppeerreview->export_for_template($OUTPU
 $helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
 $templatecontent['helpteachercheck'] = $helpteachercheck->export_for_template($OUTPUT);
 
+// Edit button
+$fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+$eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+    array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl));
+$templatecontent['fceditlink'] = $eurl;
+$templatecontent['showfceditlink'] = true;
+if (!has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
+    if (!mod_flashcards_has_delete_rights($context, $fcobj, $id)) {
+        $templatecontent['showfceditlink'] = false;
+    }
+}
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
 
