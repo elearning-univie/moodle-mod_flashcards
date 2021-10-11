@@ -157,8 +157,8 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
  */
 function mod_flashcards_get_preview_questiontext($context, $questionid, $questiontext) {
     $questiontext =
-        file_rewrite_pluginfile_urls($questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
-            $questionid);
+    file_rewrite_pluginfile_urls($questiontext, 'pluginfile.php', $context->id, 'question', 'questiontext',
+        $questionid);
     $questiontext = format_text($questiontext, FORMAT_HTML);
 
     preg_match_all('/<img[^>]+>/i', $questiontext, $images);
@@ -225,7 +225,7 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
         $question->qtype != 'flashcard') {
         $result = false;
     }
-    return $result;
+        return $result;
 }
 
 /**
@@ -444,34 +444,128 @@ function mod_flashcards_reset_tc_and_peer_review(array $data) {
         $DB->execute($sql, $inparam);
     }
 }
-    /**
-     * count the number of cards added/notadded to flashcard activity
-     *
-     * @param array $importedfcs
-     * @param array $qcategories
-     * @return array
-     */
-function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, array $qcategories) {
+
+/**
+ * Creates a textual representation of a question for display.
+ *
+ * @param object $question A question object from the database questions table
+ * @param bool $showicon If true, show the question's icon with the question. False by default.
+ * @param bool $showquestiontext If true (default), show question text after question name.
+ *       If false, show only question name.
+ * @param bool $showidnumber If true, show the question's idnumber, if any. False by default.
+ * @param core_tag_tag[]|bool $showtags if array passed, show those tags. Else, if true, get and show tags,
+ *       else, don't show tags (which is the default).
+ * @return string HTML fragment.
+ */
+function mod_flashcards_question_tostring($question, $showicon = false, $showquestiontext = true,
+    $showidnumber = false, $showtags = false) {
+    global $OUTPUT;
+    $result = '';
+
+    // Question name.
+    $name = shorten_text(format_string($question->name), 200);
+    if ($showicon) {
+        $name .= print_question_icon($question) . ' ' . $name;
+    }
+    $result .= html_writer::span($name, 'questionname');
+
+    // Question idnumber.
+    if ($showidnumber && $question->idnumber !== null && $question->idnumber !== '') {
+        $result .= ' ' . html_writer::span(
+            html_writer::span(get_string('idnumber', 'question'), 'accesshide') .
+            ' ' . s($question->idnumber), 'badge badge-primary');
+    }
+
+    // Question tags.
+    if (is_array($showtags)) {
+        $tags = $showtags;
+    } else if ($showtags) {
+        $tags = core_tag_tag::get_item_tags('core_question', 'question', $question->id);
+    } else {
+        $tags = [];
+    }
+    if ($tags) {
+        $result .= $OUTPUT->tag_list($tags, null, 'd-inline', 0, null, true);
+    }
+
+    // Question text.
+    if ($showquestiontext) {
+        $questiontext = question_utils::to_plain_text($question->questiontext,
+            $question->questiontextformat, array('noclean' => true, 'para' => false));
+        $questiontext = shorten_text($questiontext, 200);
+        if ($questiontext) {
+            $result .= ' ' . html_writer::span(s($questiontext), 'questiontext');
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * Add a question to a flashcard collection
+ *
+ * @param int $questionid The id of the question to be added
+ * @param int $flashcardsid The id of the flashcard collection
+ * @param int $page Which page to add the question on. If 0 (default), add at the end
+ * @return bool false if the question was already in the collection
+ * @throws dml_exception
+ * @throws dml_transaction_exception
+ */
+function mod_flashcards_add_question($questionid, $flashcardsid, $page = 0) {
     global $DB;
 
-    list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED, 'p');
+    if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
+        return false;
+    }
+
+    $trans = $DB->start_delegated_transaction();
+    $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
+    $trans->allow_commit();
+}
+
+/**
+ * Deletethe status of a question to a flashcard collection
+ *
+ * @param int $questionid The id of the question to be added
+ * @param int $flashcardsid The id of the flashcard collection
+ * @throws dml_exception
+ * @throws dml_transaction_exception
+ */
+function mod_flashcards_delete_question_q_status($questionid, $flashcardsid) {
+    global $DB;
+
+    $record = $DB->get_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid]);
+    if ($record) {
+        return $DB->delete_records('flashcards_q_status', ['id' => $record->id]);
+    }
+}
+
+/**
+ * count the number of cards added/notadded to flashcard activity
+ *
+ * @param array $importedfcs
+ * @param int $fcid
+ * @return array
+ */
+function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, int $fcid) {
+    global $DB;
+
     list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', true, true);
-    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+    $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
     $added = $DB->count_records_sql("SELECT COUNT(q.id)
                                        FROM {question} q
                                   LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
                                   LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
-                                      WHERE $sqlwhere", $qcategories + $importedfcids);
+                                      WHERE $sqlwhere", ['fcid' => $fcid] + $importedfcids);
 
     list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false, true);
-    $sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
-
-    $notadded = $DB->count_records_sql("SELECT COUNT(q.id)
+    $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+        $notadded = $DB->count_records_sql("SELECT COUNT(q.id)
                                           FROM {question} q
                                      LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
                                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = q.createdby
-                                         WHERE $sqlwhere", $qcategories + $importedfcids);
+                                         WHERE $sqlwhere", ['fcid' => $fcid] + $importedfcids);
 
     return array($notadded, $added);
 }

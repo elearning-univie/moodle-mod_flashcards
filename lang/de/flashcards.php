@@ -70,6 +70,7 @@ $string['addflashcardbutton'] = 'In meine Lernkartei aufnehmen';
 $string['addflashcardsdonemessage'] = 'Lernkarte(n) wurde(n) in Fach 1 verschoben!';
 $string['addfcstudent'] = 'Studierende dürfen Lernkarten hinzufügen';
 $string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
+$string['addselectedquestionstoquiz'] = 'Fügen Sie die ausgewählten Fragen zur Lernkartensammlung hinzu';
 $string['author'] = 'Hinzugefügt von';
 $string['authordisplay'] = 'Anzeige Flashcard-Autor';
 $string['authordisplay_disabled'] = 'Nichts anzeigen';
