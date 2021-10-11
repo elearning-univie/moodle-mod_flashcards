@@ -251,8 +251,8 @@ $templatecontent['answer'] = $question->format_text(
      $ans->answer, $ans->answerformat,
      $qa, 'question', 'answer', $ans->id);
 $templatecontent['qaid'] = $question->id;
-$templatecontent['hidetext'] = get_string('hidesolution', 'qtype_flashcard');
-$templatecontent['showtext'] = get_string('showsolution', 'qtype_flashcard');
+$templatecontent['hidetext'] = get_string('hidesolution', 'mod_flashcards');
+$templatecontent['showtext'] = get_string('showsolution', 'mod_flashcards');
 
 
 $renderer = $PAGE->get_renderer('core');

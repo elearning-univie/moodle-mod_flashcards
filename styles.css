@@ -146,14 +146,18 @@ img.mod-flashcards-appstore-badge {
 }
 
 .mod-flashcards-formulation {
-  color: #001a1e;
-  background-color: #e7f3f5;
-  border-color: #b8dce2;
-  /* stylelint-disable-line max-line-length */ }
-  .mod-flashcards-formulation hr {
-    border-top-color: #a6d3db; }
-  .mod-flashcards-formulation .alert-link {
-    color: black; }
+    color: #001a1e;
+    background-color: #e7f3f5;
+    border-color: #b8dce2;
+}
+
+.mod-flashcards-formulation hr {
+    border-top-color: #a6d3db;
+}
+
+.mod-flashcards-formulation .alert-link {
+    color: black;
+}
 
 div.progress.mod-flashcards-progress-bar {
     min-height: 3em;

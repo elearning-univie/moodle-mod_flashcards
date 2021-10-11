@@ -53,8 +53,8 @@
                         </div>
                         <div class="row no-gutters mt-2">
                             <a class="qflashcard-flipbutton btn btn-primary" id="qflashcard-showhidebutton-{{qaid}}"
-                             onclick="$.qtype_flashcard_hide_show_answer({{qaid}}, '{{hidetext}}', '{{showtext}}')">
-                                {{# str }} showsolution, qtype_flashcard {{/ str }}
+                             onclick="$.mod_flashcards_hide_show_answer({{qaid}}, '{{hidetext}}', '{{showtext}}')">
+                                {{# str }} showsolution, mod_flashcards {{/ str }}
                             </a>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                     <div class="p-2 mb-4" id="qflashcard-flipcontainer-answer-{{qaid}}" style="display: none;">
                         <div class="d-flex flex-column">
                                 <div class="answer">
-                                    <h4> {{# str }} correctanswer, qtype_flashcard {{/ str }} </h4>
+                                    <h4> {{# str }} correctanswer, mod_flashcards {{/ str }} </h4>
                                     {{{answer}}}
                                 </div>
                         </div>
