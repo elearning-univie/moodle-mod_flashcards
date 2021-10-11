@@ -110,6 +110,7 @@ $params = array(
         'fcid' => $flashcardsid
 );
 $params['courseid'] = $context->instanceid;
+
 $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $nostatus = false;
 
@@ -241,6 +242,19 @@ if (!has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
         $templatecontent['showfceditlink'] = false;
     }
 }
+
+foreach ($question->answers as $answer) {
+    $ans = $answer;
+}
+$templatecontent['questiontext'] = $question->questiontext;
+$templatecontent['answer'] = $question->format_text(
+     $ans->answer, $ans->answerformat,
+     $qa, 'question', 'answer', $ans->id);
+$templatecontent['qaid'] = $question->id;
+$templatecontent['hidetext'] = get_string('hidesolution', 'qtype_flashcard');
+$templatecontent['showtext'] = get_string('showsolution', 'qtype_flashcard');
+
+
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);
 

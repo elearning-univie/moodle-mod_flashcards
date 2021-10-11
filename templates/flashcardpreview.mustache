@@ -43,7 +43,35 @@
                     <input type="hidden" name="slots" value="{{slot}}"/>
                     <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
-                {{{question}}}
+                
+                <div class ="mod-flashcards-formulation clearfix">
+                    <div class="p-2" id="qflashcard-flipcontainer-{{qaid}}">
+                        <div class="qflashcard-flipper d-flex flex-column">
+                            <div class="qtext qflashcard-question align-self-stretch">
+                                {{{questiontext}}}
+                            </div>
+                        </div>
+                        <div class="row no-gutters mt-2">
+                            <a class="qflashcard-flipbutton btn btn-primary" id="qflashcard-showhidebutton-{{qaid}}"
+                             onclick="$.qtype_flashcard_hide_show_answer({{qaid}}, '{{hidetext}}', '{{showtext}}')">
+                                {{# str }} showsolution, qtype_flashcard {{/ str }}
+                            </a>
+                        </div>
+                    </div>
+                 </div>   
+                 <br>
+                 
+                 <div class ="mod-flashcards-formulation clearfix">
+                    <div class="p-2 mb-4" id="qflashcard-flipcontainer-answer-{{qaid}}" style="display: none;">
+                        <div class="d-flex flex-column">
+                                <div class="answer">
+                                    <h4> {{# str }} correctanswer, qtype_flashcard {{/ str }} </h4>
+                                    {{{answer}}}
+                                </div>
+                        </div>
+                    </div>
+                 </div>   
+
                 <div class="row">
                     <div class="col-1">
                         <div id="previewcontrols" class="controls"></div>
