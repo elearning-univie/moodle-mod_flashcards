@@ -84,7 +84,7 @@ class teacherviewtable extends table_sql {
         $this->cmid = $cmid;
         $this->courseid = $courseid;
         $this->fcid = $fcid;
-        $this->editreturnurl = '/mod/flashcards/teacherview.php?id=' . $cmid;
+        $this->editreturnurl = '/mod/flashcards/teacherview.php?cmid=' . $cmid;
         $this->authors = array();
         $this->authordisplay = $authordisplay;
         $this->context = \context_module::instance($cmid);
@@ -221,7 +221,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $eurl = new moodle_url('/question/question.php',
-                array('returnurl' => $this->editreturnurl, 'courseid' => $this->courseid, 'id' => $values->id ));
+            array('returnurl' => $this->editreturnurl, 'courseid' => $this->courseid, 'id' => $values->id, 'cmid' => $this->cmid));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }
@@ -251,7 +251,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/flashcards/teacherview.php',
-                array('id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()));
+                array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true));
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }

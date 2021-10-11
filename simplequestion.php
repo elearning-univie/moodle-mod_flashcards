@@ -122,12 +122,16 @@ if ($mform->is_cancelled()) {
     $questioncopy->name = $fromform->name;
     $questioncopy->questiontext = $fromform->questiontext;
     $questioncopy->answer = $fromform->answer;
-    $changeextent = 0;
-    if ($action == 'edit') {
-        $changeextent = $fromform->changeextent;
-    }
 
     $question = $qtypeobj->save_question($question, $questioncopy);
+    $changeextent = 0;
+
+    if ($action == 'edit') {
+        $changeextent = $fromform->changeextent;
+    } else if ($action == 'create') {
+        $fcid = $DB->get_field('course_modules', 'instance', ['id' => $cmid]);
+        $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $fcid, 'teachercheck' => 0]);
+    }
 
     $resetinfo = array(
         'changeextent' => $changeextent,
