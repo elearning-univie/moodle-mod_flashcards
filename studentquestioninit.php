@@ -74,7 +74,7 @@ if ($deleteselected) {
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/flashcards/studentquestioninit.php',
-                array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+            array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
 
         $continue = new \single_button($deleteurl, get_string('delete'), 'post');
         $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
@@ -102,18 +102,17 @@ $importedfcs = $DB->get_fieldset_sql('SELECT questionid
                              AND flashcardsid = :fid
                              AND currentbox IS NOT NULL', ['userid' => $USER->id, 'fid' => $flashcards->id]);
 
-list($sqlwherecat, $qcategories) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED, 'p');
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
-$sqlwhere = "category $sqlwherecat AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
 $table->set_sql('q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck',
-        "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+    "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
                       LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = $USER->id",
-                      $sqlwhere, $qcategories + $importedfcids);
+    $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
 $table->define_baseurl($PAGE->url);
 
-list($notadded, $added) = mod_flashcards_count_added_and_not_added_cards($importedfcs, $qcategories);
+list($notadded, $added) = mod_flashcards_count_added_and_not_added_cards($importedfcs, $flashcards->id);
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
@@ -121,12 +120,12 @@ $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 $renderer = $PAGE->get_renderer('core');
 
 $templateinfo = ['createbtnlink' => $link->out(false),
-        'id' => $id,
-        'sesskey' => sesskey(),
-        'actionurl' => $PAGE->url,
-        'aid' => $flashcards->id,
-        'cmid' => $cm->id,
-        'tab' => $tab];
+    'id' => $id,
+    'sesskey' => sesskey(),
+    'actionurl' => $PAGE->url,
+    'aid' => $flashcards->id,
+    'cmid' => $cm->id,
+    'tab' => $tab];
 $templateinfo['selected' . $perpage] = true;
 
 if ($flashcards->addfcstudent == 1) {

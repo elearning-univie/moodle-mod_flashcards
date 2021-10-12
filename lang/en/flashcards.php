@@ -71,6 +71,7 @@ $string['addflashcardbutton'] = 'Add flashcard(s)';
 $string['addflashcardsdonemessage'] = 'Flashcards have been added to Box 1!';
 $string['addfcstudent'] = 'Allow students to add flashcards';
 $string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
+$string['addselectedquestionstoquiz'] = 'Add selected questions to the flashcard collection';
 $string['author'] = 'Added by';
 $string['authordisplay'] = 'Display author of flashcard';
 $string['authordisplay_disabled'] = 'Disabled';
