@@ -245,3 +245,38 @@ function mod_flashcards_get_fontawesome_icon_map() {
         'mod_flashcards:viewfc' => 'fa-window-maximize',
     ];
 }
+
+/**
+ * Generates the question bank in a fragment output. This allows
+ * the question bank to be displayed in a modal.
+ *
+ * The only expected argument provided in the $args array is
+ * 'querystring'. The value should be the list of parameters
+ * URL encoded and used to build the question bank page.
+ *
+ * The individual list of parameters expected can be found in
+ * question_build_edit_resources.
+ *
+ * @param array $args The fragment arguments.
+ * @return string The rendered mform fragment.
+ */
+function mod_flashcards_output_fragment_questionbank($args) {
+    global $CFG, $DB, $PAGE;
+
+    require_once($CFG->dirroot . '/question/editlib.php');
+
+    $querystring = preg_replace('/^\?/', '', $args['querystring']);
+    $params = [];
+    parse_str($querystring, $params);
+
+    list($thispageurl, $contexts, $cmid, $cm, $flashcards, $pagevars) =
+            question_build_edit_resources('editq', '/mod/flashcards/teacherview.php', $params);
+
+    $course = $DB->get_record('course', array('id' => $flashcards->course), '*', MUST_EXIST);
+    require_capability('mod/flashcards:editallquestions', $contexts->lowest());
+
+    $questionbank = new mod_flashcards\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $flashcards);
+
+    $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
+    return $renderer->question_bank_contents($questionbank, $pagevars);
+}

@@ -235,3 +235,15 @@ div.progress.mod-flashcards-progress-bar {
     padding-left: 0.5em;
     font-size: 1.01rem;
 }
+
+.path-mod-flashcards .greyed {
+    opacity: 0.4;
+}
+
+.path-mod-flashcards .add-menu-outer {
+    float: right;
+}
+
+.path-mod-flashcards .add-menu-space {
+    padding-bottom: 2em;
+}
