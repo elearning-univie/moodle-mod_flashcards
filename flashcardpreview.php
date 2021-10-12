@@ -236,11 +236,10 @@ $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
     array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl));
 $templatecontent['fceditlink'] = $eurl;
-$templatecontent['showfceditlink'] = true;
-if (!has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
-    if (!mod_flashcards_has_delete_rights($context, $fcobj, $id)) {
-        $templatecontent['showfceditlink'] = false;
-    }
+$templatecontent['showfceditlink'] = false;
+if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
+    has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
+    $templatecontent['showfceditlink'] = true;
 }
 
 foreach ($question->answers as $answer) {
