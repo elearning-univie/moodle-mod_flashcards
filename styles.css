@@ -186,6 +186,11 @@ div.progress.mod-flashcards-progress-bar {
     margin-bottom: 1.5em;
 }
 
+.mod-flashcards-blue-box {
+    padding: 1em;
+    margin-bottom: 1.5em;
+}
+
 .path-mod-flashcards .upsidedown i {
     transform: rotate(180deg);
 }

@@ -45,24 +45,23 @@
                 </div>
                 
                 <div class ="mod-flashcards-formulation clearfix">
-                    <div class="p-2" id="qflashcard-flipcontainer-{{qaid}}">
+                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-{{qaid}}">
                         <div class="qflashcard-flipper d-flex flex-column">
                             <div class="qtext qflashcard-question align-self-stretch">
                                 {{{questiontext}}}
                             </div>
                         </div>
                         <div class="row no-gutters mt-2">
-                            <a class="qflashcard-flipbutton btn btn-primary" id="qflashcard-showhidebutton-{{qaid}}"
+                            <a class="qflashcard-flipbutton btn btn-primary" id="mod-flashcards-showhidebutton-{{qaid}}"
                              onclick="$.mod_flashcards_hide_show_answer({{qaid}}, '{{hidetext}}', '{{showtext}}')">
                                 {{# str }} showsolution, mod_flashcards {{/ str }}
                             </a>
                         </div>
                     </div>
                  </div>   
-                 <br>
-                 
+                
                  <div class ="mod-flashcards-formulation clearfix">
-                    <div class="p-2 mb-4" id="qflashcard-flipcontainer-answer-{{qaid}}" style="display: none;">
+                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-answer-{{qaid}}" style="display: none;">
                         <div class="d-flex flex-column">
                                 <div class="answer">
                                     <h4> {{# str }} correctanswer, mod_flashcards {{/ str }} </h4>
