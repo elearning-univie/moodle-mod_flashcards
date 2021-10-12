@@ -44,6 +44,17 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
                      fail: notification.exception
                 }]);
             };
+            $.mod_flashcards_hide_show_answer = function (qaid, htxt, stxt) {
+                var x = document.getElementById('mod-flashcards-showhidecontainer-answer-'.concat(qaid));
+                var btn = document.getElementById('mod-flashcards-showhidebutton-'.concat(qaid));
+                if (x.style.display === 'none') {
+                    btn.textContent = htxt;
+                    x.style.display = 'block';
+                } else {
+                    btn.textContent = stxt;
+                    x.style.display = 'none';
+                }
+            };
         }
     };
 });

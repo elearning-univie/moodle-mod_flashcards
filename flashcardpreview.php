@@ -110,6 +110,7 @@ $params = array(
         'fcid' => $flashcardsid
 );
 $params['courseid'] = $context->instanceid;
+
 $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $nostatus = false;
 
@@ -199,6 +200,7 @@ $templatecontent['upvotes'] = mod_flashcard_get_peer_review_votes($question->id,
 $templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, false);
 $templatecontent['questionid'] = $id;
 $templatecontent['fcid'] = $flashcardsid;
+$templatecontent['questiontitle'] = $question->name;
 
 if ($canedit) {
     for ($i = 0; $i < 3; $i++) {
@@ -228,6 +230,25 @@ $helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
 $templatecontent['helppeerreview'] = $helppeerreview->export_for_template($OUTPUT);
 $helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
 $templatecontent['helpteachercheck'] = $helpteachercheck->export_for_template($OUTPUT);
+
+// Edit button
+$fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+$eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+    array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl));
+$templatecontent['fceditlink'] = $eurl;
+if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
+    has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
+    $templatecontent['showfceditlink'] = true;
+}
+
+foreach ($question->answers as $answer) {
+    $ans = $answer;
+}
+$templatecontent['questiontext'] = $question->questiontext;
+$templatecontent['answer'] = $question->format_text(
+     $ans->answer, $ans->answerformat,
+     $qa, 'question', 'answer', $ans->id);
+$templatecontent['qaid'] = $question->id;
 
 $renderer = $PAGE->get_renderer('core');
 echo $renderer->render_from_template('mod_flashcards/flashcardpreview', $templatecontent);

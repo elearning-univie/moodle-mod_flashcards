@@ -145,6 +145,20 @@ img.mod-flashcards-appstore-badge {
     margin-right: 0.2em;
 }
 
+.mod-flashcards-formulation {
+    color: #001a1e;
+    background-color: #e7f3f5;
+    border-color: #b8dce2;
+}
+
+.mod-flashcards-formulation hr {
+    border-top-color: #a6d3db;
+}
+
+.mod-flashcards-formulation .alert-link {
+    color: black;
+}
+
 div.progress.mod-flashcards-progress-bar {
     min-height: 3em;
     background-color: SlateGray;
@@ -168,6 +182,11 @@ div.progress.mod-flashcards-progress-bar {
 
 .mod-flashcards-preview-box {
     border: 1px solid #cad0d7;
+    padding: 1em;
+    margin-bottom: 1.5em;
+}
+
+.mod-flashcards-blue-box {
     padding: 1em;
     margin-bottom: 1.5em;
 }

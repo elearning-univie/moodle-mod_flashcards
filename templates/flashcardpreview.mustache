@@ -32,14 +32,57 @@
 <div class="flex-container">
     <form method="post" action="{{{actionurl}}}" enctype="multipart/form-data" id="responseform">
         <div class="row">
+           <div class="col">
+                    <h4><b>{{# str }} question, mod_flashcards {{/ str }}: {{questiontitle}}</b> </h4>
+            </div>
+        </div>
+        <div class="row">
             <div class="col">
                 <div>
                     <input type="hidden" name="sesskey" value="{{sesskey}}"/>
                     <input type="hidden" name="slots" value="{{slot}}"/>
                     <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
-                {{{question}}}
-                <div id="previewcontrols" class="controls"></div>
+                
+                <div class ="mod-flashcards-formulation clearfix">
+                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-{{qaid}}">
+                        <div class="qflashcard-flipper d-flex flex-column">
+                            <div class="qtext qflashcard-question align-self-stretch">
+                                {{{questiontext}}}
+                            </div>
+                        </div>
+                        <div class="row no-gutters mt-2">
+                            <a class="qflashcard-flipbutton btn btn-primary" id="mod-flashcards-showhidebutton-{{qaid}}"
+                             onclick="$.mod_flashcards_hide_show_answer({{qaid}},
+                              '{{# str }} hidesolution, mod_flashcards {{/ str }}', '{{# str }} showsolution, mod_flashcards {{/ str }}')">
+                                {{# str }} showsolution, mod_flashcards {{/ str }}
+                            </a>
+                        </div>
+                    </div>
+                 </div>   
+                
+                 <div class ="mod-flashcards-formulation clearfix">
+                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-answer-{{qaid}}" style="display: none;">
+                        <div class="d-flex flex-column">
+                                <div class="answer">
+                                    <h4> {{# str }} correctanswer, mod_flashcards {{/ str }} </h4>
+                                    {{{answer}}}
+                                </div>
+                        </div>
+                    </div>
+                 </div>   
+
+                <div class="row">
+                    <div class="col-1">
+                        <div id="previewcontrols" class="controls"></div>
+                    </div>
+                    {{#showfceditlink}}
+                    <div class="col-11">
+                        <a class="btn btn-primary ml-2" href = "{{{fceditlink}}}">{{# str }} editflashcard, mod_flashcards {{/ str }}</a>
+                    </div>
+                    {{/showfceditlink}}
+               </div> 
+
             </div>
             <div class="col-12 col-xl-3">
                 <div class="mod-flashcards-preview-box">
