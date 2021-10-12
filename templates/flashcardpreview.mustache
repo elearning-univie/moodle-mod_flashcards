@@ -53,7 +53,8 @@
                         </div>
                         <div class="row no-gutters mt-2">
                             <a class="qflashcard-flipbutton btn btn-primary" id="mod-flashcards-showhidebutton-{{qaid}}"
-                             onclick="$.mod_flashcards_hide_show_answer({{qaid}}, '{{hidetext}}', '{{showtext}}')">
+                             onclick="$.mod_flashcards_hide_show_answer({{qaid}},
+                              '{{# str }} hidesolution, mod_flashcards {{/ str }}', '{{# str }} showsolution, mod_flashcards {{/ str }}')">
                                 {{# str }} showsolution, mod_flashcards {{/ str }}
                             </a>
                         </div>

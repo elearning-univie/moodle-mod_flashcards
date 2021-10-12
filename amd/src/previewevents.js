@@ -48,11 +48,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
                 var x = document.getElementById('mod-flashcards-showhidecontainer-answer-'.concat(qaid));
                 var btn = document.getElementById('mod-flashcards-showhidebutton-'.concat(qaid));
                 if (x.style.display === 'none') {
-                  btn.textContent = htxt;
-                  x.style.display = 'block';
+                    btn.textContent = htxt;
+                    x.style.display = 'block';
                 } else {
                     btn.textContent = stxt;
-                  x.style.display = 'none';
+                    x.style.display = 'none';
                 }
             };
         }
