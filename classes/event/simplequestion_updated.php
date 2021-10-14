@@ -15,27 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Mod flashcards events.
+ * The event class for the flashcard question type.
  *
  * @package    mod_flashcards
- * @copyright  2021 University of vienna
+ * @copyright  2020 University of vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_flashcards\event;
+
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array(
-    array(
-        'eventname'   => '\core\event\question_updated',
-        'callback'    => '\mod_flashcards\event\teacherquestionedit_observer::question_updated',
-    ),
-    array(
-        'eventname'   => '\mod_flashcards\event\simplequestion_updated',
-        'callback'    => '\mod_flashcards\event\simplequestionform_observer::simplequestion_updated',
-    ),
-    array(
-        'eventname'   => '\mod_flashcards\event\simplequestion_created',
-        'callback'    => '\mod_flashcards\event\simplequestionform_observer::simplequestion_created',
-        'internal'    => true,
-    ),
+/**
+ * Event for mod_flashcards.
+ */
+class simplequestion_updated extends \core\event\base {
 
-);
+    /**
+     * Init method.
+     */
+    protected function init() {
+        $this->data['objecttable'] = 'question';
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+    }
+
+    /**
+     * Returns localised general event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventsimplequestionupdated', 'mod_flashcards');
+    }
+
+}

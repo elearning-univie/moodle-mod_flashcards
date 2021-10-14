@@ -1,7 +1,7 @@
 define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification) {
     return {
         init: function () {
-            $.mod_flashcards_init_questions = function (aid, infostr) {
+            $.mod_flashcards_init_questions = function (aid) {
                 var data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = [];
                 for (var i = 0; i < data.length; i++) {
@@ -14,14 +14,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                         methodname: 'mod_flashcards_init_questions',
                         args: {flashcardsid: aid, qids: qids},
                         done: function () {
-                            alert(infostr);
                             location.reload();
                         },
                         fail: notification.exception
                     }]);
                 }
             };
-            $.mod_flashcards_remove_questions = function (aid, infostr) {
+            $.mod_flashcards_remove_questions = function (aid) {
                 var data = document.querySelectorAll(".mod-flashcards-checkbox");
                 var qids = [];
                 for (var i = 0; i < data.length; i++) {
@@ -34,7 +33,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                         methodname: 'mod_flashcards_remove_questions',
                         args: {flashcardsid: aid, qids: qids},
                         done: function () {
-                            alert(infostr);
                             location.reload();
                         },
                         fail: notification.exception

@@ -35,8 +35,9 @@ $cmid = required_param('cmid', PARAM_INT);
 $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 $action = required_param('action', PARAM_ALPHA);
+$fcid = required_param('fcid', PARAM_INT);
 
-$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin, 'action' => $action]);
+$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin, 'action' => $action, 'fcid' => $fcid]);
 if ($id) {
     $url->param('id', $id);
 }
@@ -133,11 +134,28 @@ if ($mform->is_cancelled()) {
         $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $fcid, 'teachercheck' => 0]);
     }
 
-    $resetinfo = array(
-        'changeextent' => $changeextent,
-        'questionid' => $question->id,
-        'userid' => $USER->id);
-    mod_flashcards_reset_tc_and_peer_review($resetinfo);
+    $resetinfo = array (
+        'objectid' => $question->id,
+        'context' => context_module::instance( $cm->id ),
+        'other' => array (
+            'changeextent' => $changeextent,
+            'fcid' => $fcid,
+            'userid' => $USER->id
+        )
+    );
+    $event = \mod_flashcards\event\simplequestion_updated::create($resetinfo);
+    $event->trigger();
+
+    $params = array (
+        'objectid' => $question->id,
+        'context' => context_module::instance( $cm->id ),
+        'other' => array (
+            'changeextent' => $changeextent,
+            'fcid' => $fcid
+        )
+    );
+    $event = \mod_flashcards\event\simplequestion_created::create($params);
+    $event->trigger();
 
     question_bank::notify_question_edited($question->id);
 
