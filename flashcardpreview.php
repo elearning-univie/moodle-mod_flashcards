@@ -234,7 +234,7 @@ $templatecontent['helpteachercheck'] = $helpteachercheck->export_for_template($O
 // Edit button
 $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-    array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl));
+    array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl, 'fcid' => $flashcardsid));
 $templatecontent['fceditlink'] = $eurl;
 if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
     has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
