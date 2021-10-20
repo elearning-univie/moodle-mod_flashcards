@@ -22,7 +22,8 @@ Feature: As a student I edit the an existing flashcard
     Then I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Propose novel flashcards"
+    And I follow "Create/customize my flashcards"
+    And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
@@ -35,7 +36,7 @@ Feature: As a student I edit the an existing flashcard
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
     And I should see "Peer review"
@@ -51,7 +52,7 @@ Feature: As a student I edit the an existing flashcard
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app
     And I should see "Peer review"

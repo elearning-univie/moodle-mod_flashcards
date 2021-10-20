@@ -39,7 +39,7 @@ Feature: As a student I want to add flashcards to my deck
     Given I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should see "flashcard 1"
     And I follow "My flashcards"
     Then I should see "Nothing"
@@ -47,7 +47,7 @@ Feature: As a student I want to add flashcards to my deck
     And I click on "input[class^=mod-flashcards-checkbox]" "css_element" in the "flashcard 1" "table_row"
     And I click on "Add flashcard(s)" "button"
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     And I follow "My flashcards"
     Then I should see "flashcard 1"
     And I should not see "flashcard 2"

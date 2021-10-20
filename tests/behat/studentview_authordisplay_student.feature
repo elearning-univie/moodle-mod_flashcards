@@ -24,7 +24,8 @@ Feature: As a student I want to see the students name, if a student creates a fl
     Then I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Propose novel flashcards"
+    And I follow "Create/customize my flashcards"
+    And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
@@ -40,7 +41,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should not see "Derpina Knowsalot"
     And I should not see "Student"
 
@@ -51,7 +52,7 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should see "Student"
     And I should not see "Derpina Knowsalot"
 
@@ -62,6 +63,6 @@ Feature: As a student I want to see the students name, if a student creates a fl
     When I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should see "Derpina Knowsalot"
     And I should not see "Student"

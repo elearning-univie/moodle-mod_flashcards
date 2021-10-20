@@ -538,25 +538,21 @@ function mod_flashcards_count_added_and_not_added_cards(array $importedfcs, int 
 /**
  * get qids for selected flashcards
  *
- * @param array $params
+ * @param int $flashcardsid
  * @param array $qids
  * @return array
  */
-function mod_flashcards_get_selected_qids($params, $qids) {
-    global $DB, $USER;
+function mod_flashcards_get_selected_qids($flashcardsid, $qids) {
+    global $DB;
 
-    $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-    $categories = question_categorylist($record->categoryid);
-    list($inids, $questionids) = $DB->get_in_or_equal($params['qids'], SQL_PARAMS_NAMED);
-    list($inids2, $categorieids) = $DB->get_in_or_equal($categories, SQL_PARAMS_NAMED);
+    list($inids, $questionids) = $DB->get_in_or_equal($qids, SQL_PARAMS_NAMED);
 
-    $sql = "SELECT id
-                  FROM {question}
-                 WHERE id $inids
-                   AND category $inids2";
+    $sql = "SELECT questionid
+              FROM {flashcards_q_status}
+             WHERE fcid = :fcid
+               AND questionid $inids";
 
-    $questionids = $DB->get_fieldset_sql($sql, $questionids + $categorieids +
-        ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
+    $questionids = $DB->get_fieldset_sql($sql, ['fcid' => $flashcardsid] + $questionids);
 
     return $questionids;
 }

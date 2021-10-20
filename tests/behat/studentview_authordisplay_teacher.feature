@@ -35,7 +35,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     When I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should see "John Doe (Teacher)"
 
   @javascript
@@ -45,7 +45,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     When I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should see "John Doe"
 
   @javascript
@@ -55,5 +55,5 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     When I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then I should not see "John Doe"

@@ -111,12 +111,21 @@ $functions = array(
             'loginrequired' => true
         ),
         'mod_flashcards_set_peer_review_vote' => array(
-        'classname' => 'mod_flashcards_external',
-        'methodname' => 'set_peer_review_vote',
-        'classpath' => 'mod/flashcards/externallib.php',
-        'description' => 'Sets the users peer review vote of a flashcard',
-        'type' => 'write',
-        'ajax' => true,
-        'loginrequired' => true
-    )
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'set_peer_review_vote',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Sets the users peer review vote of a flashcard',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        ),
+        'mod_flashcards_set_showappinfo' => array(
+            'classname' => 'mod_flashcards_external',
+            'methodname' => 'set_showappinfo',
+            'classpath' => 'mod/flashcards/externallib.php',
+            'description' => 'Sets the show app info preference',
+            'type' => 'write',
+            'ajax' => true,
+            'loginrequired' => true
+        )
 );

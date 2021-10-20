@@ -151,11 +151,11 @@ echo $OUTPUT->tabtree($tabs, $tab);
 
 if ($equalparam) {
     $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'onClick' => $addlink]);
     echo get_string('removeflashcardbutton', 'mod_flashcards');
 } else {
     $addlink = '$.mod_flashcards_init_questions('.$flashcards->id . ')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary add_remove_btn_margins', 'onClick' => $addlink]);
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'onClick' => $addlink]);
     echo get_string('addflashcardbutton', 'mod_flashcards');
 }
 echo html_writer::end_tag('button');
