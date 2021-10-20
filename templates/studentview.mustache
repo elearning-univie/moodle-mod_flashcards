@@ -81,7 +81,7 @@
 
 <div class="flex-container">
     <div class="row">
-        <div class="pb-2 {{#displaymobileapps}}col-sm-4{{/displaymobileapps}}{{^displaymobileapps}}col-sm-6{{/displaymobileapps}} col-xs-6 text-center">
+        <div id="mod-flashcards-collection-box" class="pb-2 {{#displaymobileapps}}col-sm-8{{/displaymobileapps}}{{^displaymobileapps}}col-sm-12{{/displaymobileapps}} col-xs-12 text-center">
             <div class="card h-100 rounded border">
                 <h2 class="card-title">
                     {{# str }} boxheaderadapt, mod_flashcards {{/ str }}
@@ -90,15 +90,11 @@
                 <p class="card-text mt-0 px-1">{{# str }} carddeckconfigexplained, mod_flashcards {{/ str }}</p>
                 <p class="card-text mt-1 px-1">{{# str }} cardbehaviourexplained, mod_flashcards {{/ str }}</p>
                 <p class="card-text mt-1 px-1">{{# str }} proposecardsexplained, mod_flashcards {{/ str }}</p>
-                <a href="{{{createfcurl}}}" role="button" class="mt-auto btn btn-primary btn-block mb-1 rounded-0 {{^enablestudentscreatequestions}}disabled{{/enablestudentscreatequestions}}">
-                    <span class="btn-label "><i class="fa fa-plus"></i></span>
-                    {{#enablestudentscreatequestions}}
-                        {{# str }} proposenewcardbutton, mod_flashcards {{/ str }}
-                    {{/enablestudentscreatequestions}}
-                    {{^enablestudentscreatequestions}}
-                        {{# str }} proposenewcardbuttondisabled, mod_flashcards {{/ str }}
-                    {{/enablestudentscreatequestions}}
-                </a>             
+                <div class="p-2 d-flex flex-row-reverse">
+                    <div id="mod-flashcards-show-app" class="btn btn-secondary btn-sm" onclick="$.mod_flashcards_show_app()" {{#displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
+                        {{# str }} showapp, mod_flashcards {{/ str }}{{# pix }} i/breadcrumbdivider, moodle {{/ pix }}
+                    </div>
+                </div>
                 <div class="mt-auto text-white progress mod-flashcards-progress-bar rounded-0">
                     <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
                         aria-valuenow="{{stats.boxzeroquestioncount}}" aria-valuemin="0" aria-valuemax="{{stats.totalquestioncount}}" 
@@ -120,45 +116,100 @@
                         </strong>
                     </h5>
                 </div>
-                <a href="{{{selectquestionsurl}}}" role="button" class="mod-flashcards-button-action-bottom {{^stats.unselectedcardsavailable}}disabled{{/stats.unselectedcardsavailable}} btn btn-primary btn-block rounded-bottom mt-1">
+                <a href="{{{selectquestionsurl}}}" role="button" class="mod-flashcards-button-action-bottom btn btn-primary btn-block rounded-bottom mt-1">
                     <span class="btn-label"><i class="fa fa-cogs"></i></span>
-                    {{#stats.unselectedcardsavailable}}
-                        {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
-                    {{/stats.unselectedcardsavailable}}
-                    {{^stats.unselectedcardsavailable}}
-                        {{# str }} customizedeckbuttondisabled, mod_flashcards {{/ str }}
-                    {{/stats.unselectedcardsavailable}}
+                    {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
                 </a>
             </div>
         </div>
-        {{#displaymobileapps}}
-            <div class="pb-2 col-sm-4 col-xs-6 text-center">
-                <div class="card px-1 h-100 rounded border">
-                    <h2 class="card-title">
-                        {{# str }} boxheaderapp, mod_flashcards {{/ str }}
-                    </h2>
-                    <img class="mod-flashcards-decoration-icon" src="{{icons.phone}}" alt="{{# str }} iconphonealt, mod_flashcards {{/ str }}">
-                    <p>{{# str }} getmobileexplanation, mod_flashcards {{/ str }}</p>
-                    <p>{{# str }} getmobilemotivation, mod_flashcards {{/ str }}</p>
-                    <div class="mt-auto container">
-                        <div class="row d-flex">
-                            {{#stores}}
-                                <div class="flex-fill m-0 p-0">
-                                    <a class="btn btn-sm" href="{{{redirecturl}}}" role="button" target="_blank">
-                                        <img src="{{{badge}}}" class="img-fluid mod-flashcards-appstore-badge" alt="{{{badgealt}}}">
-                                    </a>
+        <div id="mod-flashcards-mobile-app-info" class="pb-2 col-sm-4 col-xs-6 text-center" {{^displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
+            <div class="card px-1 h-100 rounded border">
+                <div class="left-corner-position" onclick="$.mod_flashcards_minimize_app();">
+                    {{#pix}} e/delete, moodle, {{# str }} minimize, mod_flashcards {{/ str }}{{/ pix }}
+                </div>
+                <h2 class="card-title">
+                    {{# str }} boxheaderapp, mod_flashcards {{/ str }}
+                </h2>
+                <img class="mod-flashcards-decoration-icon" src="{{icons.phone}}" alt="{{# str }} iconphonealt, mod_flashcards {{/ str }}">
+                <p>{{# str }} getmobileexplanation, mod_flashcards {{/ str }}</p>
+                <p>{{# str }} getmobilemotivation, mod_flashcards {{/ str }}</p>
+                <div class="mt-auto container">
+                    <div class="row d-flex">
+                        {{#stores}}
+                            <div class="flex-fill m-0 p-0">
+                                <a class="btn btn-sm" href="{{{redirecturl}}}" role="button" target="_blank">
+                                    <img src="{{{badge}}}" class="img-fluid mod-flashcards-appstore-badge" alt="{{{badgealt}}}">
+                                </a>
+                            </div>
+                        {{/stores}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row pb-2">
+        <div class="col border rounded">
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
+        {{#boxes}}
+            <div class="col py-2 lg-2">
+                <div class="card h-100 rounded border">
+                    <img class="card-img mod-flashcards-box-bg my-auto p-5" src="{{boxbackgroundurl}}" alt="{{# str }} boxbackgroundalt, mod_flashcards {{/ str }}">
+                    <div class="card-img-overlay d-flex flex-column p-0">
+                        <div class="row mx-0">
+                            <div class="col-10 py-2">
+                                <h2 class="box-title">
+                                    {{boxheader}}
+                                </h2>
+                                <img class="mod-flashcards-box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
+                            </div>
+                            <div class="col">
+                                <div style="background-color: {{boxnumbercolor}};"
+                                     class="border rounded-circle text-white mod-flashcards-box-number">{{boxindex}}
                                 </div>
-                            {{/stores}}
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="row mx-0 mb-1 text-white progress mod-flashcards-progress-bar rounded-0">
+                                <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
+                                    aria-valuenow="{{advancedquestionpercent}}" aria-valuemin="0" aria-valuemax="100" style="width: {{advancedquestionpercent}}%">
+                                </div>
+                                <h5 class="justify-content-center align-self-center d-flex position-absolute w-100 my-auto">
+                                    <strong>
+                                        {{#cardsavailable}}
+                                            {{# str }} learnprogress, mod_flashcards, {{count}} {{/ str }}
+                                        {{/cardsavailable}}
+                                        {{^cardsavailable}}
+                                            {{# str }} emptybox, mod_flashcards{{/ str }}
+                                        {{/cardsavailable}}
+                                    </strong>
+                                </h5>
+                            </div>
+                            <div class="row mx-0">
+                                <a href="{{{redirecturl}}}" role="button" class="mod-flashcards-button-action-bottom {{^cardsavailable}}disabled{{/cardsavailable}} btn btn-primary btn-block">
+                                    <span class="btn-label" style="overflow: visible;"><i class="fa fa-play"></i>
+                                        {{#cardsavailable}}
+                                            {{# str }} learnboxbutton, mod_flashcards, {{boxindex}} {{/ str }}
+                                        {{/cardsavailable}}
+                                        {{^cardsavailable}}
+                                            {{# str }} learnboxbuttondisabled, mod_flashcards, {{boxindex}} {{/ str }}
+                                        {{/cardsavailable}}
+                                    </span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        {{/displaymobileapps}}
-        <div class="pb-2 {{#displaymobileapps}}col-sm-4{{/displaymobileapps}}{{^displaymobileapps}}col-sm-6{{/displaymobileapps}} col-xs-6 text-center">
-            <div class="card h-100 rounded border">
-                <h2 class="card-title">
-                    {{# str }} boxheaderlearnnow, mod_flashcards {{/ str }}
-                </h2>
+        {{/boxes}}
+        <div class="col py-2 lg-2">
+            <div class="card h-100 rounded border text-center">
+                <div class="px-3 py-2">
+                    <h2 class="card-title">
+                        {{# str }} boxheaderlearnnow, mod_flashcards {{/ str }}
+                    </h2>
+                </div>
                 <img class="mod-flashcards-decoration-icon" src="{{icons.start}}" alt="{{# str }} iconstartalt, mod_flashcards {{/ str }}">
                 {{#stats.selectedcardsavailable}}
                     <p class="px-1 mt-0">{{# str }} learnnowintro, mod_flashcards, {{stats.usedquestioncount}} {{/ str }}</p>
@@ -167,12 +218,12 @@
                         <div class="row">
                             <div class="col-auto m-0 p-0">
                                 <input size="3" class="mx-1 text-center h-100 rounded" id="mod-flashcards-range-slider-value" type="number" value="{{stats.halfusedquestioncount}}"
-                                min="1" max="{{stats.usedquestioncount}}"/>
+                                       min="1" max="{{stats.usedquestioncount}}"/>
                             </div>
-                        <div class="col m-0 p-0">
-                            <div class="progress mod-flashcards-progress-bar rounded-0">
-                                <div id="mod-flashcards-range-progressbar" class="progress-bar progress-bar-striped rounded-0" role="progressbar"></div>
-                                <input class="justify-content-center align-self-center d-flex position-absolute w-100" id="mod-flashcards-range-slider" type="range" min="1" step="1" max="{{stats.usedquestioncount}}" value="{{stats.halfusedquestioncount}}"/>
+                            <div class="col m-0 p-0">
+                                <div class="progress mod-flashcards-progress-bar rounded-0">
+                                    <div id="mod-flashcards-range-progressbar" class="progress-bar progress-bar-striped rounded-0" role="progressbar"></div>
+                                    <input class="justify-content-center align-self-center d-flex position-absolute w-100" id="mod-flashcards-range-slider" type="range" min="1" step="1" max="{{stats.usedquestioncount}}" value="{{stats.halfusedquestioncount}}"/>
                                 </div>
                             </div>
                         </div>
@@ -186,19 +237,14 @@
                     {{/stats.selectedcardsavailable}}
                 {{/stats.unselectedcardsavailable}}
                 {{^stats.cardsavailable}}
-                    <div class="mx-2 my-auto alert alert-danger rounded" role="alert">
+                    <div class="mx-2 my-auto alert alert-primary rounded" role="alert">
                         <strong><i class="fa fa-warning px-1" aria-hidden="true"></i></strong>{{# str }} noquestionsassignedwarning, mod_flashcards {{/ str }}
                     </div>
                 {{/stats.cardsavailable}}
                 {{^stats.selectedcardsavailable}}
-                    <a href="{{{selectquestionsurl}}}"  role="button" class="{{^stats.unselectedcardsavailable}}disabled{{/stats.unselectedcardsavailable}} mod-flashcards-button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
+                    <a href="{{{selectquestionsurl}}}"  role="button" class="mod-flashcards-button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
                         <span class="btn-label"><i class="fa fa-cogs"></i></span>
-                        {{#stats.unselectedcardsavailable}}
-                           {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
-                        {{/stats.unselectedcardsavailable}}
-                        {{^stats.unselectedcardsavailable}}
-                           {{# str }} customizedeckbuttondisabled, mod_flashcards {{/ str }}
-                        {{/stats.unselectedcardsavailable}}
+                        {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
                     </a>
                 {{/stats.selectedcardsavailable}}
                 {{#stats.selectedcardsavailable}}
@@ -209,57 +255,6 @@
                 {{/stats.selectedcardsavailable}}
             </div>
         </div>
-    </div>
-    <div class="row pb-2">
-        <div class="col border rounded">
-        </div>
-    </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-        {{#boxes}}
-            <div class="col mb-2">
-                <div class="card h-100 rounded border">
-                    <img class="card-img mod-flashcards-box-bg my-auto p-5" src="{{boxbackgroundurl}}" alt="{{# str }} boxbackgroundalt, mod_flashcards {{/ str }}">
-                    <div class="card-img-overlay d-flex flex-column py-0 px-0">
-                        <div class="d-flex flex-row py-1">
-                            <h2 class="card-title px-1">
-                                {{boxheader}}
-                            </h2>
-                            <img class="mod-flashcards-box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
-                        </div>
-                        <div style="background-color: {{boxnumbercolor}};"
-                            class="border rounded-circle text-white mod-flashcards-box-number">{{boxindex}}
-                        </div>
-                        <div class="mt-auto">
-                            <div class="text-white progress mb-1 mod-flashcards-progress-bar rounded-0">
-                                <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
-                                    aria-valuenow="{{advancedquestionpercent}}" aria-valuemin="0" aria-valuemax="100" style="width: {{advancedquestionpercent}}%">
-                                    </div>
-                                <h5 class="justify-content-center align-self-center d-flex position-absolute w-100 my-auto">
-                                    <strong>
-                                        {{#cardsavailable}}
-                                            {{# str }} learnprogress, mod_flashcards, {{count}} {{/ str }}
-                                        {{/cardsavailable}}
-                                        {{^cardsavailable}}
-                                            {{# str }} emptybox, mod_flashcards{{/ str }}
-                                        {{/cardsavailable}}
-                                    </strong>
-                                </h5>
-                            </div>
-                            <a href="{{{redirecturl}}}" role="button" class="mod-flashcards-button-action-bottom {{^cardsavailable}}disabled{{/cardsavailable}} btn btn-primary btn-block">
-                                <span class="btn-label" style="overflow: visible;"><i class="fa fa-play"></i>
-                                    {{#cardsavailable}}
-                                        {{# str }} learnboxbutton, mod_flashcards, {{boxindex}} {{/ str }}
-                                    {{/cardsavailable}}
-                                    {{^cardsavailable}}
-                                        {{# str }} learnboxbuttondisabled, mod_flashcards, {{boxindex}} {{/ str }}
-                                    {{/cardsavailable}}
-                                </span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {{/boxes}}
     </div>
 </div>
 

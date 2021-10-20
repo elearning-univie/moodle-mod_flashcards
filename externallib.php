@@ -157,6 +157,19 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function set_showappinfo_parameters() {
+        return new external_function_parameters(
+            array(
+                'prefval' => new external_value(PARAM_BOOL, 'value to set the pref')
+            )
+        );
+    }
+
+    /**
      * Moves the question into the next box if the answer was correct, otherwise to box 1
      *
      * @param int $fid
@@ -269,7 +282,7 @@ class mod_flashcards_external extends external_api {
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
 
-        $questionids = mod_flashcards_get_selected_qids($params, $qids);
+        $questionids = mod_flashcards_get_selected_qids($record->id, $params['qids']);
         $questionarray = [];
 
         foreach ($questionids as $question) {
@@ -302,7 +315,7 @@ class mod_flashcards_external extends external_api {
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
         $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-        $questionids = mod_flashcards_get_selected_qids($params, $qids);
+        $questionids = mod_flashcards_get_selected_qids($record->id, $params['qids']);
         $questionarray = [];
 
         foreach ($questionids as $question) {
@@ -417,6 +430,19 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
+     * Sets the preference value to show or hide the mobile app info
+     * @param bool $prefval
+     * @return external_function_parameters
+     */
+    public static function set_showappinfo($prefval) {
+
+        $params = self::validate_parameters(self::set_showappinfo_parameters(),
+            array('prefval' => $prefval));
+
+        set_user_preference('flashcards_showapp', $params['prefval']);
+    }
+
+    /**
      * Returns return value description
      *
      * @return external_value
@@ -485,6 +511,15 @@ class mod_flashcards_external extends external_api {
      * @return external_value
      */
     public static function set_peer_review_vote_returns() {
+        return null;
+    }
+
+    /**
+     * Returns return value description
+     *
+     * @return external_value
+     */
+    public static function set_showappinfo_returns() {
         return null;
     }
 }

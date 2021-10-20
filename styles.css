@@ -121,6 +121,7 @@ img.mod-flashcards-appstore-badge {
 .mod-flashcards-box-smiley {
     max-width: 2em;
     max-height: 2em;
+    vertical-align: unset;
 }
 
 .path-mod-flashcards .color-declined {
@@ -141,8 +142,18 @@ img.mod-flashcards-appstore-badge {
     position: absolute;
     right: 0;
     top: 0;
-    margin-top: 0.2em;
-    margin-right: 0.2em;
+    margin-top: 0.5em;
+    margin-right: 0.5em;
+}
+
+.path-mod-flashcards .left-corner-position {
+    max-width: 2.5em;
+    max-height: 2.5em;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
 }
 
 .mod-flashcards-formulation {
@@ -246,4 +257,9 @@ div.progress.mod-flashcards-progress-bar {
 
 .path-mod-flashcards .add-menu-space {
     padding-bottom: 2em;
+}
+
+.path-mod-flashcards .box-title {
+    display: inline-block;
+    word-break: break-all;
 }

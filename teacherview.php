@@ -59,8 +59,11 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
-if (!has_capability('mod/flashcards:teacherview', $context) &&
-    has_capability('mod/flashcards:studentview', $context)) {
+if (!has_capability('mod/flashcards:teacherview', $context)) {
+    if (has_capability('mod/flashcards:studentview', $context) ) {
+        redirect(new moodle_url('/mod/flashcards/studentview.php', array('id' => $cmid)));
+    }
+
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();

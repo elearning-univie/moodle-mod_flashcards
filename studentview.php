@@ -45,7 +45,7 @@ $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
 if (has_capability('mod/flashcards:teacherview', $context) ) {
-    redirect(new moodle_url('/mod/flashcards/teacherview.php', array('id' => $id)));
+    redirect(new moodle_url('/mod/flashcards/teacherview.php', array('cmid' => $id)));
 }
 
 echo $OUTPUT->header();
@@ -82,10 +82,17 @@ if (has_capability('mod/flashcards:studentview', $context)) {
                 'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
         ];
     }
-    $templatestablecontext['displaymobileapps'] = !empty($templatestablecontext['stores']);
 
-    $boxzeroquestioncount = get_box_zero_count_record($USER->id, $flashcards);
-    $totalquestioncount = get_total_card_count_record($USER->id, $flashcards);
+    $userpref = get_user_preferences('flashcards_showapp');
+
+    if (isset($userpref)) {
+        $templatestablecontext['displaymobileapps'] = $userpref;
+    } else {
+        $templatestablecontext['displaymobileapps'] = true;
+    }
+
+    $boxzeroquestioncount = get_box_zero_count_record($USER->id, $flashcards->id);
+    $totalquestioncount = get_total_card_count_record($flashcards->id);
     $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
 
     $templatestablecontext['stats'] = [
@@ -100,7 +107,6 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     ];
 
     $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
-    $templatestablecontext['enablestudentscreatequestions'] = $flashcards->addfcstudent == 1;
 
     $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
     $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
@@ -110,9 +116,6 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
     $templatestablecontext['flashcardsid'] = $flashcards->id;
-
-    $templatestablecontext['createfcurl'] = new moodle_url('/mod/flashcards/simplequestion.php',
-            ['action' => 'create', 'cmid' => $cm->id, 'origin' => $templatestablecontext['selectquestionsurl'], 'fcid' => $flashcards->id]);
 
     $renderer = $PAGE->get_renderer('core');
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
@@ -127,60 +130,41 @@ if (has_capability('mod/flashcards:studentview', $context)) {
  * Calculates the number of questions in box zero
  *
  * @param int $userid
- * @param object $flashcards
+ * @param int $fcid
  * @return int
  * @throws coding_exception
  * @throws dml_exception
  */
-function get_box_zero_count_record($userid, $flashcards) {
+function get_box_zero_count_record($userid, $fcid) {
     global $DB;
 
-    if ($flashcards->inclsubcats) {
-        $qcategories = question_categorylist($flashcards->categoryid);
-    } else {
-        $qcategories = $flashcards->categoryid;
-    }
-
-    list($inids, $categorieids) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-
     $sql = "SELECT count(id)
-              FROM {question}
-             WHERE category $inids
-               AND qtype = 'flashcard'
-               AND id NOT IN (SELECT questionid
+              FROM {flashcards_q_status}
+             WHERE fcid = :fcid
+               AND questionid NOT IN (SELECT questionid
                                 FROM {flashcards_q_stud_rel}
                                WHERE studentid = :userid
                                  AND flashcardsid = :fid)";
 
-    return $DB->count_records_sql($sql, $categorieids + ['userid' => $userid, 'fid' => $flashcards->id]);
+    return $DB->count_records_sql($sql, ['fcid' => $fcid, 'userid' => $userid, 'fid' => $fcid]);
 }
 
 /**
- * Calculates the number of cards available for a given flashcard deck and user combination
+ * Calculates the number of cards available for a given flashcard deck
  *
- * @param int $userid To query available cards for
- * @param object $flashcards Activity configuration
+ * @param int $fcid flashcardid
  * @return int number of totally available cards
  * @throws coding_exception
  * @throws dml_exception
  */
-function get_total_card_count_record($userid, $flashcards) {
+function get_total_card_count_record($fcid) {
     global $DB;
 
-    if ($flashcards->inclsubcats) {
-        $qcategories = question_categorylist($flashcards->categoryid);
-    } else {
-        $qcategories = $flashcards->categoryid;
-    }
-
-    list($inids, $categorieids) = $DB->get_in_or_equal($qcategories, SQL_PARAMS_NAMED);
-
     $sql = "SELECT count(id)
-              FROM {question}
-             WHERE category $inids
-               AND qtype = 'flashcard'";
+              FROM {flashcards_q_status}
+             WHERE fcid = :fcid";
 
-    return $DB->count_records_sql($sql, $categorieids);
+    return $DB->count_records_sql($sql, ['fcid' => $fcid]);
 }
 
 /**
@@ -299,12 +283,12 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
 
         if (($eachbox['boxindex'] == $maxboxindex && $eachbox['count'] == $usedtotalquestioncount) ||
                 ($eachbox['count'] == 0 && $advancedquestioncount == $usedtotalquestioncount)) {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdone', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdonenew', 'mod_flashcards');
         } else if ($eachbox['count'] > 0 ||
                 ($eachbox['count'] == 0 && $advancedquestioncount > 0)) {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckwork', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckworknew', 'mod_flashcards');
         } else {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdefault', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdefaultnew', 'mod_flashcards');
         }
 
         $advancedquestioncount += $eachbox['count'];

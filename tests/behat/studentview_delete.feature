@@ -36,7 +36,7 @@ Feature: As a student I can delete my own questions
     Then I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Customize your flashcard deck"
+    And I follow "Create/customize my flashcards"
     Then ".mod_flashcards_studentview_delete" "css_element" should not exist
 
   @javascript
@@ -44,7 +44,8 @@ Feature: As a student I can delete my own questions
     Then I log in as "student"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
-    And I follow "Propose novel flashcards"
+    And I follow "Create/customize my flashcards"
+    And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
