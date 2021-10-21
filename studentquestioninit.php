@@ -96,11 +96,20 @@ if ($flashcards->inclsubcats) {
 }
 $equalparam = ($tab == 'added') ? true : false;
 
-$importedfcs = $DB->get_fieldset_sql('SELECT questionid
-                            FROM {flashcards_q_stud_rel}
-                           WHERE studentid = :userid
-                             AND flashcardsid = :fid
-                             AND currentbox IS NOT NULL', ['userid' => $USER->id, 'fid' => $flashcards->id]);
+$sql = "SELECT q.id
+          FROM {question} q,
+               {flashcards_q_status} fcs,
+               {flashcards_q_stud_rel} fsr
+         WHERE q.id = fcs.questionid
+           AND fsr.questionid = q.id
+           AND fcs.fcid = :fid
+           AND fsr.studentid = :userid
+           AND fsr.flashcardsid = fcs.fcid
+           AND qtype = 'flashcard'
+           AND q.hidden <> 1
+           AND currentbox IS NOT NULL";
+$importedfcs = $DB->get_fieldset_sql($sql, ['fid' => $flashcards->id, 'userid' => $USER->id]);
+$added = count($importedfcs);
 
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
 $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
@@ -108,15 +117,20 @@ $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sql
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
 $table->set_sql('q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck',
     "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
-                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.studentid = $USER->id",
+                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.flashcardsid = fcs.fcid AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
 $table->define_baseurl($PAGE->url);
 
-list($notadded, $added) = mod_flashcards_count_added_and_not_added_cards($importedfcs, $flashcards->id);
+list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false, true);
+$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+$sql = "SELECT COUNT(q.id)
+          FROM {question} q
+          JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+         WHERE $sqlwhere";
+$notadded = $DB->count_records_sql($sql, ['fcid' => $flashcards->id] + $importedfcids);
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
-
 $renderer = $PAGE->get_renderer('core');
 
 $templateinfo = ['createbtnlink' => $link->out(false),

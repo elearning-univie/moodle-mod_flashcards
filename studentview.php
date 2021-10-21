@@ -138,15 +138,18 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 function get_box_zero_count_record($userid, $fcid) {
     global $DB;
 
-    $sql = "SELECT count(id)
-              FROM {flashcards_q_status}
-             WHERE fcid = :fcid
+    $sql = "SELECT count(q.id)
+              FROM {question} q,
+                   {flashcards_q_status} s
+             WHERE q.id = s.questionid
+               AND fcid = :fcid
                AND questionid NOT IN (SELECT questionid
                                 FROM {flashcards_q_stud_rel}
                                WHERE studentid = :userid
-                                 AND flashcardsid = :fid)";
+                                 AND currentbox IS NOT NULL
+                                 AND flashcardsid = fcid)";
 
-    return $DB->count_records_sql($sql, ['fcid' => $fcid, 'userid' => $userid, 'fid' => $fcid]);
+    return $DB->count_records_sql($sql, ['fcid' => $fcid, 'userid' => $userid]);
 }
 
 /**
@@ -160,9 +163,11 @@ function get_box_zero_count_record($userid, $fcid) {
 function get_total_card_count_record($fcid) {
     global $DB;
 
-    $sql = "SELECT count(id)
-              FROM {flashcards_q_status}
-             WHERE fcid = :fcid";
+    $sql = "SELECT count(q.id)
+              FROM {question} q,
+                   {flashcards_q_status} s
+             WHERE q.id = s.questionid
+               AND fcid = :fcid";
 
     return $DB->count_records_sql($sql, ['fcid' => $fcid]);
 }
