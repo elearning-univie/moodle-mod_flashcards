@@ -59,9 +59,9 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading($flashcards->name);
 
     $templatestablecontext['icons'] = [
-            'deck' => $OUTPUT->image_url('deckicon', 'mod_flashcards'),
-            'phone' => $OUTPUT->image_url('phone', 'mod_flashcards'),
-            'start' => $OUTPUT->image_url('start', 'mod_flashcards')
+            'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
+            'phone' => $OUTPUT->image_url('mobile', 'mod_flashcards'),
+            'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards')
     ];
 
     $templatestablecontext['stores'] = array();
@@ -288,12 +288,12 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
 
         if (($eachbox['boxindex'] == $maxboxindex && $eachbox['count'] == $usedtotalquestioncount) ||
                 ($eachbox['count'] == 0 && $advancedquestioncount == $usedtotalquestioncount)) {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdonenew', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdone', 'mod_flashcards');
         } else if ($eachbox['count'] > 0 ||
                 ($eachbox['count'] == 0 && $advancedquestioncount > 0)) {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckworknew', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckinprogress', 'mod_flashcards');
         } else {
-            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckdefaultnew', 'mod_flashcards');
+            $boxarray[$key]['boxbackgroundurl'] = $OUTPUT->image_url('deckempty', 'mod_flashcards');
         }
 
         $advancedquestioncount += $eachbox['count'];
