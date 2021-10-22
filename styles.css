@@ -102,7 +102,7 @@ img.mod-flashcards-appstore-badge {
     width: 17em;
 }
 
-.mod-flashcards-box-number {
+.path-mod-flashcards .box-icon {
     font-size: 1.5em;
     font-weight: bolder;
     display: flex;
@@ -134,16 +134,6 @@ img.mod-flashcards-appstore-badge {
 
 .path-mod-flashcards .color-pending {
     color: orange;
-}
-
-.mod-flashcards-decoration-icon {
-    max-width: 2.5em;
-    max-height: 2.5em;
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin-top: 0.5em;
-    margin-right: 0.5em;
 }
 
 .path-mod-flashcards .left-corner-position {
