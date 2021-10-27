@@ -33,10 +33,14 @@ Feature: As a student I open the flashcard preview
     Then I log out
 
   @javascript
-  Scenario: Close Flashcard preview as Student
+  Scenario: View Flashcard preview as Student
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I follow "Test flash cards"
     And I follow "Create/customize my flashcards"
-    Then I should see "Teacher check"
+    And I click on ".mod_flashcards_questionpreviewlink" "css_element"
+    And I switch to the browser tab opened by the app
+    Then I should see "Show solution"
+    And I should see "Teacher check"
     And I should see "Peer review"
+    And I should see "not yet evaluated"
