@@ -43,7 +43,6 @@
                     <input type="hidden" name="slots" value="{{slot}}"/>
                     <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
-                
                 <div class ="mod-flashcards-formulation clearfix">
                     <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-{{qaid}}">
                         <div class="qflashcard-flipper d-flex flex-column">
@@ -127,6 +126,9 @@
                                 <option value="1" title="{{# str }} statusval1, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} statusval1, mod_flashcards {{/ str }}</option>
                                 <option value="2" title="{{# str }} statusval2, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} statusval2, mod_flashcards {{/ str }}</option>
                             </select>
+                            {{/canedit}}
+                            {{^canedit}}
+                                {{checkicon.title}}
                             {{/canedit}}
                         </div>
                         <div class="col-xl-auto">

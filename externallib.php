@@ -386,6 +386,13 @@ class mod_flashcards_external extends external_api {
             return;
         }
 
+        list ($course, $cm) = get_course_and_cm_from_instance($params['flashcardsid'], 'flashcards');
+        $context = context_module::instance($cm->id);
+
+        if (!has_capability('mod/flashcards:editreview', $context)) {
+            return;
+        }
+
         $statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['flashcardsid']]);
 
         if ($statusrec === false) {

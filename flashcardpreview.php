@@ -53,6 +53,7 @@ $options->set_from_request();
 
 $params = array('id' => $question->id);
 $params['cmid'] = $context->instanceid;
+$params['fcid'] = $flashcardsid;
 
 $prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);
