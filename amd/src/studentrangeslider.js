@@ -5,7 +5,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
             var output = document.getElementById("mod-flashcards-range-slider-value");
             var progressbar = $("#mod-flashcards-range-progressbar");
             /**
-             * updates the progress bar
+             * update slider.
              */
             function updatebar() {
                 let barwidth = ((output.value - 1) * 100) / (slidermax - 1);
