@@ -176,7 +176,8 @@ class studentviewtable extends table_sql {
      * @return string
      */
     public function col_select($values) {
-        return html_writer::tag('input', null, ['class' => 'mod-flashcards-checkbox', 'data-value' => $values->id, 'type' => 'checkbox', 'autocomplete' => 'off']);
+        return html_writer::tag('input', null, ['class' => 'mod-flashcards-checkbox', 'data-value' => $values->id, 'name' => 'selectbox',
+                    'type' => 'checkbox', 'autocomplete' => 'off', 'onChange' => '$.mod_flashcards_selected()']);
     }
 
     /**

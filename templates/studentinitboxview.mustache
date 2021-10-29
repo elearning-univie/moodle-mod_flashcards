@@ -39,6 +39,11 @@
 </form>
 {{#cbvis}}
 <div class="mod-flashcards btn-div">
+    <button class="btn btn-secondary" onclick="window.location.href = '{{backtooverviewlink}}';">{{# str }} backtooverviewbutton, mod_flashcards {{/ str }}</button>
     <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
 </div>
+<div class="alert alert-info alert-block fade in " role="alert" data-aria-autofocus="true">
+    {{# str }} studentquestioninitinfo, mod_flashcards {{/ str }}
+</div>
+
 {{/cbvis}}
