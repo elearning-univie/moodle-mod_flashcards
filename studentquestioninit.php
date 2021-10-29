@@ -131,9 +131,12 @@ $notadded = $DB->count_records_sql($sql, ['fcid' => $flashcards->id] + $imported
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
+$returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
+
 $renderer = $PAGE->get_renderer('core');
 
 $templateinfo = ['createbtnlink' => $link->out(false),
+    'backtooverviewlink' => $returnurl->out(false),
     'id' => $id,
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
@@ -165,11 +168,11 @@ echo $OUTPUT->tabtree($tabs, $tab);
 
 if ($equalparam) {
     $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'onClick' => $addlink]);
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink,  'disabled' => '']);
     echo get_string('removeflashcardbutton', 'mod_flashcards');
 } else {
     $addlink = '$.mod_flashcards_init_questions('.$flashcards->id . ')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'onClick' => $addlink]);
+    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink, 'disabled' => '']);
     echo get_string('addflashcardbutton', 'mod_flashcards');
 }
 echo html_writer::end_tag('button');

@@ -39,8 +39,23 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     }]);
                 }
             };
+            $.mod_flashcards_selected = function () {
+                var checkboxes = document.getElementsByName('selectbox');
+                var checkboxesChecked = [];
+                for (var i=0; i<checkboxes.length; i++) {
+                   if (checkboxes[i].checked) {
+                      checkboxesChecked.push(checkboxes[i]);
+                   }
+                }
+                if(checkboxesChecked.length > 0){
+                    document.getElementById("maintanancebtn").disabled = false;
+                } else{
+                    document.getElementById("maintanancebtn").disabled = true;
+                }
+            };
             $.mod_flashcards_select_all = function (selected) {
                 $('input:checkbox').not(selected).prop('checked', selected.checked);
+                this.mod_flashcards_selected();
             };
         }
     };
