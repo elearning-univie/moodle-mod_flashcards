@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die;
  * @return boolean
  */
 function xmldb_flashcards_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
 
@@ -131,6 +131,39 @@ function xmldb_flashcards_upgrade($oldversion) {
         // Conditionally launch create table for flashcards_q_status.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
+        }
+
+        $flashcards = $DB->get_records('flashcards');
+
+        foreach ($flashcards as $flashcard) {
+            if ($flashcard->inclsubcats) {
+                require_once($CFG->dirroot . '/lib/questionlib.php');
+                $qcategories = question_categorylist($flashcard->categoryid);
+            } else {
+                $qcategories = $flashcard->categoryid;
+            }
+
+            list($sqlwhere, $qcategories) = $DB->get_in_or_equal($qcategories);
+            $sqlwhere = "category $sqlwhere";
+            $sql = "SELECT id, createdby
+                      FROM {question}
+                     WHERE $sqlwhere
+                       AND qtype = 'flashcard'";
+
+            $questions = $DB->get_records_sql($sql, $qcategories);
+            $context = context_module::instance($flashcard->course);
+
+            foreach ($questions as $q) {
+                $sql = "SELECT id
+                          FROM {flashcards_q_status}
+                         WHERE questionid = :questionid
+                           AND fcid = :fcid";
+
+                if (!$DB->record_exists_sql($sql, ['questionid' => $q->id, 'fcid' => $flashcard->id])) {
+                    $teachercheck = has_capability('mod/flashcards:editallquestions', $context, $q->createdby) ? 1 : 0;
+                    $DB->insert_record('flashcards_q_status', ['questionid' => $q->id, 'fcid' => $flashcard->id, 'teachercheck' => $teachercheck]);
+                }
+            }
         }
 
         // Flashcards savepoint reached.
