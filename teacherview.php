@@ -110,7 +110,7 @@ if (!$DB->record_exists("question_categories", array('id' => $flashcards->catego
 
 $sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'";
 
-$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards->id, FLASHCARDS_AUTHOR_NAME);
+$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
 
 $table->set_sql('q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck',
         "{question} q JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere);
