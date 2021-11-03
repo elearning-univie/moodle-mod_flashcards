@@ -25,10 +25,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $observers = array(
     array(
-        'eventname'   => '\core\event\question_updated',
-        'callback'    => '\mod_flashcards\event\teacherquestionedit_observer::question_updated',
-    ),
-    array(
         'eventname'   => '\mod_flashcards\event\simplequestion_updated',
         'callback'    => '\mod_flashcards\event\simplequestionform_observer::simplequestion_updated',
     ),

@@ -58,10 +58,13 @@ class simplequestionform_observer {
                  FROM {flashcards_q_stud_rel}
                  WHERE questionid =:questionid";
             $records = $DB->get_fieldset_sql($sql, ['questionid' => $event->objectid]);
-            list($insql, $inparam) = $DB->get_in_or_equal($records, SQL_PARAMS_NAMED, 'id');
-            $sql = "DELETE FROM {flashcards_q_stud_rel}
-                 WHERE id $insql ";
-            $DB->execute($sql, $inparam);
+
+            if ($records) {
+                list($insql, $inparam) = $DB->get_in_or_equal($records, SQL_PARAMS_NAMED, 'id');
+                $sql = "DELETE FROM {flashcards_q_stud_rel}
+                     WHERE id $insql ";
+                $DB->execute($sql, $inparam);
+            }
         }
     }
     /**

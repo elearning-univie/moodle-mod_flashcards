@@ -75,16 +75,18 @@ class teacherviewtable extends table_sql {
      * @param int $uniqueid
      * @param int $cmid
      * @param int $courseid
-     * @param int $fcid
+     * @param object $fcobj
      * @param string $authordisplay
+     * @param string $callbackurl
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcid, $authordisplay) {
+    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $authordisplay, $callbackurl) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
         $this->courseid = $courseid;
-        $this->fcid = $fcid;
-        $this->editreturnurl = '/mod/flashcards/teacherview.php?cmid=' . $cmid;
+        $this->fcid = $fcobj->id;
+        $this->fcobj = $fcobj;
+        $this->editreturnurl = $callbackurl;
         $this->authors = array();
         $this->authordisplay = $authordisplay;
         $this->context = \context_module::instance($cmid);
@@ -220,8 +222,8 @@ class teacherviewtable extends table_sql {
     public function col_edit($values) {
         global $OUTPUT;
 
-        $eurl = new moodle_url('/question/question.php',
-            array('returnurl' => $this->editreturnurl, 'courseid' => $this->courseid, 'id' => $values->id, 'cmid' => $this->cmid));
+        $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id, 'origin' => $this->editreturnurl));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }

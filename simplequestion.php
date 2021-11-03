@@ -77,9 +77,6 @@ if ($id) {
     // require_login above. Passing it as the third parameter tells the function
     // to filter the course tags by that course.
     get_question_options($question, true, [$COURSE]);
-    if ($question->category != $categoryid) {
-        print_error('errornotallowedonpage');
-    }
 } else if ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
@@ -125,38 +122,27 @@ if ($mform->is_cancelled()) {
     $questioncopy->answer = $fromform->answer;
 
     $question = $qtypeobj->save_question($question, $questioncopy);
-    $changeextent = 0;
-
-    if ($action == 'edit') {
-        $changeextent = $fromform->changeextent;
-    } else if ($action == 'create') {
-        $fcid = $DB->get_field('course_modules', 'instance', ['id' => $cmid]);
-        $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $fcid, 'teachercheck' => 0]);
-    }
-
-    $resetinfo = array (
-        'objectid' => $question->id,
-        'context' => context_module::instance( $cm->id ),
-        'other' => array (
-            'changeextent' => $changeextent,
-            'fcid' => $fcid,
-            'userid' => $USER->id
-        )
-    );
-    $event = \mod_flashcards\event\simplequestion_updated::create($resetinfo);
-    $event->trigger();
 
     $params = array (
         'objectid' => $question->id,
-        'context' => context_module::instance( $cm->id ),
-        'other' => array (
-            'changeextent' => $changeextent,
-            'fcid' => $fcid
-        )
+        'context' => context_module::instance( $cm->id )
     );
-    $event = \mod_flashcards\event\simplequestion_created::create($params);
-    $event->trigger();
-
+    if ($action == 'create') {
+        $params['other'] = array (
+            'changeextent' => 0,
+            'fcid' => $fcid
+        );
+        $event = \mod_flashcards\event\simplequestion_created::create($params);
+        $event->trigger();
+    } else {
+        $params['other'] = array (
+            'changeextent' => $fromform->changeextent,
+            'fcid' => $fcid,
+            'userid' => $USER->id
+        );
+        $event = \mod_flashcards\event\simplequestion_updated::create($params);
+        $event->trigger();
+    }
     question_bank::notify_question_edited($question->id);
 
     if ($qtypeobj->finished_edit_wizard($fromform)) {
