@@ -43,7 +43,7 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
 
         $paths = array();
         $paths[] = new restore_path_element('flashcards', '/activity/flashcards');
-
+        $paths[] = new restore_path_element('flashcards_q_status', '/activity/flashcards/flashcards_q_status');
         return $this->prepare_activity_structure($paths);
     }
 
@@ -64,6 +64,24 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
 
         $newitemid = $DB->insert_record('flashcards', $data);
         $this->apply_activity_instance($newitemid);
+    }
+
+    /**
+     * Process_flashcards_q_status
+     *
+     * @param array $data parsed element data
+     */
+    protected function process_flashcards_q_status($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $data->fcid = $this->get_new_parentid('flashcards');
+        $questionmapping = $this->get_mapping('question', $data->questionid);
+        $data->questionid = $questionmapping ? $questionmapping->newitemid : $data->questionid;
+
+        $data->timemodified = time();
+
+        $DB->insert_record('flashcards_q_status', $data);
     }
 
 
