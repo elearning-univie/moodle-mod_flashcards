@@ -99,10 +99,12 @@ class teacherviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
-        $columns = array('name', 'teachercheck', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        $columns = array('name', 'teachercheck', 'up', 'sep', 'down', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
-        $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('up', 'flashcards_up');
+        $this->column_class('sep', 'flashcards_sep');
+        $this->column_class('down', 'flashcards_down');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
@@ -113,7 +115,9 @@ class teacherviewtable extends table_sql {
         $headers = array(
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
-            get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+            get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
+            get_string('sepcolumn', 'mod_flashcards'),
+            get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
@@ -125,6 +129,8 @@ class teacherviewtable extends table_sql {
         $helpforheaders = array(
             null,
             new \help_icon('teachercheck', 'mod_flashcards'),
+            null,
+            null,
             new \help_icon('peerreview', 'mod_flashcards'),
             null,
             null,
@@ -140,6 +146,7 @@ class teacherviewtable extends table_sql {
 
         $this->no_sorting('peerreview');
         $this->no_sorting('edit');
+        $this->no_sorting('sep');
         $this->no_sorting('preview');
         $this->no_sorting('delete');
     }
@@ -187,20 +194,14 @@ class teacherviewtable extends table_sql {
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
-    /**
-     * Prepares column peerreview for display
-     *
-     * @param object $values
-     * @return string
-     */
-    public function col_peerreview($values) {
-
-        $peervalues = mod_flashcard_peer_review_info_overview($values->id, $this->fcid);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
-
-        return html_writer::link($qurl, $peervalues,
-                ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
-
+        /**
+         * Prepares column sep for display
+         *
+         * @param object $values
+         * @return string
+         */
+    public function col_sep($values) {
+        return "/";
     }
 
     /**
