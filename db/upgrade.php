@@ -151,7 +151,8 @@ function xmldb_flashcards_upgrade($oldversion) {
                        AND qtype = 'flashcard'";
 
             $questions = $DB->get_records_sql($sql, $qcategories);
-            $context = context_module::instance($flashcard->course);
+            $cmid = $DB->get_field('course_modules', 'id', ['instance' => $flashcard->id, 'course' => $flashcard->course]);
+            $context = context_module::instance($cmid);
 
             foreach ($questions as $q) {
                 $sql = "SELECT id
