@@ -118,7 +118,6 @@ $string['noquestion'] = 'No question could be found.';
 $string['opencardnumber'] = 'Open: {{count}} Cards';
 $string['pagesize'] = 'Questions shown per page';
 $string['pagetitle'] = 'Moodle Flashcard';
-$string['peerreviewtableheader'] = 'Peer review {$a->thumbsup} / {$a->thumbsdown}';
 $string['peerreviewtableheaderup'] = 'Peer review {$a->thumbsup}';
 $string['peerreviewtableheaderdown'] = '{$a->thumbsdown}';
 $string['peerreview'] = 'Peer review';
