@@ -117,7 +117,6 @@ $string['noquestion'] = 'Es konnte keine Frage gefunden werden.';
 $string['opencardnumber'] = 'Offen: {{count}} Karten';
 $string['pagesize'] = 'Fragen pro Seite';
 $string['pagetitle'] = 'Moodle Lernkartei';
-$string['peerreviewtableheader'] = 'Peer-Review {$a->thumbsup} / {$a->thumbsdown}';
 $string['peerreviewtableheaderup'] = 'Peer Review {$a->thumbsup}';
 $string['peerreviewtableheaderdown'] = '{$a->thumbsdown}';
 $string['peerreview'] = 'Peer-Review';

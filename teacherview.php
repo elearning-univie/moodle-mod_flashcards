@@ -113,8 +113,8 @@ $sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'";
 $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
 
 $table->set_sql("q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) up,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) down",
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) downvotes",
         "{question} q JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere);
 
 $table->define_baseurl($PAGE->url);

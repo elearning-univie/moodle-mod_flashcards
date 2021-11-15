@@ -28,28 +28,32 @@ th.flashcards_teacherview_tc {
     white-space: nowrap;
     text-align: center;
 }
-#page-mod-flashcards-teacherview .generaltable th.flashcards_up {
+#page-mod-flashcards-teacherview .generaltable th.flashcards_up,
+#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_up {
     width: 11%;
     text-align: right;
     margin-right: 0px;
     padding-right: 0em;
 }
 
-#page-mod-flashcards-teacherview .generaltable th.flashcards_down {
+#page-mod-flashcards-teacherview .generaltable th.flashcards_down,
+#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_down {
     width: 8%;
     text-align: left;
     margin-left: 0px;
     padding-left: 0em;
 }
 
-#page-mod-flashcards-teacherview .generaltable td.flashcards_up {
+#page-mod-flashcards-teacherview .generaltable td.flashcards_up,
+#page-mod-flashcards-studentquestioninit .generaltable td.flashcards_up {
     width: 11%;
     text-align: right;
     margin-right: 0px;
     padding-right: 0em;
 }
 
-#page-mod-flashcards-teacherview .generaltable td.flashcards_down {
+#page-mod-flashcards-teacherview .generaltable td.flashcards_down,
+#page-mod-flashcards-studentquestioninit td.flashcards_down {
     width: 8%;
     text-align: left;
     margin-left: 0px;

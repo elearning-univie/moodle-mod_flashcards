@@ -115,7 +115,9 @@ list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PAR
 $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
-$table->set_sql('q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck',
+$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) downvotes",
     "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
                       LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.flashcardsid = fcs.fcid AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);

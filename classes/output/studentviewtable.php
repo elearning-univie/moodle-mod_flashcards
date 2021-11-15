@@ -93,13 +93,15 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        $columns = array('select', 'name', 'teachercheck', 'currentbox', 'peerreview', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        $columns = array('select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
 
         $this->define_columns($columns);
         $this->column_class('currentbox', 'flashcards_studentview_tc');
         $this->column_class('select', 'flashcards_teacherview_ec');
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
-        $this->column_class('peerreview', 'flashcards_studentview_tc');
+        $this->column_class('upvotes', 'flashcards_up');
+        $this->column_class('sep', 'flashcards_sep');
+        $this->column_class('downvotes', 'flashcards_down');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
@@ -115,7 +117,9 @@ class studentviewtable extends table_sql {
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('box', 'mod_flashcards'),
-            get_string('peerreviewtableheader', 'mod_flashcards', ['thumbsup' => $thumbsup, 'thumbsdown' => $thumbsdown]),
+            get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
+            get_string('sepcolumn', 'mod_flashcards'),
+            get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
@@ -127,6 +131,8 @@ class studentviewtable extends table_sql {
             null,
             null,
             new \help_icon('teachercheck', 'mod_flashcards'),
+            null,
+            null,
             null,
             new \help_icon('peerreview', 'mod_flashcards'),
             null,
@@ -154,6 +160,7 @@ class studentviewtable extends table_sql {
         $this->no_sorting('select');
         $this->no_sorting('peerreview');
         $this->no_sorting('edit');
+        $this->no_sorting('sep');
         $this->no_sorting('preview');
         $this->no_sorting('delete');
     }
@@ -191,16 +198,13 @@ class studentviewtable extends table_sql {
     }
 
     /**
-     * Prepares column peerreview for display
+     * Prepares column sep for display
      *
      * @param object $values
      * @return string
      */
-    public function col_peerreview($values) {
-        $peervalues = mod_flashcard_peer_review_info_overview($values->id, $this->fcobj->id);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id));
-        return html_writer::link($qurl, $peervalues,
-            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+    public function col_sep($values) {
+        return "/";
     }
 
     /**

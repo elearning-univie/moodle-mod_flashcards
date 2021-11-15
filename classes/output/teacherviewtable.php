@@ -99,12 +99,12 @@ class teacherviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
-        $columns = array('name', 'teachercheck', 'up', 'sep', 'down', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
-        $this->column_class('up', 'flashcards_up');
+        $this->column_class('upvotes', 'flashcards_up');
         $this->column_class('sep', 'flashcards_sep');
-        $this->column_class('down', 'flashcards_down');
+        $this->column_class('downvotes', 'flashcards_down');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
