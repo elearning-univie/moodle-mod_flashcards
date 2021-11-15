@@ -353,6 +353,7 @@ class mod_flashcards_external extends external_api {
                   FROM {flashcards_q_stud_rel}
                  WHERE studentid = :userid
                    AND flashcardsid = :fid
+                   AND currentbox <> 0
               ORDER BY currentbox, lastanswered";
 
         $questionids = $DB->get_fieldset_sql($sql, ['userid' => $USER->id, 'fid' => $params['flashcardsid']]);
