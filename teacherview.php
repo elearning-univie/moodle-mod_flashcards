@@ -28,6 +28,7 @@ require_once('locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG;
 
 $cmid = required_param('cmid', PARAM_INT);
+$fcid = optional_param('fcid', null, PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
@@ -79,23 +80,18 @@ if ($deleteselected) {
         $questionid = $deleteselected;
         question_require_capability_on($questionid, 'edit');
 
-        if (questions_in_use(array($questionid))) {
-            $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
-        } else {
-            question_delete_question($questionid);
-        }
-        $DB->delete_records('flashcards_q_stud_rel', ['questionid' => $questionid]);
-        $DB->delete_records('flashcards_q_status', ['questionid' => $questionid]);
+        $DB->delete_records('flashcards_q_stud_rel', ['questionid' => $questionid, 'flashcardsid' => $fcid]);
+        $DB->delete_records('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $fcid]);
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/flashcards/teacherview.php',
-                array('cmid' => $cmid, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+            array('cmid' => $cmid, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected), 'fcid' => $fcid));
 
-        $continue = new \single_button($deleteurl, get_string('delete'), 'post');
+        $continue = new \single_button($deleteurl, get_string('removeflashcard', 'mod_flashcards'), 'post');
         $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
 
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('deletequestionscheck', 'question', $questionname), $continue, $PAGE->url);
+        echo $OUTPUT->confirm(get_string('removeflashcadcheck', 'mod_flashcards', $questionname), $continue, $PAGE->url);
         echo $OUTPUT->footer();
         die();
     }

@@ -17,9 +17,16 @@
     margin-left: 5px;
 }
 
+th.flashcards_studentview_dr,
+th.flashcards_teacherview_dr {
+    width: 5%;
+    text-align: center;
+}
+
 th.flashcards_studentview_ec,
 th.flashcards_teacherview_ec {
     width: 2%;
+    text-align: center;
 }
 
 th.flashcards_studentview_tc,
@@ -72,10 +79,22 @@ th.flashcards_studentview_all {
     width: 9em;
 }
 
+td.flashcards_studentview_dr,
+td.flashcards_teacherview_dr {
+    width: 5%;
+    text-align: center;
+}
+
 td.flashcards_studentview_tc,
 td.flashcards_teacherview_tc {
     width: 6%;
     white-space: nowrap;
+    text-align: center;
+}
+
+td.flashcards_studentview_ec,
+td.flashcards_teacherview_ec {
+    width: 2%;
     text-align: center;
 }
 
