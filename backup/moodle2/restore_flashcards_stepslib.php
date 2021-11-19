@@ -62,10 +62,12 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
             $data->timemodified = time();
         }
 
-        $data->categoryid = $this->get_mappingid('question_category', $data->categoryid);
+        if ($mappedcat = $this->get_mappingid('question_category', $data->categoryid)) {
+            $data->categoryid = $mappedcat;
+        }
 
-        if (!empty($data->studentsubcat)) {
-            $data->studentsubcat = $this->get_mappingid('question_category', $data->studentsubcat);
+        if (!empty($data->studentsubcat) && ($mappedstudcat = $this->get_mappingid('question_category', $data->studentsubcat))) {
+            $data->studentsubcat = $mappedstudcat;
         }
 
         $newitemid = $DB->insert_record('flashcards', $data);
