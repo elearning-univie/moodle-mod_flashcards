@@ -106,7 +106,7 @@ class studentviewtable extends table_sql {
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
-        $this->column_class('delete', 'flashcards_teacherview_ec');
+        $this->column_class('delete', 'flashcards_teacherview_dr');
 
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
@@ -139,7 +139,7 @@ class studentviewtable extends table_sql {
             null,
             null,
             null,
-            null);
+            new \help_icon('deleteflashcardinfo', 'mod_flashcards'));
 
         $sortcolumn = 'timemodified';
         $ascdesc = SORT_DESC;

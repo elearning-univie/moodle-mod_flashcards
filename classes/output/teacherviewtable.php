@@ -92,14 +92,14 @@ class teacherviewtable extends table_sql {
         $this->context = \context_module::instance($cmid);
 
         $this->editicontext = get_string('edit', 'moodle');
-        $this->deleteicontext = get_string('delete', 'moodle');
+        $this->deleteicontext = get_string('removeflashcard', 'mod_flashcards');
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
 
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
-        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'remove');
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('upvotes', 'flashcards_up');
@@ -109,7 +109,7 @@ class teacherviewtable extends table_sql {
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
-        $this->column_class('delete', 'flashcards_teacherview_ec');
+        $this->column_class('remove', 'flashcards_teacherview_dr');
 
         // Define the titles of columns to show in header.
         $headers = array(
@@ -122,7 +122,7 @@ class teacherviewtable extends table_sql {
             get_string('timemodified', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
-            get_string('delete'));
+            get_string('removeflashcard', 'mod_flashcards'));
         $this->define_headers($headers);
 
         // Define help for columns teachercheck and peer review.
@@ -136,7 +136,7 @@ class teacherviewtable extends table_sql {
             null,
             null,
             null,
-            null);
+            new \help_icon('removeflashcardinfo', 'mod_flashcards'));
         $this->define_help_for_headers($helpforheaders);
 
         $this->collapsible(false);
@@ -148,7 +148,7 @@ class teacherviewtable extends table_sql {
         $this->no_sorting('edit');
         $this->no_sorting('sep');
         $this->no_sorting('preview');
-        $this->no_sorting('delete');
+        $this->no_sorting('remove');
     }
 
     /**
@@ -250,12 +250,13 @@ class teacherviewtable extends table_sql {
      * @param object $values
      * @return string
      */
-    public function col_delete($values) {
+    public function col_remove($values) {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/flashcards/teacherview.php',
-                array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true));
+            array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true, 'fcid' => $this->fcid));
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }
+
 }
