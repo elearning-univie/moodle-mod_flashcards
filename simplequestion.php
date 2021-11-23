@@ -18,7 +18,7 @@
  * Page where students can create flashcards
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -133,7 +133,6 @@ if ($mform->is_cancelled()) {
             'fcid' => $fcid
         );
         $event = \mod_flashcards\event\simplequestion_created::create($params);
-        $event->trigger();
     } else {
         $params['other'] = array (
             'changeextent' => $fromform->changeextent,
@@ -141,8 +140,8 @@ if ($mform->is_cancelled()) {
             'userid' => $USER->id
         );
         $event = \mod_flashcards\event\simplequestion_updated::create($params);
-        $event->trigger();
     }
+    $event->trigger();
     question_bank::notify_question_edited($question->id);
 
     if ($qtypeobj->finished_edit_wizard($fromform)) {

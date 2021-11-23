@@ -18,7 +18,7 @@
  * Initial load of questions for flashcards
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
@@ -32,13 +32,13 @@ $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $tab = optional_param('tab', 'notadded', PARAM_ALPHAEXT);
 
-$params = array();
-$params['id'] = $id;
-$params['tab'] = $tab;
-
 if (!in_array($perpage, [10, 20, 50, 100], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
+
+$params = array();
+$params['id'] = $id;
+$params['tab'] = $tab;
 $params['perpage'] = $perpage;
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -51,8 +51,7 @@ if ($node) {
     $node->make_active();
 }
 
-$pagetitle = get_string('pagetitle', 'flashcards');
-$PAGE->set_title($pagetitle);
+$PAGE->set_title(get_string('pagetitle', 'flashcards'));
 $PAGE->set_heading($course->fullname);
 
 if (!has_capability('mod/flashcards:studentview', $context)) {
@@ -114,7 +113,7 @@ $added = count($importedfcs);
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
 $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
-$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $course->id, $flashcards, $PAGE->url, $tab);
+$table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url, $tab);
 $table->set_sql("q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) downvotes",

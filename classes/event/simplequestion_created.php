@@ -18,7 +18,7 @@
  * The event class for the flashcard question type.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\event;

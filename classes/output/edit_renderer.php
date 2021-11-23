@@ -18,7 +18,7 @@
  * Renderer outputting the flashcards action menu.
  *
  * @package mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ use \html_writer;
 /**
  * Renderer outputting the quiz editing UI.
  *
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_renderer extends \plugin_renderer_base {

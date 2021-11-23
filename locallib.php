@@ -18,7 +18,7 @@
  * Private page module utility functions
  *
  * @package mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -103,18 +103,6 @@ function mod_flashcards_get_next_question($fid, $boxid) {
         // Return first element of array and remove it from the session array.
         return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
     }
-}
-
-/**
- * Deletes records from flashcards_q_stud_rel when the question got deleted
- * @throws dml_exception
- */
-function mod_flashcards_check_for_orphan_or_hidden_questions() {
-    global $USER, $DB;
-
-    $sql = "questionid NOT IN (SELECT id FROM {question} WHERE hidden = 0) AND studentid = :userid";
-
-    $DB->delete_records_select('flashcards_q_stud_rel', $sql, array('userid' => $USER->id));
 }
 
 /**
@@ -350,7 +338,7 @@ function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
  * @param int $fcid
  * @return int
  */
-function mod_flashcard_get_peer_review_vote(int $questionid, int $fcid) {
+function mod_flashcard_get_peer_review_vote_user(int $questionid, int $fcid) {
     global $DB, $USER;
 
     $sql = "SELECT peerreview
@@ -393,21 +381,6 @@ function mod_flashcard_get_peer_review_votes(int $questionid, int $fcid, bool $u
     $votes = $DB->count_records_sql($sql, $params);
 
     return $votes;
-}
-
-/**
- * Returns the peer review information displayed int the student/teacher overview list.
- *
- * @param int $questionid
- * @param int $fcid
- * @return string
- */
-function mod_flashcard_peer_review_info_overview(int $questionid, int $fcid) {
-
-    $noup = mod_flashcard_get_peer_review_votes($questionid, $fcid, true);
-    $nodown = mod_flashcard_get_peer_review_votes($questionid, $fcid, false);
-
-    return $noup.'/'.$nodown;
 }
 
 /**
@@ -471,12 +444,11 @@ function mod_flashcards_question_tostring($question, $showicon = false, $showque
  *
  * @param int $questionid The id of the question to be added
  * @param int $flashcardsid The id of the flashcard collection
- * @param int $page Which page to add the question on. If 0 (default), add at the end
  * @return bool false if the question was already in the collection
  * @throws dml_exception
  * @throws dml_transaction_exception
  */
-function mod_flashcards_add_question($questionid, $flashcardsid, $page = 0) {
+function mod_flashcards_add_question($questionid, $flashcardsid) {
     global $DB;
 
     if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
@@ -486,23 +458,6 @@ function mod_flashcards_add_question($questionid, $flashcardsid, $page = 0) {
     $trans = $DB->start_delegated_transaction();
     $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
     $trans->allow_commit();
-}
-
-/**
- * Deletethe status of a question to a flashcard collection
- *
- * @param int $questionid The id of the question to be added
- * @param int $flashcardsid The id of the flashcard collection
- * @throws dml_exception
- * @throws dml_transaction_exception
- */
-function mod_flashcards_delete_question_q_status($questionid, $flashcardsid) {
-    global $DB;
-
-    $record = $DB->get_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid]);
-    if ($record) {
-        return $DB->delete_records('flashcards_q_status', ['id' => $record->id]);
-    }
 }
 
 /**

@@ -18,7 +18,7 @@
  * Form for creating flashcards with less information to fill out
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\form;
@@ -31,7 +31,7 @@ require_once($CFG->libdir . '/formslib.php');
 /**
  * Flashcard form definition with less information.
  *
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class simplequestionform extends \moodleform {

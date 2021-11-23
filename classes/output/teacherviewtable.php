@@ -18,7 +18,7 @@
  * Table class for displaying the flashcard list of an activity for a teacher.
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\output;
@@ -34,7 +34,7 @@ use html_writer;
 /**
  * Table class for displaying the flashcard list of an activity for a teacher.
  *
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class teacherviewtable extends table_sql {
@@ -63,9 +63,6 @@ class teacherviewtable extends table_sql {
     /** @var array array to save previously looked up authors */
     private $authors;
 
-    /** @var string setting for how to display the author name in the list */
-    private $authordisplay;
-
     /** @var object course module context */
     private $context;
 
@@ -74,21 +71,17 @@ class teacherviewtable extends table_sql {
      *
      * @param int $uniqueid
      * @param int $cmid
-     * @param int $courseid
      * @param object $fcobj
-     * @param string $authordisplay
      * @param string $callbackurl
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $authordisplay, $callbackurl) {
+    public function __construct($uniqueid, $cmid, $fcobj, $callbackurl) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
-        $this->courseid = $courseid;
+        $this->courseid = $fcobj->course;
         $this->fcid = $fcobj->id;
-        $this->fcobj = $fcobj;
         $this->editreturnurl = $callbackurl;
         $this->authors = array();
-        $this->authordisplay = $authordisplay;
         $this->context = \context_module::instance($cmid);
 
         $this->editicontext = get_string('edit', 'moodle');
@@ -116,7 +109,7 @@ class teacherviewtable extends table_sql {
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
-            get_string('sepcolumn', 'mod_flashcards'),
+            "/",
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
@@ -170,7 +163,7 @@ class teacherviewtable extends table_sql {
      */
     public function col_createdby($values) {
         if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, $this->authordisplay);
+            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
             $this->authors[$values->createdby] = $author;
         } else {
             $author = $this->authors[$values->createdby];
@@ -224,7 +217,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id, 'origin' => $this->editreturnurl));
+            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid, 'origin' => $this->editreturnurl));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }

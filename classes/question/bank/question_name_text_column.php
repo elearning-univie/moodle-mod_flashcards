@@ -18,7 +18,7 @@
  * A column type for the name followed by the start of the question text.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
  * A column type for the name followed by the start of the question text.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class question_name_text_column extends \core_question\bank\question_name_column {
@@ -48,7 +48,6 @@ class question_name_text_column extends \core_question\bank\question_name_column
      * @param string $rowclasses
      */
     protected function display_content($question, $rowclasses) {
-        // echo '<div>';
         if ($this->qbank->flashcards_contains($question->id)) {
             $class = 'greyed';
         }

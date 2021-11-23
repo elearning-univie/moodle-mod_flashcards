@@ -95,7 +95,7 @@
                         {{# str }} showapp, mod_flashcards {{/ str }}{{# pix }} i/breadcrumbdivider, moodle {{/ pix }}
                     </div>
                 </div>
-                <div class="mt-auto text-white progress mod-flashcards-progress-bar rounded-0">
+                <div class="mt-auto text-white progress progress-bar rounded-0">
                     <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
                         aria-valuenow="{{stats.boxzeroquestioncount}}" aria-valuemin="0" aria-valuemax="{{stats.totalquestioncount}}" 
                         style="width: {{stats.usedquestionspercentage}}%">
@@ -116,7 +116,7 @@
                         </strong>
                     </h5>
                 </div>
-                <a href="{{{selectquestionsurl}}}" role="button" class="mod-flashcards-button-action-bottom btn btn-primary btn-block rounded-bottom mt-1">
+                <a href="{{{selectquestionsurl}}}" role="button" class="button-action-bottom btn btn-primary btn-block rounded-bottom mt-1">
                     <span class="btn-label"><i class="fa fa-cogs"></i></span>
                     {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
                 </a>
@@ -155,14 +155,14 @@
         {{#boxes}}
             <div class="col py-2 lg-2">
                 <div class="card h-100 rounded border">
-                    <img class="card-img mod-flashcards-box-bg my-auto p-5" src="{{boxbackgroundurl}}" alt="{{# str }} boxbackgroundalt, mod_flashcards {{/ str }}">
+                    <img class="card-img box-bg my-auto p-5" src="{{boxbackgroundurl}}" alt="{{# str }} boxbackgroundalt, mod_flashcards {{/ str }}">
                     <div class="card-img-overlay d-flex flex-column p-0">
                         <div class="row mx-0">
                             <div class="col-10 py-2">
                                 <h2 class="box-title">
                                     {{boxheader}}
                                 </h2>
-                                <img class="mod-flashcards-box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
+                                <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
                             </div>
                             <div class="col">
                                 <div style="background-color: {{boxnumbercolor}};"
@@ -171,7 +171,7 @@
                             </div>
                         </div>
                         <div class="mt-auto">
-                            <div class="row mx-0 mb-1 text-white progress mod-flashcards-progress-bar rounded-0">
+                            <div class="row mx-0 mb-1 text-white progress progress-bar rounded-0">
                                 <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
                                     aria-valuenow="{{advancedquestionpercent}}" aria-valuemin="0" aria-valuemax="100" style="width: {{advancedquestionpercent}}%">
                                 </div>
@@ -187,7 +187,7 @@
                                 </h5>
                             </div>
                             <div class="row mx-0">
-                                <a href="{{{redirecturl}}}" role="button" class="mod-flashcards-button-action-bottom {{^cardsavailable}}disabled{{/cardsavailable}} btn btn-primary btn-block">
+                                <a href="{{{redirecturl}}}" role="button" class="button-action-bottom {{^cardsavailable}}disabled{{/cardsavailable}} btn btn-primary btn-block">
                                     <span class="btn-label" style="overflow: visible;"><i class="fa fa-play"></i>
                                         {{#cardsavailable}}
                                             {{# str }} learnboxbutton, mod_flashcards, {{boxindex}} {{/ str }}
@@ -220,7 +220,7 @@
                                        min="1" max="{{stats.usedquestioncount}}"/>
                             </div>
                             <div class="col m-0 p-0">
-                                <div class="progress mod-flashcards-progress-bar rounded-0">
+                                <div class="progress progress-bar rounded-0">
                                     <div id="mod-flashcards-range-progressbar" class="progress-bar progress-bar-striped rounded-0" role="progressbar"></div>
                                     <input class="justify-content-center align-self-center d-flex position-absolute w-100" id="mod-flashcards-range-slider" type="range" min="1" step="1" max="{{stats.usedquestioncount}}" value="{{stats.halfusedquestioncount}}"/>
                                 </div>
@@ -241,7 +241,7 @@
                     </div>
                 {{/stats.cardsavailable}}
                 {{^stats.selectedcardsavailable}}
-                    <a href="{{{selectquestionsurl}}}"  role="button" class="mod-flashcards-button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
+                    <a href="{{{selectquestionsurl}}}"  role="button" class="button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
                         <span class="btn-label"><i class="fa fa-cogs"></i></span>
                         {{# str }} customizedeckbutton, mod_flashcards {{/ str }}
                     </a>

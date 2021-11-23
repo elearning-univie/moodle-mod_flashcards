@@ -18,7 +18,7 @@
  * Defines the custom question bank view used on the Edit quiz page.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ use coding_exception;
  * Subclass to customise the view of the question bank for the quiz editing screen.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_view extends \core_question\bank\view {

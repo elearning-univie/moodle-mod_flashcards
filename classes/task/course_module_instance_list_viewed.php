@@ -18,7 +18,7 @@
  * The mod_flashcards instance list viewed event.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * The mod_flashcards instance list viewed event class.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed

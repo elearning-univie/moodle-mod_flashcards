@@ -18,7 +18,7 @@
  * The questiontype class for the flashcard question type.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\event;
@@ -61,9 +61,7 @@ class simplequestionform_observer {
 
             if ($records) {
                 list($insql, $inparam) = $DB->get_in_or_equal($records, SQL_PARAMS_NAMED, 'id');
-                $sql = "DELETE FROM {flashcards_q_stud_rel}
-                     WHERE id $insql ";
-                $DB->execute($sql, $inparam);
+                $DB->delete_records_select('flashcards_q_stud_rel', "id $insql", $inparam);
             }
         }
     }

@@ -19,7 +19,7 @@
  *
  * @package       mod_flashcards
  * @author        Thomas Wedekind <Thomas.Wedekind@univie.ac.at
- * @copyright     2020 University of Vienna
+ * @copyright     2021 University of Vienna
  * @since         Moodle 3.10
  * @license       http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

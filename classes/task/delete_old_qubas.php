@@ -18,7 +18,7 @@
  * Task to cleanup old question previews.
  *
  * @package    mod_flashcards
- * @copyright  2013 onwards Martin Dougiamas  http://dougiamas.com
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\task;
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * A task to cleanup old unused qubas.
  *
- * @copyright  2013 onwards Martin Dougiamas  http://dougiamas.com
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class delete_old_qubas extends \core\task\scheduled_task {

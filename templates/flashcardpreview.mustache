@@ -43,8 +43,8 @@
                     <input type="hidden" name="slots" value="{{slot}}"/>
                     <input type="hidden" name="scrollpos" value="" id="scrollpos"/>
                 </div>
-                <div class ="mod-flashcards-formulation clearfix">
-                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-{{qaid}}">
+                <div class ="formulation clearfix">
+                    <div class="blue-box" id="mod-flashcards-showhidecontainer-{{qaid}}">
                         <div class="qflashcard-flipper d-flex flex-column">
                             <div class="qtext qflashcard-question align-self-stretch">
                                 <h4> {{# str }} question {{/ str }} </h4>
@@ -61,8 +61,8 @@
                     </div>
                  </div>   
                 
-                 <div class ="mod-flashcards-formulation clearfix">
-                    <div class="mod-flashcards-blue-box" id="mod-flashcards-showhidecontainer-answer-{{qaid}}" style="display: none;">
+                 <div class ="formulation clearfix">
+                    <div class="blue-box" id="mod-flashcards-showhidecontainer-answer-{{qaid}}" style="display: none;">
                         <div class="d-flex flex-column">
                                 <div class="answer">
                                     <h4> {{# str }} correctanswer, mod_flashcards {{/ str }} </h4>
@@ -84,7 +84,7 @@
 
             </div>
             <div class="col-12 col-xl-3">
-                <div class="mod-flashcards-preview-box">
+                <div class="preview-box">
                     <div class="row justify-content-between no-gutters">
                         <div class="col">
                             <h5>{{# str }} peerreview, mod_flashcards {{/ str }}  {{#helppeerreview}}{{>core/help_icon}}{{/helppeerreview}}</h5>
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="mod-flashcards-preview-box">
+                <div class="preview-box">
                     <div class="row">
                         <div class="col">
                             <h5>{{# str }} teachercheck, mod_flashcards {{/ str }} {{#helpteachercheck}}{{>core/help_icon}}{{/helpteachercheck}}</h5>

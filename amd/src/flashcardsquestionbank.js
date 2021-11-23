@@ -17,7 +17,7 @@
  * Initialise the question bank modal on the quiz page.
  *
  * @module    mod_flashcards/flashcardsquestionbank
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define(

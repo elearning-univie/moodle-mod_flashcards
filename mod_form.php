@@ -18,7 +18,7 @@
  * Multiple choice question definition classes.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ require_once($CFG->libdir . '/formslib.php');
  * mod_flashcards_mod_form
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_flashcards_mod_form extends moodleform_mod {
