@@ -18,7 +18,7 @@
  * Table class for displaying the flashcard list of an activity for a student.
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use context_module;
 /**
  * Table class for displaying the flashcard list of an activity for a teacher.
  *
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class studentviewtable extends table_sql {
@@ -73,16 +73,15 @@ class studentviewtable extends table_sql {
      * studentviewtable constructor.
      * @param int $uniqueid
      * @param int $cmid
-     * @param int $courseid
      * @param object $fcobj
      * @param string $callbackurl
      * @param string $tab
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $courseid, $fcobj, $callbackurl, $tab) {
+    public function __construct($uniqueid, $cmid, $fcobj, $callbackurl, $tab) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
-        $this->courseid = $courseid;
+        $this->courseid = $fcobj->course;
         $this->fcobj = $fcobj;
         $this->returnurl = $callbackurl;
         $this->authors = array();
@@ -118,7 +117,7 @@ class studentviewtable extends table_sql {
             get_string('teachercheck', 'mod_flashcards'),
             get_string('box', 'mod_flashcards'),
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
-            get_string('sepcolumn', 'mod_flashcards'),
+            "/",
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),

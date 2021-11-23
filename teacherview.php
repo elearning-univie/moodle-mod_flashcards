@@ -18,7 +18,7 @@
  * Flashcards teacher view
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
@@ -106,7 +106,7 @@ if (!$DB->record_exists("question_categories", array('id' => $flashcards->catego
 
 $sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'";
 
-$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $course->id, $flashcards, FLASHCARDS_AUTHOR_NAME, $PAGE->url);
+$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url);
 
 $table->set_sql("q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
@@ -126,24 +126,21 @@ $templateinfo = ['createbtnlink' => $link->out(false),
         'actionurl' => $PAGE->url];
 $templateinfo['selected' . $perpage] = true;
 
-if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
-    if (has_capability('mod/flashcards:editallquestions', $context)) {
-        $addonpage = optional_param('addonpage', 0, PARAM_INT);
+if (has_capability('mod/flashcards:editallquestions', $context)) {
+    if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
         $rawdata = (array) data_submitted();
         foreach ($rawdata as $key => $value) {
             if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
                 $key = $matches[1];
-                mod_flashcards_add_question($key, $flashcards->id, $addonpage);
+                mod_flashcards_add_question($key, $flashcards->id);
             }
         }
         redirect($pageurl);
     }
-}
 
-if (optional_param('addsingle', false, PARAM_BOOL) && confirm_sesskey()) {
-    if (has_capability('mod/flashcards:editallquestions', $context)) {
+    if (optional_param('addsingle', false, PARAM_BOOL) && confirm_sesskey()) {
         $qid = optional_param('addquestion', 0, PARAM_INT);
-        mod_flashcards_add_question($qid, $flashcards->id, true);
+        mod_flashcards_add_question($qid, $flashcards->id);
         redirect($pageurl);
     }
 }

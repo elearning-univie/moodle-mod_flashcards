@@ -17,7 +17,7 @@
  * Task to cleanup old question previews.
  *
  * @package    mod_flashcards
- * @copyright  2013 onwards Martin Dougiamas  http://dougiamas.com
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

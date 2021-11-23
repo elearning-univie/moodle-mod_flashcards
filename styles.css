@@ -35,22 +35,9 @@ th.flashcards_teacherview_tc {
     white-space: nowrap;
     text-align: center;
 }
+
 #page-mod-flashcards-teacherview .generaltable th.flashcards_up,
-#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_up {
-    width: 11%;
-    text-align: right;
-    margin-right: 0px;
-    padding-right: 0em;
-}
-
-#page-mod-flashcards-teacherview .generaltable th.flashcards_down,
-#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_down {
-    width: 8%;
-    text-align: left;
-    margin-left: 0px;
-    padding-left: 0em;
-}
-
+#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_up,
 #page-mod-flashcards-teacherview .generaltable td.flashcards_up,
 #page-mod-flashcards-studentquestioninit .generaltable td.flashcards_up {
     width: 11%;
@@ -59,6 +46,8 @@ th.flashcards_teacherview_tc {
     padding-right: 0em;
 }
 
+#page-mod-flashcards-teacherview .generaltable th.flashcards_down,
+#page-mod-flashcards-studentquestioninit .generaltable th.flashcards_down,
 #page-mod-flashcards-teacherview .generaltable td.flashcards_down,
 #page-mod-flashcards-studentquestioninit td.flashcards_down {
     width: 8%;
@@ -101,44 +90,14 @@ td.flashcards_teacherview_ec {
 div.flashcards_add_btn_visi {
     visibility: visible;
 }
+
 div.flashcards_add_btn_invisi {
     visibility: hidden;
 }
-.mod-flashcards.btn-div {
+
+.path-mod-flashcards .btn-div {
     display: inline-block;
     margin-bottom: 1em;
-}
-
-.mod-flashcards.fc-center {
-    display: block;
-    margin: auto;
-    text-align: center;
-}
-
-.mod-flashcards.btn-box {
-    text-align: left;
-    min-width: 10em;
-    min-height: 8em;
-    width: 100%;
-}
-.mod-flashcards.fc-shadow {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 0;
-}
-
-.mod-flashcards.btn-learn-now {
-    height: 100%;
-    border: 1px solid;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    margin-left: 1em;
-    margin-right: 1em;
-}
-.mod-flashcards.btn-box {
-    text-align: left;
-    min-width: 10em;
-    min-height: 8em;
-    width: 100%;
 }
 
 #mod-flashcards-question .im-controls {
@@ -176,7 +135,7 @@ img.mod-flashcards-appstore-badge {
     margin-right: 0.3em;
 }
 
-.mod-flashcards-box-smiley {
+.path-mod-flashcards .box-smiley {
     max-width: 2em;
     max-height: 2em;
     vertical-align: unset;
@@ -204,21 +163,21 @@ img.mod-flashcards-appstore-badge {
     margin-left: 0.5em;
 }
 
-.mod-flashcards-formulation {
+.path-mod-flashcards .formulation {
     color: #001a1e;
     background-color: #e7f3f5;
     border-color: #b8dce2;
 }
 
-.mod-flashcards-formulation hr {
+.path-mod-flashcards .formulation hr {
     border-top-color: #a6d3db;
 }
 
-.mod-flashcards-formulation .alert-link {
+.path-mod-flashcards .formulation .alert-link {
     color: black;
 }
 
-div.progress.mod-flashcards-progress-bar {
+.path-mod-flashcards  div.progress.progress-bar {
     min-height: 3em;
     background-color: SlateGray;
 }
@@ -228,24 +187,24 @@ div.progress.mod-flashcards-progress-bar {
     background-color: SlateGray;
 }
 
-.btn.mod-flashcards-button-action-bottom {
+.path-mod-flashcards .btn.button-action-bottom {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
 }
 
-.card-img.mod-flashcards-box-bg {
+.path-mod-flashcards .card-img.box-bg {
     max-height: 23em;
 }
 
-.mod-flashcards-preview-box {
+.path-mod-flashcards .preview-box {
     border: 1px solid #cad0d7;
     padding: 1em;
     margin-bottom: 1.5em;
 }
 
-.mod-flashcards-blue-box {
+.path-mod-flashcards .blue-box {
     padding: 1em;
     margin-bottom: 1.5em;
 }
@@ -284,10 +243,6 @@ div.progress.mod-flashcards-progress-bar {
 
 .path-mod-flashcards #teacherviewform {
     float: right;
-}
-
-.path-mod-flashcards .btn-space {
-    padding-left: 1em;
 }
 
 .path-mod-flashcards .votetext {

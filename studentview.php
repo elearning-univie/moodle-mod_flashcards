@@ -18,7 +18,7 @@
  * Flashcards Student view
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
@@ -51,8 +51,6 @@ if (has_capability('mod/flashcards:teacherview', $context) ) {
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:studentview', $context)) {
-
-    mod_flashcards_check_for_orphan_or_hidden_questions();
     $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
     $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
@@ -91,8 +89,25 @@ if (has_capability('mod/flashcards:studentview', $context)) {
         $templatestablecontext['displaymobileapps'] = true;
     }
 
-    $boxzeroquestioncount = get_box_zero_count_record($USER->id, $flashcards->id);
-    $totalquestioncount = get_total_card_count_record($flashcards->id);
+    $sql = "SELECT count(q.id)
+              FROM {question} q,
+                   {flashcards_q_status} s
+             WHERE q.id = s.questionid
+               AND fcid = :fcid
+               AND questionid NOT IN (SELECT questionid
+                                FROM {flashcards_q_stud_rel}
+                               WHERE studentid = :userid
+                                 AND currentbox IS NOT NULL
+                                 AND flashcardsid = fcid)";
+    $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
+
+    $sql = "SELECT count(q.id)
+              FROM {question} q,
+                   {flashcards_q_status} s
+             WHERE q.id = s.questionid
+               AND fcid = :fcid";
+    $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
+
     $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
 
     $templatestablecontext['stats'] = [
@@ -124,52 +139,6 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
-}
-
-/**
- * Calculates the number of questions in box zero
- *
- * @param int $userid
- * @param int $fcid
- * @return int
- * @throws coding_exception
- * @throws dml_exception
- */
-function get_box_zero_count_record($userid, $fcid) {
-    global $DB;
-
-    $sql = "SELECT count(q.id)
-              FROM {question} q,
-                   {flashcards_q_status} s
-             WHERE q.id = s.questionid
-               AND fcid = :fcid
-               AND questionid NOT IN (SELECT questionid
-                                FROM {flashcards_q_stud_rel}
-                               WHERE studentid = :userid
-                                 AND currentbox IS NOT NULL
-                                 AND flashcardsid = fcid)";
-
-    return $DB->count_records_sql($sql, ['fcid' => $fcid, 'userid' => $userid]);
-}
-
-/**
- * Calculates the number of cards available for a given flashcard deck
- *
- * @param int $fcid flashcardid
- * @return int number of totally available cards
- * @throws coding_exception
- * @throws dml_exception
- */
-function get_total_card_count_record($fcid) {
-    global $DB;
-
-    $sql = "SELECT count(q.id)
-              FROM {question} q,
-                   {flashcards_q_status} s
-             WHERE q.id = s.questionid
-               AND fcid = :fcid";
-
-    return $DB->count_records_sql($sql, ['fcid' => $fcid]);
 }
 
 /**
@@ -212,7 +181,6 @@ function get_regular_box_count_records($userid, $flashcardsid) {
 function create_regular_boxvalue_array($records, $courseid, $usedtotalquestioncount) {
     global $OUTPUT;
 
-    $boxtext = get_string('box', 'mod_flashcards');
     $boxindex = 1;
     $maxboxindex = 5;
 

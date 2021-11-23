@@ -18,7 +18,7 @@
  * Interface implementation of the external Webservices
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ require_once(__DIR__ . '/locallib.php');
 /**
  * Class mod_flashcards_external
  *
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_flashcards_external extends external_api {
@@ -44,8 +44,8 @@ class mod_flashcards_external extends external_api {
     public static function update_progress_parameters() {
         return new external_function_parameters(
                 array(
-                        'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
-                        'boxid' => new external_value(PARAM_INT, 'id of box'),
+                        'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
+                        'boxid' => new external_value(PARAM_INT, 'box id'),
                         'questionid' => new external_value(PARAM_INT, 'question id'),
                         'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer')
                 )
@@ -60,7 +60,7 @@ class mod_flashcards_external extends external_api {
     public static function load_learn_progress_parameters() {
         return new external_function_parameters(
             array(
-                'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
+                'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
                 'boxid' => new external_value(PARAM_INT, 'id of current box')
             )
         );
@@ -74,7 +74,7 @@ class mod_flashcards_external extends external_api {
     public static function load_next_question_parameters() {
         return new external_function_parameters(
             array(
-                'fid' => new external_value(PARAM_INT, 'id of flashcard activity'),
+                'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
                 'boxid' => new external_value(PARAM_INT, 'id of current box')
             )
         );
@@ -88,7 +88,7 @@ class mod_flashcards_external extends external_api {
     public static function init_questions_parameters() {
         return new external_function_parameters(
                 array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                        'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
                         'qids' => new external_multiple_structure(
                                 new external_value(PARAM_INT, 'id array of questions')
                         ),
@@ -104,7 +104,7 @@ class mod_flashcards_external extends external_api {
     public static function remove_questions_parameters() {
         return new external_function_parameters(
             array(
-                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
                 'qids' => new external_multiple_structure(
                     new external_value(PARAM_INT, 'id array of questions')
                     ),
@@ -120,7 +120,7 @@ class mod_flashcards_external extends external_api {
     public static function start_learn_now_parameters() {
         return new external_function_parameters(
             array(
-                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
+                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
                 'qcount' => new external_value(PARAM_INT, 'number of questions to learn')
             )
         );
@@ -134,8 +134,8 @@ class mod_flashcards_external extends external_api {
     public static function set_preview_status_parameters() {
         return new external_function_parameters(
                 array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
-                        'questionid' => new external_value(PARAM_INT, 'id of question'),
+                        'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
+                        'questionid' => new external_value(PARAM_INT, 'question id'),
                         'status' => new external_value(PARAM_INT, 'number of questions to learn')
                 )
         );
@@ -149,8 +149,8 @@ class mod_flashcards_external extends external_api {
     public static function set_peer_review_vote_parameters() {
         return new external_function_parameters(
             array(
-                'flashcardsid' => new external_value(PARAM_INT, 'id of activity'),
-                'questionid' => new external_value(PARAM_INT, 'id of question'),
+                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
+                'questionid' => new external_value(PARAM_INT, 'question id'),
                 'vote' => new external_value(PARAM_INT, 'peer review vote')
             )
         );
@@ -221,14 +221,14 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Get a representation of the student learning progress
+     * Get a representation of the student learn progress
      *
      * @param int $fid
      * @param int $boxid
      * @return string|null
      */
     public static function load_learn_progress($fid, $boxid) {
-        global $USER, $PAGE, $_SESSION;
+        global $PAGE, $_SESSION;
         list ($course, $cm) = get_course_and_cm_from_instance($fid, 'flashcards');
         require_login($course, false, $cm);
 
@@ -300,7 +300,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Reoves all selected questions from box 1 to box 0 for the activity
+     * Removes all selected questions from box 1 to box 0 for the activity
      *
      * @param int $flashcardsid
      * @param array $qids
@@ -369,7 +369,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Sets the review status of a flashcard
+     * Set the review status of a flashcard
      *
      * @param int $flashcardsid
      * @param int $questionid
@@ -405,7 +405,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Sets the users peer review vote of a flashcard
+     * Set the user peer review vote of a flashcard
      *
      * @param int $flashcardsid
      * @param int $questionid
@@ -438,7 +438,7 @@ class mod_flashcards_external extends external_api {
     }
 
     /**
-     * Sets the preference value to show or hide the mobile app info
+     * Set the preference value to show or hide the mobile app info
      * @param bool $prefval
      * @return external_function_parameters
      */

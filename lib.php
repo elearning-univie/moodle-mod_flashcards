@@ -18,7 +18,7 @@
  * Flashcards lib
  *
  * @package    mod_flashcards
- * @copyright  2019 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -118,7 +118,13 @@ function flashcards_check_category($flashcards, $courseid) {
 function flashcards_delete_instance(int $id) {
     global $DB;
 
+    if (!$DB->record_exists('flashcards', ['id' => $id])) {
+        return false;
+    }
+
     $DB->delete_records('flashcards', ['id' => $id]);
+    $DB->delete_records('flashcards_q_status', ['fcid' => $id]);
+    $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $id]);
 
     return true;
 }

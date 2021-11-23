@@ -23,7 +23,7 @@
  * than in the database.
  *
  * @package    mod_flashcards
- * @copyright  2020 University of Vienna
+ * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -221,7 +221,7 @@ if ($canedit) {
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
-$peerreviewvote = mod_flashcard_get_peer_review_vote($question->id, $flashcardsid);
+$peerreviewvote = mod_flashcard_get_peer_review_vote_user($question->id, $flashcardsid);
 $templatecontent['prbtncolorinfoup'] = mod_flashcard_get_peer_review_info($peerreviewvote, true);
 $templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($peerreviewvote, false);
 $templatecontent['statval'] = $statusval;

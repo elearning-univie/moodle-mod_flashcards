@@ -18,7 +18,7 @@
  * A column with a checkbox for each question with name q{questionid}.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * A column with a checkbox for each question with name q{questionid}.
  *
  * @package   mod_flashcards
- * @copyright 2020 University of Vienna
+ * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class checkbox_column extends \core_question\bank\checkbox_column {
