@@ -158,7 +158,7 @@ function flashcards_get_database_object($flashcards) {
         $flashcardsdb->inclsubcats = 1;
     }
 
-    if (property_exists($flashcards, 'intro') || $flashcards->intro == null) {
+    if (!property_exists($flashcards, 'intro') || $flashcards->intro == null) {
         $flashcardsdb->intro = '';
     } else {
         $flashcardsdb->intro = $flashcards->intro;

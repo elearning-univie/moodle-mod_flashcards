@@ -21,6 +21,10 @@
  * See https://docs.moodle.org/dev/version.php for more info.
  *
  * @package   mod_flashcards
+ * @author    Adrian Czermak
+ * @author    Jakob Mischke
+ * @author    Thomas Wedekind
+ *
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,7 +32,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_flashcards';
-$plugin->version = 2021112200;
+$plugin->version = 2021120600;
 $plugin->release = 'v1.0.0';
 $plugin->requires = 2020061501;
 $plugin->maturity = MATURITY_STABLE;

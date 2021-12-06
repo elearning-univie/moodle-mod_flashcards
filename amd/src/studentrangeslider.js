@@ -21,7 +21,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                     updatebar();
                 };
                 output.onchange = updatebar;
-                output.oninput = function() {
+                output.onblur = function() {
                     var intval = Math.floor(this.value);
                     if (intval == this.value && $.isNumeric(this.value)) {
                         if (this.value >= slidermin && this.value <= slidermax) {

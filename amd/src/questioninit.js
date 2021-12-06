@@ -14,7 +14,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                         methodname: 'mod_flashcards_init_questions',
                         args: {flashcardsid: aid, qids: qids},
                         done: function () {
-                            location.reload();
+                            let params = new URLSearchParams(location.search);
+                            params.set('page', '0');
+                            location.search = params.toString();
                         },
                         fail: notification.exception
                     }]);
