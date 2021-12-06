@@ -37,13 +37,15 @@
         <option value="100" title="100" {{#selected100}}selected{{/selected100}}>100</option>
     </select>
 </form>
-{{#cbvis}}
+
 <div class="btn-div">
     <button class="btn btn-secondary" onclick="window.location.href = '{{backtooverviewlink}}';">{{# str }} backtooverviewbutton, mod_flashcards {{/ str }}</button>
+    {{#cbvis}}
     <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
+    {{/cbvis}}
 </div>
+{{#cbvis}}
 <div class="alert alert-info alert-block fade in " role="alert" data-aria-autofocus="true">
     {{# str }} studentquestioninitinfo, mod_flashcards {{/ str }}
 </div>
-
 {{/cbvis}}

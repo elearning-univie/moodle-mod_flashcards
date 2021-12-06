@@ -110,6 +110,10 @@ $sql = "SELECT q.id
 $importedfcs = $DB->get_fieldset_sql($sql, ['fid' => $flashcards->id, 'userid' => $USER->id]);
 $added = count($importedfcs);
 
+if ($added == 0) {
+    $importedfcs[] = -1;
+}
+
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
 $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
 
@@ -168,11 +172,11 @@ echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templ
 echo $OUTPUT->tabtree($tabs, $tab);
 
 if ($equalparam) {
-    $addlink = '$.mod_flashcards_remove_questions('.$flashcards->id .')';
+    $addlink = '$.mod_flashcards_remove_questions(' . $flashcards->id . ')';
     echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink,  'disabled' => '']);
     echo get_string('removeflashcardbutton', 'mod_flashcards');
 } else {
-    $addlink = '$.mod_flashcards_init_questions('.$flashcards->id . ')';
+    $addlink = '$.mod_flashcards_init_questions(' . $flashcards->id . ')';
     echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink, 'disabled' => '']);
     echo get_string('addflashcardbutton', 'mod_flashcards');
 }
