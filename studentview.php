@@ -133,6 +133,14 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $templatestablecontext['flashcardsid'] = $flashcards->id;
 
     $renderer = $PAGE->get_renderer('core');
+
+    if (trim(strip_tags($flashcards->intro))) {
+        $formatoptions = new stdClass();
+        $formatoptions->noclean = true;
+        $templatestablecontext['intro'] = $renderer->box(format_text($flashcards->intro, $flashcards->introformat, $formatoptions),
+            'generalbox', 'intro');
+    }
+
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
     echo $OUTPUT->footer();
 } else {
