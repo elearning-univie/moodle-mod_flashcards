@@ -114,5 +114,33 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021072600, 'flashcards');
     }
 
+    if ($oldversion < 2022011000) {
+
+        // Define table flashcards_q_status to be created.
+        $table = new xmldb_table('flashcards_stud_xp_events');
+
+        // Adding fields to table flashcards_q_status.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('fcid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('studentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('firstquestion', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('usedshuffle', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('firstcheckpoint', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('secondcheckpoint', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('thirdcheckpoint', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table flashcards_q_status.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fc_stud_xp_unique', XMLDB_KEY_UNIQUE, ['fcid', 'studentid']);
+
+        // Conditionally launch create table for flashcards_q_status.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2022011000, 'flashcards');
+    }
+
     return true;
 }

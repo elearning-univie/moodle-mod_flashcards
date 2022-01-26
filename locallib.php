@@ -481,3 +481,84 @@ function mod_flashcards_get_selected_qids($flashcardsid, $qids) {
 
     return $questionids;
 }
+
+/**
+ * Fires Level up events.
+ *
+ * @param int $flashcardsid
+ * @param bool $isshuffle
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
+    global $DB, $USER;
+
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+
+    $eventparams = array (
+        'context' => $context,
+        'objectid' => $flashcardsid
+    );
+
+    $eventtriggered = false;
+
+    $eventsrec = $DB->get_record('flashcards_stud_xp_events', ['fcid' => $flashcardsid, 'studentid' => $USER->id]);
+    $countfirstcard = $DB->count_records_select('flashcards_q_stud_rel', 'currentbox is not null AND studentid = :studid AND flashcardsid = :fcid',
+        ['studid' => $USER->id, 'fcid' => $flashcardsid]);
+
+    if (!$eventsrec) {
+        $newentry = new stdClass();
+        $newentry->fcid = $flashcardsid;
+        $newentry->studentid = $USER->id;
+
+        $entryid = $DB->insert_record('flashcards_stud_xp_events', $newentry);
+        $eventsrec = $DB->get_record('flashcards_stud_xp_events', ['id' => $entryid]);
+    }
+
+    if ($countfirstcard) {
+        if (!$eventsrec->firstquestion) {
+            $event = \mod_flashcards\event\levelup_firstquestion::create($eventparams);
+            $event->trigger();
+            $eventsrec->firstquestion = 1;
+            $eventtriggered = true;
+        } else {
+            $countmaxbox = $DB->count_records('flashcards_q_stud_rel', ['studentid' => $USER->id, 'flashcardsid' => $flashcardsid, 'currentbox' => 5]);
+
+            if ($countmaxbox) {
+                $questioncount = $DB->count_records('flashcards_q_status', ['fcid' => $flashcardsid]);
+
+                if ((($countmaxbox / $questioncount) >= 0.25) && !$eventsrec->firstcheckpoint) {
+                    $event = \mod_flashcards\event\levelup_firstcheckpoint::create($eventparams);
+                    $event->trigger();
+                    $eventsrec->firstcheckpoint = 1;
+                    $eventtriggered = true;
+                }
+                if ((($countmaxbox / $questioncount) >= 0.5) && !$eventsrec->secondcheckpoint) {
+                    $event = \mod_flashcards\event\levelup_secondcheckpoint::create($eventparams);
+                    $event->trigger();
+                    $eventsrec->secondcheckpoint = 1;
+                    $eventtriggered = true;
+                }
+                if ((($countmaxbox / $questioncount) >= 0.9) && !$eventsrec->thirdcheckpoint) {
+                    $event = \mod_flashcards\event\levelup_thirdcheckpoint::create($eventparams);
+                    $event->trigger();
+                    $eventsrec->thirdcheckpoint = 1;
+                    $eventtriggered = true;
+                }
+            }
+        }
+    }
+
+    if ($isshuffle && !$eventsrec->usedshuffle) {
+        $event = \mod_flashcards\event\levelup_learnnow::create($eventparams);
+        $event->trigger();
+        $eventsrec->usedshuffle = 1;
+        $eventtriggered = true;
+    }
+
+    if ($eventtriggered) {
+        $DB->update_record('flashcards_stud_xp_events', $eventsrec);
+    }
+}

@@ -15,25 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version and other meta-info about the plugin
+ * The event class for the flashcard question type.
  *
- * Setting the $plugin->version to 0 prevents the plugin from being installed.
- * See https://docs.moodle.org/dev/version.php for more info.
- *
- * @package   mod_flashcards
- * @author    Adrian Czermak
- * @author    Jakob Mischke
- * @author    Thomas Wedekind
- *
- * @copyright 2021 University of Vienna
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_flashcards
+ * @copyright  2021 University of Vienna
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_flashcards\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_flashcards';
-$plugin->version = 2022011000;
-$plugin->release = 'v1.0.0';
-$plugin->requires = 2020061501;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('qtype_flashcard' => 2020111300);
+/**
+ * Event for mod_flashcards.
+ */
+class levelup_learnnow extends \core\event\base {
+
+    /**
+     * Init method.
+     */
+    protected function init() {
+        $this->data['objecttable'] = 'flashcards';
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+    }
+
+    /**
+     * Returns localised general event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('leveluplearnnow', 'mod_flashcards');
+    }
+}

@@ -62,6 +62,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
         $questionhtml .= '<div id="mod-flashcards-learning-progress" class="progress mb-2">';
         $questionhtml .= $questionrenderer->render_learn_progress($lncount, $lnknown, $lnunknown);
         $questionhtml .= '</div>';
+
+        mod_flashcards_load_xp_events($flashcards->id, true);
     }
     $questionhtml .= '<div id="mod-flashcards-question">';
     $questionhtml .= $questionrenderer->render_flashcard($flashcards->id, $USER->id, $box, $qid);
