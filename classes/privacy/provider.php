@@ -99,6 +99,20 @@ class provider implements
             'privacy:metadata:flashcards_q_stud_rel'
             );
 
+        $collection->add_database_table(
+            'flashcards_stud_xp_events',
+            [
+                'fcid' => 'privacy:metadata:flashcards_stud_xp_events:fcid',
+                'studentid' => 'privacy:metadata:flashcards_q_stud_rel:studentid',
+                'firstquestion' => 'privacy:metadata:flashcards_q_stud_rel:firstquestion',
+                'usedshuffle' => 'privacy:metadata:flashcards_q_stud_rel:usedshuffle',
+                'firstcheckpoint' => 'privacy:metadata:flashcards_q_stud_rel:firstcheckpoint',
+                'secondcheckpoint' => 'privacy:metadata:flashcards_q_stud_rel:secondcheckpoint',
+                'thirdcheckpoint' => 'privacy:metadata:flashcards_q_stud_rel:thirdcheckpoint',
+            ],
+            'privacy:metadata:flashcards_q_stud_rel'
+        );
+
         $collection->add_user_preference('flashcards_showapp', 'privacy:metadata:flashcards_showapp');
 
         // Mod flashcards links to the 'core_question' subsystem for all question functionality.
@@ -251,19 +265,7 @@ class provider implements
                 continue;
             }
 
-            $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $context->instanceid, 'studentid' => $userid]);
-
-            list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-            $contextparams['createdby'] = $contextlist->get_user()->id;
-            $DB->set_field_select('question', 'createdby', 0, "
-                category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-            AND createdby = :createdby  AND qtype = 'flashcard'", $contextparams);
-
-            list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-            $contextparams['modifiedby'] = $contextlist->get_user()->id;
-            $DB->set_field_select('question', 'modifiedby', 0, "
-                category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-            AND modifiedby = :modifiedby AND qtype = 'flashcard'", $contextparams);
+            do_delete($context->instanceid, $userid);
         }
     }
 
@@ -279,20 +281,34 @@ class provider implements
         $userids = $userlist->get_userids();
 
         foreach ($userids as $userid) {
-            $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $context->instanceid, 'studentid' => $userid]);
+            do_delete($context->instanceid, $userid);
+        }
+    }
 
-            list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-            $contextparams['createdby'] = $contextlist->get_user()->id;
-            $DB->set_field_select('question', 'createdby', 0, "
+    /**
+     * Deletes the records from the db
+     *
+     * @param int $flashcardsid
+     * @param int $userid
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    private function do_delete($flashcardsid, $userid) {
+        global $DB;
+        $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'studentid' => $userid]);
+        $DB->delete_records('flashcards_stud_xp_events', ['flashcardsid' => $flashcardsid, 'studentid' => $userid]);
+
+        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        $contextparams['createdby'] = $contextlist->get_user()->id;
+        $DB->set_field_select('question', 'createdby', 0, "
                 category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
             AND createdby = :createdby  AND qtype = 'flashcard'", $contextparams);
 
-            list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-            $contextparams['modifiedby'] = $contextlist->get_user()->id;
-            $DB->set_field_select('question', 'modifiedby', 0, "
+        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        $contextparams['modifiedby'] = $contextlist->get_user()->id;
+        $DB->set_field_select('question', 'modifiedby', 0, "
                 category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
             AND modifiedby = :modifiedby AND qtype = 'flashcard'", $contextparams);
-        }
     }
 }
 

@@ -33,5 +33,29 @@ $observers = array(
         'callback'    => '\mod_flashcards\event\simplequestionform_observer::simplequestion_created',
         'internal'    => true,
     ),
-
+    array(
+        'eventname'   => '\mod_flashcards\event\levelup_firstquestion',
+        'callback'    => '\mod_flashcards\event\levelup_firstquestion::get_name',
+        'internal'    => false,
+    ),
+    array(
+        'eventname'   => '\mod_flashcards\event\levelup_learnnow',
+        'callback'    => '\mod_flashcards\event\levelup_learnnow::get_name',
+        'internal'    => false,
+    ),
+    array(
+        'eventname'   => '\mod_flashcards\event\levelup_firstcheckpoint',
+        'callback'    => '\mod_flashcards\event\levelup_firstcheckpoint::get_name',
+        'internal'    => false,
+    ),
+    array(
+        'eventname'   => '\mod_flashcards\event\levelup_secondcheckpoint',
+        'callback'    => '\mod_flashcards\event\levelup_secondcheckpoint::get_name',
+        'internal'    => false,
+    ),
+    array(
+        'eventname'   => '\mod_flashcards\event\levelup_thirdcheckpoint',
+        'callback'    => '\mod_flashcards\event\levelup_thirdcheckpoint::get_name',
+        'internal'    => false,
+    )
 );

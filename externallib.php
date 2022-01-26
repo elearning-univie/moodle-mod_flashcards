@@ -217,6 +217,9 @@ class mod_flashcards_external extends external_api {
         }
 
         $DB->update_record('flashcards_q_stud_rel', $record);
+
+        mod_flashcards_load_xp_events($params['fid']);
+
         return 1;
     }
 
