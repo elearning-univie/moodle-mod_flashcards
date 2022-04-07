@@ -245,7 +245,7 @@ if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
 foreach ($question->answers as $answer) {
     $ans = $answer;
 }
-$templatecontent['questiontext'] = $question->questiontext;
+$templatecontent['questiontext'] = format_text($question->questiontext);
 $templatecontent['answer'] = $question->format_text(
      $ans->answer, $ans->answerformat,
      $qa, 'question', 'answer', $ans->id);
