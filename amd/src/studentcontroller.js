@@ -1,4 +1,4 @@
-define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, ajax, notification, url){
+define(['jquery', 'core/ajax', 'core/notification', 'core/url', 'core/event'], function ($, ajax, notification, url, event){
     return {
         init: function() {
             var mobilebox = document.getElementById('mod-flashcards-mobile-app-info');
@@ -18,6 +18,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
                             done: function(result) {
                                 if (result !== null) {
                                     $("#mod-flashcards-question").html(result);
+                                    event.notifyFilterContentUpdated($("#mod-flashcards-question"));
                                     ajax.call([{
                                         methodname: 'mod_flashcards_load_learn_progress',
                                         args: {fid: $fid, boxid: boxid},
