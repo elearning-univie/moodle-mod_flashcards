@@ -61,12 +61,12 @@ class simplequestionform extends \moodleform {
      * @param string $submiturl
      * @param object $question
      * @param string $category
-     * @param bool $formeditable
      * @param string $action
+     * @param bool $formeditable
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function __construct($submiturl, $question, $category, $formeditable = true, $action) {
+    public function __construct($submiturl, $question, $category, $action, $formeditable = true) {
         global $DB;
 
         $this->question = $question;

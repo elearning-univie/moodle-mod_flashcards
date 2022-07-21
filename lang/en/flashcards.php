@@ -58,6 +58,7 @@ $string['changeextenttitle'] = 'Extent of Changes';
 $string['configintro'] = 'Flashcards';
 $string['correctanswer'] = 'Solution';
 $string['createflashcardbutton'] = 'Create new flash card';
+$string['createdbystudents'] = 'created by students';
 $string['customizedeckbutton'] = 'Create/customize my flashcards';
 $string['deleteflashcardinfo'] = 'deleting a flashcard';
 $string['deleteflashcardinfo_help'] = 'Delete a flashcard.';

@@ -57,6 +57,7 @@ $string['cardbehaviourexplained'] = 'Beginnend mit Fach 1, können Sie diese dur
 $string['configintro'] = 'Lernkartei';
 $string['correctanswer'] = 'Musterlösung';
 $string['createflashcardbutton'] = 'Neue Lernkarte erstellen';
+$string['createdbystudents'] = 'von Studierenden erstellt';
 $string['customizedeckbutton'] = 'Meine Lernkartei erstellen/anpassen';
 $string['deleteflashcardinfo'] = 'Lernkarte löschen';
 $string['deleteflashcardinfo_help'] = 'Lernkarte löschen.';

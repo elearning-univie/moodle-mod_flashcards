@@ -105,7 +105,7 @@ $question->formoptions->canaddwithcat = question_has_capability_on($question, 'a
 $formeditable = true;
 
 $PAGE->set_pagetype('question-type-flashcard');
-$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $formeditable, $action);
+$mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $action, $formeditable);
 
 $questioncopy = fullclone($question);
 $questioncopy->category = "{$category->id},{$category->contextid}";

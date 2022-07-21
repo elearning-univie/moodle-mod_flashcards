@@ -245,7 +245,9 @@ if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
 foreach ($question->answers as $answer) {
     $ans = $answer;
 }
-$templatecontent['questiontext'] = format_text($question->questiontext);
+
+$templatecontent['questiontext'] = $question->format_questiontext($qa);
+
 $templatecontent['answer'] = $question->format_text(
      $ans->answer, $ans->answerformat,
      $qa, 'question', 'answer', $ans->id);
@@ -264,4 +266,5 @@ $PAGE->requires->strings_for_js(array(
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');
+
 echo $OUTPUT->footer();
