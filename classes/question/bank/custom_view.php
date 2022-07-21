@@ -25,6 +25,8 @@
 namespace mod_flashcards\question\bank;
 
 use coding_exception;
+use mod_flashcards;
+
 
 /**
  * Subclass to customise the view of the question bank for the quiz editing screen.
@@ -38,7 +40,6 @@ class custom_view extends \core_question\bank\view {
     protected $flashcards = false;
     /** @var array the flashcards questionlist. */
     protected $questionlist;
-
     /** @var int The maximum displayed length of the category info. */
     const MAX_TEXT_LENGTH = 200;
 
@@ -52,9 +53,29 @@ class custom_view extends \core_question\bank\view {
      */
     public function __construct($contexts, $pageurl, $course, $cm, $flashcards) {
         global $DB;
-        parent::__construct($contexts, $pageurl, $course, $cm);
+        $this->contexts = $contexts;
+        $this->baseurl = $pageurl;
+        $this->course = $course;
+        $this->cm = $cm;
         $this->flashcards = $flashcards;
         $this->questionlist = $DB->get_fieldset_select('flashcards_q_status', 'questionid', 'fcid = ' . $this->flashcards->id);
+
+        // Create the url of the new question page to forward to.
+        $returnurl = $pageurl->out_as_local_url(false);
+        $this->editquestionurl = new \moodle_url('/question/question.php',
+            array('returnurl' => $returnurl));
+        if ($cm !== null) {
+            $this->editquestionurl->param('cmid', $cm->id);
+        } else {
+            $this->editquestionurl->param('courseid', $this->course->id);
+        }
+
+        $this->lastchangedid = optional_param('lastchanged', 0, PARAM_INT);
+
+        $this->init_columns($this->wanted_columns(), $this->heading_column());
+        $this->init_sort();
+        $this->init_search_conditions();
+
     }
 
     /**
@@ -216,6 +237,7 @@ class custom_view extends \core_question\bank\view {
         }
 
         echo '<div class="categorypagingbarcontainer">';
+
         $pageingurl = new \moodle_url('teacherview.php', $pageurl->params());
         $pagingbar = new \paging_bar($totalnumber, $page, $perpage, $pageingurl);
         $pagingbar->pagevar = 'qpage';
@@ -438,6 +460,7 @@ class custom_view extends \core_question\bank\view {
             }
             $fields = array_merge($fields, $column->get_required_fields());
         }
+
         $fields = array_unique($fields);
 
         // Build the order by clause.
@@ -450,6 +473,7 @@ class custom_view extends \core_question\bank\view {
         // Build the where clause.
         $tests = array('q.parent = 0');
         $this->sqlparams = array();
+
         foreach ($this->searchconditions as $searchcondition) {
             if ($searchcondition->where()) {
                 $tests[] = '((' . $searchcondition->where() .'))';
@@ -458,10 +482,15 @@ class custom_view extends \core_question\bank\view {
                 $this->sqlparams = array_merge($this->sqlparams, $searchcondition->params());
             }
         }
+
         // Build the SQL.
         $sql = ' FROM {question} q ' . implode(' ', $joins);
         $sql .= ' WHERE ' . implode(' AND ', $tests);
-        $sql .= '   AND q.qtype IN (\'flashcard\') ';
+        $sql .= '   AND q.qtype IN (\'flashcard\', \'multichoice\') ';
+        $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
+                                      JOIN {tag_instance} ti ON ti.itemid = qu.id
+                                      JOIN {tag} t ON t.id = ti.tagid
+                                     WHERE t.name = '2fc') ";
         $this->countsql = 'SELECT count(1)' . $sql;
         $this->loadsql = 'SELECT ' . implode(', ', $fields) . $sql . ' ORDER BY ' . implode(', ', $sorts);
     }

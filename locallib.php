@@ -117,14 +117,14 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
     global $DB;
 
     $subcatid = $DB->get_field('question_categories', 'id',
-        ['contextid' => $contextid, 'parent' => $categoryid, 'name' => 'von Studierenden erstellt']);
+        ['contextid' => $contextid, 'parent' => $categoryid, 'name' => get_string('createdbystudents', 'mod_flashcards')]);
 
     if (!$flashcards->studentsubcat && !$subcatid) {
         $cat = new stdClass();
         $cat->parent = $categoryid;
         $cat->contextid = $contextid;
-        $cat->name = 'von Studierenden erstellt';
-        $cat->info = 'von Studierenden erstellt';
+        $cat->name = get_string('createdbystudents', 'mod_flashcards');
+        $cat->info = get_string('createdbystudents', 'mod_flashcards');
         $cat->infoformat = 0;
         $cat->sortorder = 999;
         $cat->stamp = make_unique_id_code();
@@ -454,6 +454,11 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
         return false;
     }
+    $question = question_bank::load_question($questionid);
+
+    if ($question->get_type_name() == 'multichoice') {
+        $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+    }
 
     $trans = $DB->start_delegated_transaction();
     $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
@@ -561,4 +566,141 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
     if ($eventtriggered) {
         $DB->update_record('flashcards_stud_xp_events', $eventsrec);
     }
+}
+
+/**
+ * copy multichoice to flashcard
+ *
+ * @param int $question
+ * @param int $flashcardsid
+ * @return int $flashcardsid
+ */
+function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
+    global $DB, $USER, $CFG;
+
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+    $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+
+    $answers = $question->answers;
+    $fcquestionext = $question->questiontext . '<ul style="list-style-type:circle;">';
+    foreach ($answers as $answer) {
+        $fcquestionext = $fcquestionext . '<li>' . $answer->answer . '</li>';
+    }
+    $fcquestionext = $fcquestionext . '</ul>';
+    $fcanswerext = $question->questiontext . '<ul style="list-style-type:circle;">';
+    foreach ($answers as $answer) {
+        if ( $answer->fraction > 0) {
+            $fcanswerext = $fcanswerext . '<li style="font-weight: bold; font-size:110%; list-style-type:disc">' . '('
+                                        . get_string('statusval1', 'flashcards') . ')'. $answer->answer . '</li>';
+        } else {
+            $fcanswerext = $fcanswerext . '<li>' . '(' . get_string('statusval2', 'flashcards') . ')' . $answer->answer . '</li>';
+        }
+    }
+
+    $qtype = 'flashcard';
+    $qtypeobj = question_bank::get_qtype($qtype);
+
+    $question2fc = new stdClass();
+    $question2fc->category = $flashcard->categoryid;
+    $question2fc->qtype = $qtype;
+    $question2fc->createdby = $USER->id;
+    $question2fc->options = new stdClass();
+    $question2fc->formoptions = new stdClass();
+    $question2fc->contextid = $context->id;
+    $question2fc->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
+
+    $question2fc->name = $question->name;
+    $question2fc->questiontext = $fcquestionext;
+    $question2fc->answer = $fcanswerext;
+
+    $questioncopy = fullclone($question2fc);
+    $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
+    $questioncopy->cmid = $cm->id;
+    $questioncopy->name = $question->name;
+    $questioncopy->questiontext = array();
+    $questioncopy->questiontext['text'] = $fcquestionext;
+    $questioncopy->questiontext['format'] = FORMAT_HTML;
+
+    $questioncopy->answer = array();
+    $questioncopy->answer['text'] = $fcanswerext;
+    $questioncopy->answer['format'] = FORMAT_HTML;
+    $question2fc = $qtypeobj->save_question($question2fc, $questioncopy);
+    $question2fc = question_bank::load_question($question2fc->id);
+    $answerid = array_key_first($question2fc->answers);
+
+    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid);
+
+    // set 2fc tag to mc question
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
+
+    return $question2fc->id;
+}
+
+/**
+ * add 2fc tag to origin question
+ *
+ * @param int $questionid
+ * @param int $contextid
+ */
+function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
+    global $DB, $USER;
+
+    // get tag id
+    $tag = $DB->get_record('tag', ['name' => '2fc']);
+
+    if (!$tag) {
+        $dataobject = new stdClass();
+        $dataobject->userid = $USER->id;
+        $dataobject->isstandard   = 0;
+        $dataobject->timemodified = time();
+        $dataobject->tagcollid    = 1;
+        $dataobject = (object)(array)$dataobject;
+        $dataobject->rawname = '2fc';
+        $dataobject->name    = '2fc';
+        $tagid = $DB->insert_record('tag', $dataobject);
+    } else {
+        $tagid = $tag->id;
+    }
+
+    $taginstance = new stdClass();
+    $taginstance->tagid = $tagid;
+    $taginstance->component = 'core_question';
+    $taginstance->itemtype = 'question';
+    $taginstance->itemid = $questionid;
+    $taginstance->contextid = $contextid;
+    $taginstance->ordering = 0;
+    $taginstance->timecreated = time();
+    $taginstance->timemodified = time();
+    $DB->insert_record('tag_instance', $taginstance);
+}
+
+/**
+ * copy multichoice to flashcard
+ *
+ * @param int $questionid
+ * @param int $question2fcid
+ * @param int $answerid
+ */
+function mod_flashcards_save_image_files_for_flashcards($questionid, $question2fcid, $answerid) {
+    global $DB;
+
+    $fs = new \file_storage();
+    $files = $DB->get_records('files', ['itemid' => $questionid, 'component' => 'question']);
+    foreach ($files as $file) {
+        if ($file->filearea != 'generalfeedback') {
+            unset($file->id);
+            unset($file->pathnamehash);
+            $file->itemid = $question2fcid;
+            $file->timecreated = time();
+            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'questiontext', $question2fcid, '/', $file->filename);
+            $DB->insert_record('files', $file);
+            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'answer', $answerid, '/', $file->filename);
+            $file->itemid = $answerid;
+            $file->filearea = 'answer';
+            $DB->insert_record('files', $file);
+        }
+    }
+
 }

@@ -147,6 +147,7 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading($flashcards->name);
+
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');
