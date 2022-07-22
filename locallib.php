@@ -460,6 +460,10 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
         $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
     }
 
+    if ($question->get_type_name() == 'truefalse') {
+        $questionid = mod_flashcards_truefalse_to_flashcard($question, $flashcardsid);
+    }
+    
     $trans = $DB->start_delegated_transaction();
     $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
     $trans->allow_commit();
@@ -639,6 +643,77 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
 }
 
 /**
+ * copy true/false to flashcard
+ *
+ * @param int $question
+ * @param int $flashcardsid
+ * @return int $flashcardsid
+ */
+function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
+    global $DB, $USER, $CFG;
+    
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+    $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+    
+    $rightanswer = $question->rightanswer;
+
+    $fcquestionext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+                     . get_string('trueorfalse', 'mod_flashcards') . '<br></p>';
+    $fcquestionext = $fcquestionext . $question->questiontext;
+    if ($rightanswer) {
+        $tfanswerid = $question->trueanswerid;
+        $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
+                       . get_string('true', 'qtype_truefalse')
+                       . '<br></p>' . $question->truefeedback;
+    } else {
+        $tfanswerid = $question->falseanswerid;
+        $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
+                       . get_string('false', 'qtype_truefalse')
+                       . '<br></p>' . $question->falsefeedback;;
+    }
+
+
+    $qtype = 'flashcard';
+    $qtypeobj = question_bank::get_qtype($qtype);
+
+    $question2fc = new stdClass();
+    $question2fc->category = $flashcard->categoryid;
+    $question2fc->qtype = $qtype;
+    $question2fc->createdby = $USER->id;
+    $question2fc->options = new stdClass();
+    $question2fc->formoptions = new stdClass();
+    $question2fc->contextid = $context->id;
+    $question2fc->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
+
+    $question2fc->name = $question->name;
+    $question2fc->questiontext = $fcquestionext;
+    $question2fc->answer = $fcanswerext;
+
+    $questioncopy = fullclone($question2fc);
+    $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
+    $questioncopy->cmid = $cm->id;
+    $questioncopy->name = $question->name;
+    $questioncopy->questiontext = array();
+    $questioncopy->questiontext['text'] = $fcquestionext;
+    $questioncopy->questiontext['format'] = FORMAT_HTML;
+
+    $questioncopy->answer = array();
+    $questioncopy->answer['text'] = $fcanswerext;
+    $questioncopy->answer['format'] = FORMAT_HTML;
+    $question2fc = $qtypeobj->save_question($question2fc, $questioncopy);
+    $question2fc = question_bank::load_question($question2fc->id);
+    $answerid = array_key_first($question2fc->answers);
+
+    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid, $tfanswerid);
+
+    // set 2fc tag to mc question
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
+
+    return $question2fc->id;
+}
+/**
  * add 2fc tag to origin question
  *
  * @param int $questionid
@@ -682,25 +757,27 @@ function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
  * @param int $questionid
  * @param int $question2fcid
  * @param int $answerid
+ * @param int $tfanswerid
  */
-function mod_flashcards_save_image_files_for_flashcards($questionid, $question2fcid, $answerid) {
+function mod_flashcards_save_image_files_for_flashcards($questionid, $question2fcid, $answerid, $tfanswerid = 0) {
     global $DB;
 
-    $fs = new \file_storage();
-    $files = $DB->get_records('files', ['itemid' => $questionid, 'component' => 'question']);
+    $fs = new \file_storage(); 
+    list($inids, $questionids) = $DB->get_in_or_equal([$questionid, $tfanswerid], SQL_PARAMS_NAMED);
+    $sql = "SELECT * FROM {files} WHERE itemid $inids AND component = 'question'";
+    $files = $DB->get_records_sql($sql, $questionids);
     foreach ($files as $file) {
-        if ($file->filearea != 'generalfeedback') {
-            unset($file->id);
-            unset($file->pathnamehash);
-            $file->itemid = $question2fcid;
-            $file->timecreated = time();
-            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'questiontext', $question2fcid, '/', $file->filename);
-            $DB->insert_record('files', $file);
-            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'answer', $answerid, '/', $file->filename);
-            $file->itemid = $answerid;
+        unset($file->id);
+        unset($file->pathnamehash);
+        $itemid = $question2fcid;
+        if ($file->filearea == 'answer' || $file->filearea == 'answerfeedback') {
+            $itemid = $answerid;
             $file->filearea = 'answer';
-            $DB->insert_record('files', $file);
         }
+        $file->itemid = $itemid;
+        $file->timecreated = time();
+        $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $file->filearea, $itemid, '/', $file->filename);
+        $DB->insert_record('files', $file);
     }
 
 }

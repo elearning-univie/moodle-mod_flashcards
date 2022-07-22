@@ -188,4 +188,5 @@ $string['teachercheck_help'] = 'Die Karte wurde von einem Lehrenden überprüft 
 $string['thumbsdown'] = 'Mag ich nicht';
 $string['thumbsup'] = 'Mag ich';
 $string['timemodified'] = 'Zuletzt verändert';
+$string['trueorfalse'] = 'Wahr oder Falsch?';
 $string['userpreferences'] = 'Benutzereigenschaften';

@@ -486,7 +486,7 @@ class custom_view extends \core_question\bank\view {
         // Build the SQL.
         $sql = ' FROM {question} q ' . implode(' ', $joins);
         $sql .= ' WHERE ' . implode(' AND ', $tests);
-        $sql .= '   AND q.qtype IN (\'flashcard\', \'multichoice\') ';
+        $sql .= '   AND q.qtype IN (\'flashcard\', \'multichoice\', \'truefalse\') ';
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
                                       JOIN {tag_instance} ti ON ti.itemid = qu.id
                                       JOIN {tag} t ON t.id = ti.tagid

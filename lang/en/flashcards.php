@@ -188,4 +188,5 @@ $string['teachercheck_help'] = 'The content of the card has been reviewed by a t
 $string['thumbsdown'] = 'I dislike this';
 $string['thumbsup'] = 'I like this';
 $string['timemodified'] = 'Last modified';
+$string['trueorfalse'] = 'True or False?';
 $string['userpreferences'] = 'User preferences';
