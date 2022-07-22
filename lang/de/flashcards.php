@@ -127,6 +127,7 @@ $string['proposecardsexplained'] = 'Nutzen Sie „Peer-Review“ um für Lernkar
 $string['playnowbutton'] = 'Lernen starten';
 $string['pluginadministration'] = 'Lernkartei Administration';
 $string['pluginname'] = 'Lernkartei';
+$string['possibleanswers'] = 'Mögliche Antwort(en):';
 $string['privacy:metadata:flashcards:course'] = 'Die Kurs ID';
 $string['privacy:metadata:flashcards:name'] = 'Name der Lernkartei Aktivität';
 $string['privacy:metadata:flashcards:categoryid'] = 'Fragenkategorie ID';

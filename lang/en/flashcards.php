@@ -125,6 +125,7 @@ $string['peerreview_help'] = 'Up and down votes of your peers after reviewing th
 $string['playnowbutton'] = 'Start learning';
 $string['pluginadministration'] = 'Flashcard administration';
 $string['pluginname'] = 'Flashcard';
+$string['possibleanswers'] = 'Possible answer(s):';
 $string['privacy:metadata:flashcards:course'] = 'The course id';
 $string['privacy:metadata:flashcards:name'] = 'The flashcard activity name';
 $string['privacy:metadata:flashcards:categoryid'] = 'Question category id';
