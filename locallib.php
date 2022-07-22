@@ -460,6 +460,10 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
         $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
     }
 
+    if ($question->get_type_name() == 'multichoiceset') {
+        $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+    }
+
     if ($question->get_type_name() == 'truefalse') {
         $questionid = mod_flashcards_truefalse_to_flashcard($question, $flashcardsid);
     }
@@ -637,7 +641,7 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     $question2fc = question_bank::load_question($question2fc->id);
     $answerid = array_key_first($question2fc->answers);
 
-    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid);
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
     mod_flashcards_add_2fc_tag($question->id, $context->id);
@@ -709,7 +713,7 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
     $question2fc = question_bank::load_question($question2fc->id);
     $answerid = array_key_first($question2fc->answers);
 
-    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid, $tfanswerid);
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid, $tfanswerid);
 
     // set 2fc tag to mc question
     mod_flashcards_add_2fc_tag($question->id, $context->id);
@@ -774,7 +778,7 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
     $question2fc = question_bank::load_question($question2fc->id);
     $answerid = array_key_first($question2fc->answers);
 
-    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid);
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
     mod_flashcards_add_2fc_tag($question->id, $context->id);
@@ -822,30 +826,54 @@ function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
 /**
  * copy multichoice to flashcard
  *
- * @param int $questionid
+ * @param stdClass $questionid
  * @param int $question2fcid
  * @param int $answerid
  * @param int $tfanswerid
  */
-function mod_flashcards_save_image_files_for_flashcards($questionid, $question2fcid, $answerid, $tfanswerid = 0) {
+function mod_flashcards_save_image_files_for_flashcards($question, $question2fcid, $answerid, $tfanswerid = 0) {
     global $DB;
 
     $fs = new \file_storage(); 
-    list($inids, $questionids) = $DB->get_in_or_equal([$questionid, $tfanswerid], SQL_PARAMS_NAMED);
+    list($inids, $questionids) = $DB->get_in_or_equal([$question->id, $tfanswerid], SQL_PARAMS_NAMED);
     $sql = "SELECT * FROM {files} WHERE itemid $inids AND component = 'question'";
     $files = $DB->get_records_sql($sql, $questionids);
+
     foreach ($files as $file) {
         unset($file->id);
         unset($file->pathnamehash);
         $itemid = $question2fcid;
-        if ($file->filearea == 'answer' || $file->filearea == 'answerfeedback') {
-            $itemid = $answerid;
-            $file->filearea = 'answer';
+        if ($question->get_type_name() == 'multichoice' || $question->get_type_name() == 'multichoiceset') {
+            mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+            mod_flashcards_save_file($file, $answerid, 'answer');
         }
-        $file->itemid = $itemid;
-        $file->timecreated = time();
-        $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $file->filearea, $itemid, '/', $file->filename);
-        $DB->insert_record('files', $file);
+        if ($question->get_type_name() == 'truefalse') {
+            if ($file->filearea == 'answer' || $file->filearea == 'answerfeedback') {
+                mod_flashcards_save_file($file, $answerid, 'answer');
+            } else {
+                mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+            }
+        }
+        if ($question->get_type_name() == 'shortanswer') {
+            mod_flashcards_save_file($file, $question2fcid, $file->filearea);
+        }
     }
 
+}
+/**
+ * copy multichoice to flashcard
+ *
+ * @param stdClass $file
+ * @param int $itemid
+ * @param string $filearea
+ */
+function mod_flashcards_save_file($file, $itemid, $filearea) {
+    global $DB;
+
+    $fs = new \file_storage();
+    $file->itemid = $itemid;
+    $file->filearea = $filearea;
+    $file->timecreated = time();
+    $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $filearea, $itemid, '/', $file->filename);
+    $DB->insert_record('files', $file);
 }
