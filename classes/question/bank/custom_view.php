@@ -484,7 +484,7 @@ class custom_view extends \core_question\bank\view {
             }
         }
 
-        $qtypes = '\'flashcard\', \'multichoice\', \'truefalse\', \'shortanswer\'';
+        $qtypes = '\'flashcard\', \'multichoice\', \'truefalse\', \'shortanswer\', \'multianswer\'';
         if (question_bank::qtype_exists('multichoiceset')) {
             $qtypes = $qtypes . ', \'multichoiceset\'';
         }
