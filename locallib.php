@@ -750,8 +750,8 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
                         $correctanswer = '<b> ' . $answer->answer . '</b>';
                     }
                 }
-                $answeroptions = $answeroptions . ' |'; 
-            } elseif (in_array($mcsubtext[0], $horizontal)) {
+                $answeroptions = $answeroptions . ' |';
+            } else if (in_array($mcsubtext[0], $horizontal)) {
                 $answeroptions = '<table><tbody><tr>';
                 $correctanswer = '<table><tbody><tr>';
                 foreach ($answers as $answer) {
@@ -764,7 +764,7 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
                 }
                 $answeroptions .= '</tr></tbody></table>';
                 $correctanswer .= '</tr></tbody></table>';
-            } elseif (in_array($mcsubtext[0], $vertical)) {
+            } else if (in_array($mcsubtext[0], $vertical)) {
                 $answeroptions = '<ul style="list-style-type:circle;">';
                 $correctanswer = '<ul style="list-style-type:circle;">';
                 foreach ($answers as $answer) {
