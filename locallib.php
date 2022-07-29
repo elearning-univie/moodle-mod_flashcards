@@ -798,7 +798,6 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
 
-    // mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
     // set 2fc tag to mc question
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
