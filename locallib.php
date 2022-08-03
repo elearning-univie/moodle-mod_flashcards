@@ -609,12 +609,12 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     foreach ($answers as $answer) {
         if ( $answer->fraction > 0) {
             $fcanswerext .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
-            '" style="font-weight: bold; font-size:110%; list-style-type:disc">' . $answer->answer . '</li>';
+            '" style="font-weight: bold; font-size:110%; list-style-type:disc">('. get_string('statusval1', 'flashcards') . ')' . $answer->answer . '</li>';
         } else {
-            $fcanswerext .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">' . $answer->answer . '</li>';
+            $fcanswerext .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">('. get_string('statusval2', 'flashcards') . ')' . $answer->answer . '</li>';
         }
     }
-
+    
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
 
