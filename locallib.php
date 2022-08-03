@@ -697,14 +697,14 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
         }
     }
     $fcanswerext = $fcanswerext . '</ul>';
-
+print_object($question);
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
-    mod_flashcards_add_2fc_tag($question->id, $context->id);
+    //mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -938,7 +938,7 @@ function mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, 
     $question2fc->name = $question->name;
     $question2fc->questiontext = $fcquestionext;
     $question2fc->answer = $fcanswerext;
-    $question2fc->generalfeedback = $question->generalfeedback;
+    $question2fc->generalfeedback['text'] = $question->generalfeedback;
 
     $questioncopy = fullclone($question2fc);
     $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
@@ -947,7 +947,7 @@ function mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, 
     $questioncopy->questiontext = array();
     $questioncopy->questiontext['text'] = $fcquestionext;
     $questioncopy->questiontext['format'] = FORMAT_HTML;
-    $questioncopy->generalfeedback = $question->generalfeedback;
+    $questioncopy->generalfeedback['text'] = $question->generalfeedback;
     $questioncopy->generalfeedbackformat = $question->generalfeedbackformat;
 
     $questioncopy->answer = array();
