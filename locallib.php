@@ -456,24 +456,22 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     }
     $question = question_bank::load_question($questionid);
 
-    if ($question->get_type_name() == 'multichoice') {
-        $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
-    }
-
-    if ($question->get_type_name() == 'multichoiceset') {
-        $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
-    }
-
-    if ($question->get_type_name() == 'truefalse') {
-        $questionid = mod_flashcards_truefalse_to_flashcard($question, $flashcardsid);
-    }
-
-    if ($question->get_type_name() == 'shortanswer') {
-        $questionid = mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid);
-    }
-
-    if ($question->get_type_name() == 'multianswer') {
-        $questionid = mod_flashcards_multianswer_to_flashcard($question, $flashcardsid);
+    switch ($question->get_type_name()) {
+        case 'multichoice':
+            $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+            break;
+        case 'multichoiceset':
+            $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+            break;
+        case 'truefalse':
+            $questionid = mod_flashcards_truefalse_to_flashcard($question, $flashcardsid);
+            break;
+        case 'shortanswer':
+            $questionid = mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid);
+            break;
+        case 'multianswer':
+            $questionid = mod_flashcards_multianswer_to_flashcard($question, $flashcardsid);
+            break;
     }
 
     $trans = $DB->start_delegated_transaction();
@@ -621,7 +619,7 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
-    //mod_flashcards_add_2fc_tag($question->id, $context->id);
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -664,7 +662,7 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid, $tfanswerid);
 
     // set 2fc tag to mc question
-    //mod_flashcards_add_2fc_tag($question->id, $context->id);
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -704,7 +702,7 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
-    //mod_flashcards_add_2fc_tag($question->id, $context->id);
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -808,7 +806,7 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
     // set 2fc tag to mc question
-    //mod_flashcards_add_2fc_tag($question->id, $context->id);
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
