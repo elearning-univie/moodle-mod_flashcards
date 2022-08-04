@@ -621,7 +621,7 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
-    mod_flashcards_add_2fc_tag($question->id, $context->id);
+    //mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -664,7 +664,7 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid, $tfanswerid);
 
     // set 2fc tag to mc question
-    mod_flashcards_add_2fc_tag($question->id, $context->id);
+    //mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -704,7 +704,7 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
-    mod_flashcards_add_2fc_tag($question->id, $context->id);
+    //mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
@@ -751,6 +751,8 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
                     $answeroptions .= ' | ' .$answer->answer;
                     if ($answer->fraction > 0) {
                         $correctanswer .= '| <b> ' . $answer->answer . '</b>';
+                    } else {
+                        $correctanswer .= '| ' . $answer->answer;
                     }
                 }
                 $correctanswer .= ' |';
@@ -806,7 +808,7 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
     // set 2fc tag to mc question
-    mod_flashcards_add_2fc_tag($question->id, $context->id);
+    //mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
 }
