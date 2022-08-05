@@ -456,8 +456,22 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     }
     $question = question_bank::load_question($questionid);
 
-    if ($question->get_type_name() == 'multichoice') {
-        $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+    switch ($question->get_type_name()) {
+        case 'multichoice':
+            $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+            break;
+        case 'multichoiceset':
+            $questionid = mod_flashcards_multichoice_to_flashcard($question, $flashcardsid);
+            break;
+        case 'truefalse':
+            $questionid = mod_flashcards_truefalse_to_flashcard($question, $flashcardsid);
+            break;
+        case 'shortanswer':
+            $questionid = mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid);
+            break;
+        case 'multianswer':
+            $questionid = mod_flashcards_multianswer_to_flashcard($question, $flashcardsid);
+            break;
     }
 
     $trans = $DB->start_delegated_transaction();
@@ -586,51 +600,23 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     $answers = $question->answers;
     $fcquestionext = $question->questiontext . '<ul style="list-style-type:circle;">';
     foreach ($answers as $answer) {
-        $fcquestionext = $fcquestionext . '<li>' . $answer->answer . '</li>';
+        $fcquestionext .= '<li>' . $answer->answer . '</li>';
     }
-    $fcquestionext = $fcquestionext . '</ul>';
+    $fcquestionext .= '</ul>';
     $fcanswerext = $question->questiontext . '<ul style="list-style-type:circle;">';
     foreach ($answers as $answer) {
         if ( $answer->fraction > 0) {
-            $fcanswerext = $fcanswerext . '<li style="font-weight: bold; font-size:110%; list-style-type:disc">' . '('
-                                        . get_string('statusval1', 'flashcards') . ')'. $answer->answer . '</li>';
+            $fcanswerext .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
+            '" style="font-weight: bold; font-size:110%; list-style-type:disc">('. get_string('statusval1', 'flashcards') . ')' . $answer->answer . '</li>';
         } else {
-            $fcanswerext = $fcanswerext . '<li>' . '(' . get_string('statusval2', 'flashcards') . ')' . $answer->answer . '</li>';
+            $fcanswerext .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">('. get_string('statusval2', 'flashcards') . ')' . $answer->answer . '</li>';
         }
     }
 
-    $qtype = 'flashcard';
-    $qtypeobj = question_bank::get_qtype($qtype);
-
-    $question2fc = new stdClass();
-    $question2fc->category = $flashcard->categoryid;
-    $question2fc->qtype = $qtype;
-    $question2fc->createdby = $USER->id;
-    $question2fc->options = new stdClass();
-    $question2fc->formoptions = new stdClass();
-    $question2fc->contextid = $context->id;
-    $question2fc->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
-
-    $question2fc->name = $question->name;
-    $question2fc->questiontext = $fcquestionext;
-    $question2fc->answer = $fcanswerext;
-
-    $questioncopy = fullclone($question2fc);
-    $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
-    $questioncopy->cmid = $cm->id;
-    $questioncopy->name = $question->name;
-    $questioncopy->questiontext = array();
-    $questioncopy->questiontext['text'] = $fcquestionext;
-    $questioncopy->questiontext['format'] = FORMAT_HTML;
-
-    $questioncopy->answer = array();
-    $questioncopy->answer['text'] = $fcanswerext;
-    $questioncopy->answer['format'] = FORMAT_HTML;
-    $question2fc = $qtypeobj->save_question($question2fc, $questioncopy);
-    $question2fc = question_bank::load_question($question2fc->id);
+    $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
 
-    mod_flashcards_save_image_files_for_flashcards($question->id, $question2fc->id, $answerid);
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // set 2fc tag to mc question
     mod_flashcards_add_2fc_tag($question->id, $context->id);
@@ -638,6 +624,192 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     return $question2fc->id;
 }
 
+/**
+ * copy true/false to flashcard
+ *
+ * @param int $question
+ * @param int $flashcardsid
+ * @return int $flashcardsid
+ */
+function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
+    global $DB, $USER, $CFG;
+
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+    $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+
+    $rightanswer = $question->rightanswer;
+
+    $fcquestionext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+                     . get_string('trueorfalse', 'mod_flashcards') . '<br></p>';
+    $fcquestionext = $fcquestionext . $question->questiontext;
+    if ($rightanswer) {
+        $tfanswerid = $question->trueanswerid;
+        $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
+                       . get_string('true', 'qtype_truefalse')
+                       . '<br></p>' . $question->truefeedback;
+    } else {
+        $tfanswerid = $question->falseanswerid;
+        $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
+                       . get_string('false', 'qtype_truefalse')
+                       . '<br></p>' . $question->falsefeedback;;
+    }
+
+    $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
+    $answerid = array_key_first($question2fc->answers);
+
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid, $tfanswerid);
+
+    // set 2fc tag to mc question
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
+
+    return $question2fc->id;
+}
+/**
+ * copy shortanswer to flashcard
+ *
+ * @param int $question
+ * @param int $flashcardsid
+ * @return int $flashcardsid
+ */
+function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
+    global $DB, $USER, $CFG;
+
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+    $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+
+    $answers = $question->answers;
+    $fcquestionext = $question->questiontext;
+
+    $fcanswerext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+                  . get_string('possibleanswers', 'mod_flashcards')
+                  . '<br></p> <ul style="list-style-type:circle;">';
+    foreach ($answers as $answer) {
+        // for the shortanswer show only answers that are 100% correct
+        if ($answer->fraction == 1) {
+            $fcanswerext = $fcanswerext . '<li style="list-style-type:disc">'
+                           . $answer->answer . '</li>';
+        }
+    }
+    $fcanswerext = $fcanswerext . '</ul>';
+
+    $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
+    $answerid = array_key_first($question2fc->answers);
+
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
+
+    // set 2fc tag to mc question
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
+
+    return $question2fc->id;
+}
+/**
+ * copy multianswer to flashcard
+ *
+ * @param int $question
+ * @param int $flashcardsid
+ * @return int $flashcardsid
+ */
+function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
+    global $DB, $USER, $CFG;
+
+    require_once($CFG->dirroot . '/lib/questionlib.php');
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+    $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+
+    $dropdown = ['MULTICHOICE', 'MC', 'MULTICHOICE_S', 'MCS'];
+    $horizontal = ['MULTICHOICE_H', 'MCH', 'MULTICHOICE_HS', 'MCHS', 'MULTIRESPONSE_H', 'MRH', 'MULTIRESPONSE_HS', 'MRHS'];
+    $vertical = ['MULTICHOICE_V', 'MCV', 'MULTICHOICE_VS', 'MCVS', 'MULTIRESPONSE', 'MR MULTIRESPONSE_S', 'MRS'];
+
+    $subquestions = $question->subquestions;
+    $rawquestiontext = $question->questiontext;
+    $rawanswertext = $question->questiontext;
+
+    $matches = array();
+    preg_match_all('/\{#[0-9]+\}/', $rawquestiontext, $matches, PREG_OFFSET_CAPTURE);
+    $matches = $matches[0];
+    $placeholders = array();
+    foreach ($matches as $match) {
+        array_push($placeholders, $match[0]);
+    }
+    $i = 0;
+    foreach ($subquestions as $subquestion) {
+        $answers = $subquestion->answers;
+        $answeroptions = '';
+        $correctanswer = '';
+        $mcsubtext = array();
+        if (get_class($subquestion->qtype) == 'qtype_multichoice') {
+            preg_match('/M[A-Z]+_?[A-Z]?/', $subquestion->questiontext, $mcsubtext);
+            if (in_array($mcsubtext[0], $dropdown)) {
+                foreach ($answers as $answer) {
+                    $answeroptions .= ' | ' .$answer->answer;
+                    if ($answer->fraction > 0) {
+                        $correctanswer .= '| <b> ' . $answer->answer . '</b>';
+                    } else {
+                        $correctanswer .= '| ' . $answer->answer;
+                    }
+                }
+                $correctanswer .= ' |';
+                $answeroptions .= ' |';
+            } else if (in_array($mcsubtext[0], $horizontal)) {
+                $answeroptions = '<table><tbody><tr>';
+                $correctanswer = '<table><tbody><tr>';
+                foreach ($answers as $answer) {
+                    $answeroptions .= '<td class="pr-5"> &#9675; ' . $answer->answer . '</td> ';
+                    if ($answer->fraction > 0) {
+                        $correctanswer .= '<td aria-label="' . get_string('answeriscorrect', 'flashcards') . '" class="pr-5"><b> &#9679;' . $answer->answer . '</b></td> ';
+                    } else {
+                        $correctanswer .= '<td aria-label="' . get_string('answeriswrong', 'flashcards') . '" class="pr-5"> &#9675; ' . $answer->answer . '</td> ';
+                    }
+                }
+                $answeroptions .= '</tr></tbody></table>';
+                $correctanswer .= '</tr></tbody></table>';
+            } else if (in_array($mcsubtext[0], $vertical)) {
+                $answeroptions = '<ul style="list-style-type:circle;">';
+                $correctanswer = '<ul style="list-style-type:circle;">';
+                foreach ($answers as $answer) {
+                    $answeroptions .= '<li>' . $answer->answer . '</li>';
+                    if ( $answer->fraction > 0) {
+                        $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
+                        '" style="list-style-type:disc; font-weight: bold;">' . $answer->answer . '</li>';
+                    } else {
+                        $correctanswer .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">' . $answer->answer . '</li>';
+                    }
+                }
+                $answeroptions .= '</ul>';
+                $correctanswer .= '</ul>';
+            }
+        } else if (get_class($subquestion->qtype) == 'qtype_shortanswer' || get_class($subquestion->qtype) == 'qtype_numerical') {
+            $answeroptions = ' _______ ';
+            foreach ($answers as $answer) {
+                if ($answer->fraction == 1) {
+                    $correctanswer .= '| <b> ' . $answer->answer . '</b> ';
+                }
+            }
+            $correctanswer .= '|';
+        }
+
+        $rawquestiontext = str_replace($placeholders[$i], $answeroptions, $rawquestiontext);
+        $rawanswertext = str_replace($placeholders[$i], $correctanswer, $rawanswertext);
+        $i++;
+    }
+
+    $fcquestionext = $rawquestiontext;
+    $fcanswerext = $rawanswertext;
+
+    $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
+    $answerid = array_key_first($question2fc->answers);
+
+    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
+    // set 2fc tag to mc question
+    mod_flashcards_add_2fc_tag($question->id, $context->id);
+
+    return $question2fc->id;
+}
 /**
  * add 2fc tag to origin question
  *
@@ -679,28 +851,110 @@ function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
 /**
  * copy multichoice to flashcard
  *
- * @param int $questionid
+ * @param stdClass $question
  * @param int $question2fcid
  * @param int $answerid
+ * @param int $tfanswerid
  */
-function mod_flashcards_save_image_files_for_flashcards($questionid, $question2fcid, $answerid) {
+function mod_flashcards_save_image_files_for_flashcards($question, $question2fcid, $answerid, $tfanswerid = 0) {
     global $DB;
 
     $fs = new \file_storage();
-    $files = $DB->get_records('files', ['itemid' => $questionid, 'component' => 'question']);
+    list($inids, $questionids) = $DB->get_in_or_equal([$question->id, $tfanswerid], SQL_PARAMS_NAMED);
+    $sql = "SELECT * FROM {files} WHERE itemid $inids AND component = 'question'";
+    $files = $DB->get_records_sql($sql, $questionids);
+
     foreach ($files as $file) {
-        if ($file->filearea != 'generalfeedback') {
-            unset($file->id);
-            unset($file->pathnamehash);
-            $file->itemid = $question2fcid;
-            $file->timecreated = time();
-            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'questiontext', $question2fcid, '/', $file->filename);
-            $DB->insert_record('files', $file);
-            $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', 'answer', $answerid, '/', $file->filename);
-            $file->itemid = $answerid;
-            $file->filearea = 'answer';
-            $DB->insert_record('files', $file);
+        unset($file->id);
+        unset($file->pathnamehash);
+
+        if ($question->get_type_name() == 'multichoice' || $question->get_type_name() == 'multichoiceset'
+            || $question->get_type_name() == 'multianswer') {
+            if ($file->filearea == 'questiontext' || $file->filearea == 'answer') {
+                mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+                mod_flashcards_save_file($file, $answerid, 'answer');
+            } else {
+                mod_flashcards_save_file($file, $question2fcid, 'generalfeedback');
+            }
+        }
+        if ($question->get_type_name() == 'truefalse') {
+            if ($file->filearea == 'answer' || $file->filearea == 'answerfeedback') {
+                mod_flashcards_save_file($file, $answerid, 'answer');
+            } else if ($file->filearea == 'questiontext') {
+                mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+            } else {
+                mod_flashcards_save_file($file, $question2fcid, 'generalfeedback');
+            }
+        }
+        if ($question->get_type_name() == 'shortanswer') {
+            mod_flashcards_save_file($file, $question2fcid, $file->filearea);
         }
     }
 
+}
+/**
+ * copy multichoice to flashcard
+ *
+ * @param stdClass $file
+ * @param int $itemid
+ * @param string $filearea
+ */
+function mod_flashcards_save_file($file, $itemid, $filearea) {
+    global $DB;
+
+    $fs = new \file_storage();
+    $file->itemid = $itemid;
+    $file->filearea = $filearea;
+    $file->timecreated = time();
+    $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $filearea, $itemid, '/', $file->filename);
+    $DB->insert_record('files', $file);
+}
+/**
+ * create flashcard
+ *
+ * @param stdClass $question
+ * @param stdClass $flashcard
+ * @param string $fcquestionext
+ * @param string $fcanswerext
+ * @return stdClass
+ */
+function mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext) {
+    global $USER;
+
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcard->id, 'flashcards');
+    $context = context_module::instance($cm->id);
+
+    $qtype = 'flashcard';
+    $qtypeobj = question_bank::get_qtype($qtype);
+    $question2fc = new stdClass();
+    $question2fc->category = $flashcard->categoryid;
+    $question2fc->qtype = $qtype;
+    $question2fc->createdby = $USER->id;
+    $question2fc->options = new stdClass();
+    $question2fc->formoptions = new stdClass();
+    $question2fc->contextid = $context->id;
+    $question2fc->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
+
+    $question2fc->name = $question->name;
+    $question2fc->questiontext = $fcquestionext;
+    $question2fc->answer = $fcanswerext;
+    $question2fc->generalfeedback['text'] = $question->generalfeedback;
+
+    $questioncopy = fullclone($question2fc);
+    $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
+    $questioncopy->cmid = $cm->id;
+    $questioncopy->name = $question->name;
+    $questioncopy->questiontext = array();
+    $questioncopy->questiontext['text'] = $fcquestionext;
+    $questioncopy->questiontext['format'] = FORMAT_HTML;
+    $questioncopy->generalfeedback['text'] = $question->generalfeedback;
+    $questioncopy->generalfeedbackformat = $question->generalfeedbackformat;
+
+    $questioncopy->answer = array();
+    $questioncopy->answer['text'] = $fcanswerext;
+    $questioncopy->answer['format'] = FORMAT_HTML;
+    $question2fc = $qtypeobj->save_question($question2fc, $questioncopy);
+    $question2fc = question_bank::load_question($question2fc->id);
+
+    return $question2fc;
 }

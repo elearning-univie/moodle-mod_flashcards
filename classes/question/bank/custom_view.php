@@ -26,6 +26,7 @@ namespace mod_flashcards\question\bank;
 
 use coding_exception;
 use mod_flashcards;
+use question_bank;
 
 
 /**
@@ -483,10 +484,14 @@ class custom_view extends \core_question\bank\view {
             }
         }
 
+        $qtypes = '\'flashcard\', \'multichoice\', \'truefalse\', \'shortanswer\', \'multianswer\'';
+        if (question_bank::qtype_exists('multichoiceset')) {
+            $qtypes = $qtypes . ', \'multichoiceset\'';
+        }
         // Build the SQL.
         $sql = ' FROM {question} q ' . implode(' ', $joins);
         $sql .= ' WHERE ' . implode(' AND ', $tests);
-        $sql .= '   AND q.qtype IN (\'flashcard\', \'multichoice\') ';
+        $sql .= '   AND q.qtype IN (' . $qtypes . ') ';
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
                                       JOIN {tag_instance} ti ON ti.itemid = qu.id
                                       JOIN {tag} t ON t.id = ti.tagid
