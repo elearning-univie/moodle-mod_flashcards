@@ -64,7 +64,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
             if (optional_param('missingcategory', 0, PARAM_INT)) {
                 $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $contexts));
             } else {
-                $mform->addElement('hidden', 'category', get_string('category', 'question'), array('contexts' => $contexts));
+                $mform->addElement('hidden', 'category', get_string('category', 'question'), array('contexts' => $context->id));
             }
 
             $mform->setType('category', PARAM_RAW);
