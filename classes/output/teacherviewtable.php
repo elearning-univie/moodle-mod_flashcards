@@ -45,9 +45,6 @@ class teacherviewtable extends table_sql {
     /** @var int course id */
     private $courseid;
 
-    /** @var int flashcard id */
-    private $fcid;
-
     /** @var string text for the edit icon */
     private $editicontext;
 
@@ -71,15 +68,14 @@ class teacherviewtable extends table_sql {
      *
      * @param int $uniqueid
      * @param int $cmid
-     * @param object $fcobj
+     * @param int $course
      * @param string $callbackurl
      * @throws \coding_exception
      */
-    public function __construct($uniqueid, $cmid, $fcobj, $callbackurl) {
+    public function __construct($uniqueid, $cmid, $course, $callbackurl) {
         parent::__construct($uniqueid);
         $this->cmid = $cmid;
-        $this->courseid = $fcobj->course;
-        $this->fcid = $fcobj->id;
+        $this->courseid = $course;
         $this->editreturnurl = $callbackurl;
         $this->authors = array();
         $this->context = \context_module::instance($cmid);
@@ -92,7 +88,7 @@ class teacherviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
-        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'remove');
+        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'version', 'preview', 'edit', 'remove');
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('upvotes', 'flashcards_up');
@@ -100,6 +96,7 @@ class teacherviewtable extends table_sql {
         $this->column_class('downvotes', 'flashcards_down');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
+        $this->column_class('version', 'flashcards_studentview_dr');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('remove', 'flashcards_teacherview_dr');
@@ -113,6 +110,7 @@ class teacherviewtable extends table_sql {
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
+            get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
             get_string('removeflashcard', 'mod_flashcards'));
@@ -129,6 +127,7 @@ class teacherviewtable extends table_sql {
             null,
             null,
             null,
+            null,
             new \help_icon('removeflashcardinfo', 'mod_flashcards'));
         $this->define_help_for_headers($helpforheaders);
 
@@ -140,6 +139,7 @@ class teacherviewtable extends table_sql {
         $this->no_sorting('peerreview');
         $this->no_sorting('edit');
         $this->no_sorting('sep');
+        $this->no_sorting('version');
         $this->no_sorting('preview');
         $this->no_sorting('remove');
     }
@@ -182,7 +182,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
         return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
@@ -217,7 +217,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid, 'origin' => $this->editreturnurl));
+            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $values->fqid, 'origin' => $this->editreturnurl));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }
@@ -231,7 +231,7 @@ class teacherviewtable extends table_sql {
     public function col_preview($values) {
         global $OUTPUT;
 
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcid));
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
 
         return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
@@ -247,7 +247,7 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/flashcards/teacherview.php',
-            array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true, 'fcid' => $this->fcid));
+            array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true, 'fcid' => $values->fqid));
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }

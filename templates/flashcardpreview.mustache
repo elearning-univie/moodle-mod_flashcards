@@ -91,7 +91,7 @@
                         </div>
                         <div class="col-sm-auto">
                             <div class="iconsize">
-                                <button type="button" id="upvotebtn" class="btn btn-peerreview {{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{upvote}})">
+                                <button type="button" id="upvotebtn" class="btn btn-peerreview {{prbtncolorinfoup}}" onClick="$.mod_flashcards_peer_review({{fqid}}, {{upvote}})">
                                     {{# pix }} t/approve, core, {{# str }} thumbsup, mod_flashcards {{/ str }} {{/ pix }}
                                 </button>
                             </div>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="col-sm-auto">
                             <div class="iconsize upsidedown">
-                                <button type="button" id="downvotebtn" class="btn btn-peerreview {{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review({{questionid}}, {{fcid}}, {{downvote}})">
+                                <button type="button" id="downvotebtn" class="btn btn-peerreview {{prbtncolorinfodown}}" onClick="$.mod_flashcards_peer_review({{fqid}}, {{downvote}})">
                                     {{# pix }} t/approve, core, {{# str }} thumbsdown, mod_flashcards {{/ str }} {{/ pix }}
                                 </button>
                             </div>
@@ -121,7 +121,7 @@
                     <div class="row justify-content-between no-gutters">
                         <div class="col">
                             {{#canedit}}
-                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{questionid}}, {{fcid}}, {{statval}}, this.value)">
+                            <select id="teachercheck" name="teachercheck" onchange="$.mod_flashcards_teacher_check({{fqid}}, {{statval}}, this.value)">
                                 <option value="0" title="{{# str }} statusval0, mod_flashcards {{/ str }}" {{#selected0}}selected{{/selected0}}>{{# str }} statusval0, mod_flashcards {{/ str }}</option>
                                 <option value="1" title="{{# str }} statusval1, mod_flashcards {{/ str }}" {{#selected1}}selected{{/selected1}}>{{# str }} statusval1, mod_flashcards {{/ str }}</option>
                                 <option value="2" title="{{# str }} statusval2, mod_flashcards {{/ str }}" {{#selected2}}selected{{/selected2}}>{{# str }} statusval2, mod_flashcards {{/ str }}</option>

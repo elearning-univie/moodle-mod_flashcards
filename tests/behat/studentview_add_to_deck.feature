@@ -18,7 +18,7 @@ Feature: As a student I want to add flashcards to my deck
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
@@ -37,8 +37,7 @@ Feature: As a student I want to add flashcards to my deck
   @javascript
   Scenario: Ich klicke auf den zweiten Reiter
     Given I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then I should see "flashcard 1"
     And I follow "My flashcards"
@@ -46,7 +45,7 @@ Feature: As a student I want to add flashcards to my deck
     And I follow "Flashcards collection"
     And I click on "input[class^=mod-flashcards-checkbox]" "css_element" in the "flashcard 1" "table_row"
     And I click on "Add flashcard(s)" "button"
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I follow "My flashcards"
     Then I should see "flashcard 1"

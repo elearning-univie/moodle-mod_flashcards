@@ -42,8 +42,8 @@ th.flashcards_teacherview_tc {
 #page-mod-flashcards-studentquestioninit .generaltable td.flashcards_up {
     width: 11%;
     text-align: right;
-    margin-right: 0px;
-    padding-right: 0em;
+    margin-right: 0;
+    padding-right: 0;
 }
 
 #page-mod-flashcards-teacherview .generaltable th.flashcards_down,
@@ -52,8 +52,8 @@ th.flashcards_teacherview_tc {
 #page-mod-flashcards-studentquestioninit td.flashcards_down {
     width: 8%;
     text-align: left;
-    margin-left: 0px;
-    padding-left: 0em;
+    margin-left: 0;
+    padding-left: 0;
 }
 
 th.flashcards_sep {
@@ -224,13 +224,13 @@ img.mod-flashcards-appstore-badge {
 }
 
 .path-mod-flashcards .texticon i {
-    margin: 0em;
+    margin: 0;
 }
 
 .path-mod-flashcards .btn-peerreview {
     background-color: transparent;
     border: none;
-    padding: 0em;
+    padding: 0;
 }
 
 .path-mod-flashcards .btn-peerreview.btn-up {

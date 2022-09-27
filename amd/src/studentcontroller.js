@@ -68,3 +68,4 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url', 'core/event'], f
         }
     };
 });
+

@@ -72,8 +72,14 @@ class simplequestionform extends \moodleform {
         $this->question = $question;
         $this->action = $action;
 
-        $record = $DB->get_record('question_categories',
+        if ($action == 'edit') {
+            $record = $DB->get_record('question_categories',
+                    array('id' => $question->questioncategoryid), 'contextid');
+        }
+        if ($action == 'create') {
+            $record = $DB->get_record('question_categories',
                 array('id' => $question->category), 'contextid');
+        }
         $this->context = \context::instance_by_id($record->contextid);
 
         $this->editoroptions = array('subdirs' => 1, 'maxfiles' => EDITOR_UNLIMITED_FILES,
@@ -92,6 +98,8 @@ class simplequestionform extends \moodleform {
      * @throws coding_exception
      */
     public function definition() {
+        global $PAGE;
+
         $mform = $this->_form;
 
         $mform->addElement('header', 'generalheader', get_string("general", 'form'));
@@ -105,6 +113,20 @@ class simplequestionform extends \moodleform {
         }
 
         $mform->setType('category', PARAM_RAW);
+
+        if ($this->action == 'edit') {
+            // Add extra information from plugins when editing a question (e.g.: Authors, version control and usage).
+            $functionname = 'edit_form_display';
+            $questiondata = [];
+            $plugins = get_plugin_list_with_function('qbank', $functionname);
+            foreach ($plugins as $componentname => $plugin) {
+                $element = new \stdClass();
+                $element->pluginhtml = component_callback($componentname, $functionname, [$this->question]);
+                $questiondata['editelements'][] = $element;
+            }
+            $mform->addElement('static', 'versioninfo', get_string('versioninfo', 'qbank_editquestion'),
+                $PAGE->get_renderer('qbank_editquestion')->render_question_info($questiondata));
+        }
 
         $mform->addElement('text', 'name', get_string('questionname', 'question'),
                 array('size' => 50, 'maxlength' => 255));

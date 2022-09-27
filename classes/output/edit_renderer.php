@@ -64,19 +64,19 @@ class edit_renderer extends \plugin_renderer_base {
     /**
      * Returns the add menu that is output once per page.
      * @param \moodle_url $pageurl the canonical URL of this page.
-     * @param \question_edit_contexts $contexts the relevant question bank contexts.
+     * @param array $contexts the relevant question bank contexts.
      * @param array $pagevars the variables from {@see \question_edit_setup()}.
      * @return string HTML to output.
      */
     public function add_menu_actions(\moodle_url $pageurl,
-        \question_edit_contexts $contexts, array $pagevars) {
+         $contexts, array $pagevars) {
 
         $actions = $this->edit_menu_actions($pageurl, $pagevars);
         if (empty($actions)) {
             return '';
         }
         $menu = new \action_menu();
-        $menu->set_alignment(\action_menu::TR, \action_menu::TR);
+        $menu->set_menu_left();
         $menu->set_constraint('.mod-flashcards-edit-content');
         $trigger = html_writer::tag('span', get_string('add', 'quiz'), array('class' => 'add-menu'));
         $menu->set_menu_trigger($trigger);

@@ -23,8 +23,7 @@ Feature: As a student I can add a flashcard
 
   @javascript
   Scenario: I add a flashcard as a student
-    Given I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    Given I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on "Create new flash card" "button"
     Then I should see "Editing a Flashcard question"

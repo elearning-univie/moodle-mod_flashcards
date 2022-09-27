@@ -18,7 +18,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     And I am on "Course 1" course homepage with editing mode on
     When I add a "Flash cards" to section "1" and I fill the form with:
       | Flash cards activity name | Test flash cards |
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
@@ -33,8 +33,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
     When I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then I should see "John Doe (Teacher)"
 
@@ -43,8 +42,7 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     Given the following config values are set as admin:
       | authordisplay | 2 | flashcards |
     When I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then I should see "John Doe"
 
@@ -53,7 +51,6 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
     Given the following config values are set as admin:
       | authordisplay | 0 | flashcards |
     When I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then I should not see "John Doe"

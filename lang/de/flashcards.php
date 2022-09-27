@@ -193,3 +193,4 @@ $string['thumbsup'] = 'Mag ich';
 $string['timemodified'] = 'Zuletzt verändert';
 $string['trueorfalse'] = 'Wahr oder Falsch?';
 $string['userpreferences'] = 'Benutzereigenschaften';
+$string['version'] = 'Version';

@@ -52,3 +52,4 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/url'], function ($, aj
         }
     };
 });
+
