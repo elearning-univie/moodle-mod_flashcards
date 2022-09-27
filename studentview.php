@@ -54,7 +54,6 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
     $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-    echo $OUTPUT->heading($flashcards->name);
 
     $templatestablecontext['icons'] = [
             'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
@@ -92,23 +91,24 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
-             WHERE q.id = s.questionid
+             WHERE q.id = s.qbankentryid
                AND fcid = :fcid
-               AND questionid NOT IN (SELECT questionid
-                                FROM {flashcards_q_stud_rel}
-                               WHERE studentid = :userid
-                                 AND currentbox IS NOT NULL
-                                 AND flashcardsid = fcid)";
+               AND s.id NOT IN (SELECT fqid
+                                  FROM {flashcards_q_stud_rel}
+                                 WHERE studentid = :userid
+                                   AND currentbox IS NOT NULL)";
     $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
 
     $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
-             WHERE q.id = s.questionid
+             WHERE q.id = s.qbankentryid
                AND fcid = :fcid";
     $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
     $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
+    $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
+    $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
 
     $templatestablecontext['stats'] = [
             'totalquestioncount' => $totalquestioncount,
@@ -122,14 +122,8 @@ if (has_capability('mod/flashcards:studentview', $context)) {
     ];
 
     $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
-
-    $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
-    $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
-
     $templatestablecontext['boxes'] = $boxarray;
     $templatestablecontext['selectquestionsurl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
-
-    $templatestablecontext['learnnowurl'] = new moodle_url("/mod/flashcards/studentlearnnow.php", ['id' => $id]);
     $templatestablecontext['flashcardsid'] = $flashcards->id;
 
     $renderer = $PAGE->get_renderer('core');
@@ -161,10 +155,12 @@ function get_regular_box_count_records($userid, $flashcardsid) {
     global $DB;
 
     $sql = "SELECT currentbox AS boxid,
-                   count(id) AS questioncount
-            FROM {flashcards_q_stud_rel}
-            WHERE studentid = :userid
-              AND flashcardsid = :flashcardsid
+                   count(r.id) AS questioncount
+            FROM {flashcards_q_stud_rel} r,
+                 {flashcards_q_status} s
+            WHERE r.fqid = s.id
+              AND studentid = :userid
+              AND s.fcid = :flashcardsid
               AND currentbox != 0
             GROUP BY boxid
             ORDER BY boxid ASC";

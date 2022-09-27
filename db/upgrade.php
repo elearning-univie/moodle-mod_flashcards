@@ -142,5 +142,52 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022011000, 'flashcards');
     }
 
+    if ($oldversion < 2022090100) {
+
+        // Define field fcstatusid to be added to flashcards_q_stud_rel.
+        $table = new xmldb_table('flashcards_q_stud_rel');
+        $field = new xmldb_field('fqid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0, 'id');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            $records = $DB->get_records('flashcards_q_stud_rel');
+            foreach ($records as $record) {
+                $fqsrec = $DB->get_record('flashcards_q_status', ['questionid' => $record->questionid, 'fcid' => $record->flashcardsid]);
+                $record->fqid = $fqsrec->id;
+                $DB->update_record('flashcards_q_stud_rel', $record);
+            }
+
+            $key = new xmldb_key('flashcards_q_stud_rel', XMLDB_KEY_UNIQUE, ['flashcardsid', 'questionid', 'studentid']);
+            $dbman->drop_key($table, $key);
+
+            $key = new xmldb_key('flashcards_q_stud_rel', XMLDB_KEY_UNIQUE, ['flashcardsid', 'fqid', 'studentid']);
+            $dbman->add_key($table, $key);
+        }
+
+        $table = new xmldb_table('flashcards_q_status');
+        $field = new xmldb_field('qbankentryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+
+            $records = $DB->get_records('flashcards_q_status');
+            foreach ($records as $record) {
+                $qvrec = $DB->get_record('question_versions', ['questionid' => $record->questionid]);
+                $record->qbankentryid = $qvrec->questionbankentryid;
+                $DB->update_record('flashcards_q_status', $record);
+            }
+        }
+
+        $field = new xmldb_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2022090100, 'flashcards');
+    }
+
     return true;
 }

@@ -28,7 +28,7 @@ require_once('locallib.php');
 global $PAGE, $OUTPUT, $DB, $CFG;
 
 $cmid = required_param('cmid', PARAM_INT);
-$fcid = optional_param('fcid', null, PARAM_INT);
+$fqid = optional_param('fcid', null, PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
@@ -80,12 +80,12 @@ if ($deleteselected) {
         $questionid = $deleteselected;
         question_require_capability_on($questionid, 'edit');
 
-        $DB->delete_records('flashcards_q_stud_rel', ['questionid' => $questionid, 'flashcardsid' => $fcid]);
-        $DB->delete_records('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $fcid]);
+        $DB->delete_records('flashcards_q_stud_rel', ['fqid' => $fqid]);
+        $DB->delete_records('flashcards_q_status', ['id' => $fqid]);
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/flashcards/teacherview.php',
-            array('cmid' => $cmid, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected), 'fcid' => $fcid));
+            array('cmid' => $cmid, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected), 'fcid' => $fqid));
 
         $continue = new \single_button($deleteurl, get_string('removeflashcard', 'mod_flashcards'), 'post');
         $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
@@ -104,14 +104,19 @@ if (!$DB->record_exists("question_categories", array('id' => $flashcards->catego
     redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
-$sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'";
+$sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'
+AND qv.version = (SELECT MAX(v.version)
+    FROM {question_versions} v
+    WHERE qv.questionbankentryid = v.questionbankentryid) ";
 
-$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url);
+$table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $flashcards->course, $PAGE->url);
 
-$table->set_sql("q.id, name, q.questiontext, q.createdby, q.timemodified, teachercheck,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) downvotes",
-        "{question} q JOIN {flashcards_q_status} fcs on q.id = fcs.questionid", $sqlwhere);
+$table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck, fcs.id fqid, fcs.fcid flashcardsid,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
+        "{question} q
+        JOIN {question_versions} qv ON qv.questionid = q.id
+        JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid", $sqlwhere);
 
 $table->define_baseurl($PAGE->url);
 
@@ -146,8 +151,6 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
 }
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
-
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');

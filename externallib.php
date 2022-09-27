@@ -134,8 +134,7 @@ class mod_flashcards_external extends external_api {
     public static function set_preview_status_parameters() {
         return new external_function_parameters(
                 array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                        'questionid' => new external_value(PARAM_INT, 'question id'),
+                        'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
                         'status' => new external_value(PARAM_INT, 'number of questions to learn')
                 )
         );
@@ -149,8 +148,7 @@ class mod_flashcards_external extends external_api {
     public static function set_peer_review_vote_parameters() {
         return new external_function_parameters(
             array(
-                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'questionid' => new external_value(PARAM_INT, 'question id'),
+                'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
                 'vote' => new external_value(PARAM_INT, 'peer review vote')
             )
         );
@@ -190,8 +188,10 @@ class mod_flashcards_external extends external_api {
             'qanswervalue' => $qanswervalue)
         );
 
+        $fqrec = $DB->get_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['fid']]);
+
         $record = $DB->get_record('flashcards_q_stud_rel',
-                ['studentid' => $USER->id, 'flashcardsid' => $params['fid'], 'questionid' => $params['questionid']], '*',
+                ['studentid' => $USER->id, 'fqid' => $fqrec->id], '*',
                 MUST_EXIST);
 
         $currentbox = $record->currentbox;
@@ -289,13 +289,13 @@ class mod_flashcards_external extends external_api {
         $questionarray = [];
 
         foreach ($questionids as $question) {
-            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
+            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'fqid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
                 $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => 1]);
             } else {
                 $questionentry =
                 array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
-                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
+                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0, 'fqid' => $question);
                 $questionarray[] = $questionentry;
             }
         }
@@ -352,8 +352,9 @@ class mod_flashcards_external extends external_api {
 
         list($context, $course, $cm) = mod_flashcards_check_student_rights($params['flashcardsid']);
 
-        $sql = "SELECT questionid
-                  FROM {flashcards_q_stud_rel}
+        $sql = "SELECT fq.questionid
+                  FROM {flashcards_q_stud_rel} fsr
+                  JOIN {flashcards_q_status} fq ON fsr.fqid = fq.id
                  WHERE studentid = :userid
                    AND flashcardsid = :fid
                    AND currentbox <> 0
@@ -374,63 +375,62 @@ class mod_flashcards_external extends external_api {
     /**
      * Set the review status of a flashcard
      *
-     * @param int $flashcardsid
-     * @param int $questionid
+     * @param int $fqid
      * @param int $status
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
-    public static function set_preview_status($flashcardsid, $questionid, $status) {
+    public static function set_preview_status($fqid, $status) {
         global $DB;
 
         $params = self::validate_parameters(self::set_preview_status_parameters(),
-                array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'status' => $status));
+                array('fqid' => $fqid, 'status' => $status));
 
         if ($params['status'] != FLASHCARDS_CHECK_NONE && $params['status'] != FLASHCARDS_CHECK_POS && $params['status'] != FLASHCARDS_CHECK_NEG) {
             return;
         }
 
-        list ($course, $cm) = get_course_and_cm_from_instance($params['flashcardsid'], 'flashcards');
+        $statusrec = $DB->get_record('flashcards_q_status', ['id' => $params['fqid']]);
+
+        if ($statusrec === false) {
+            return;
+        }
+
+        list ($course, $cm) = get_course_and_cm_from_instance($statusrec->fcid, 'flashcards');
         $context = context_module::instance($cm->id);
 
         if (!has_capability('mod/flashcards:editreview', $context)) {
             return;
         }
 
-        $statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['flashcardsid']]);
-
-        if ($statusrec === false) {
-            $DB->insert_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['flashcardsid'], 'teachercheck' => $params['status']]);
-        } else {
-            $statusrec->teachercheck = $params['status'];
-            $DB->update_record('flashcards_q_status', $statusrec);
-        }
+        $statusrec->teachercheck = $params['status'];
+        $DB->update_record('flashcards_q_status', $statusrec);
     }
 
     /**
      * Set the user peer review vote of a flashcard
      *
-     * @param int $flashcardsid
-     * @param int $questionid
+     * @param int $fqid
      * @param int $vote
      * @throws dml_exception
      * @throws invalid_parameter_exception
      */
-    public static function set_peer_review_vote($flashcardsid, $questionid, $vote) {
+    public static function set_peer_review_vote($fqid, $vote) {
         global $DB, $USER;
 
         $params = self::validate_parameters(self::set_peer_review_vote_parameters(),
-            array('flashcardsid' => $flashcardsid, 'questionid' => $questionid, 'vote' => $vote));
+            array('fqid' => $fqid, 'vote' => $vote));
 
         if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP && $params['vote'] != FLASHCARDS_PEER_REVIEW_DOWN) {
             return;
         }
 
-        $statusrec = $DB->get_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'], 'flashcardsid' => $params['flashcardsid'], 'studentid' => $USER->id]);
+        $statusrec = $DB->get_record('flashcards_q_stud_rel', ['fqid' => $params['fqid'], 'studentid' => $USER->id]);
 
         if ($statusrec === false) {
-            $DB->insert_record('flashcards_q_stud_rel', ['questionid' => $params['questionid'],
-                'flashcardsid' => $params['flashcardsid'],
+            $DB->insert_record('flashcards_q_stud_rel', ['fqid' => $params['fqid'],
+                'flashcardsid' => 0, // TOREMOVE!
+                'questionid' => 0, // TOREMOVE!
                 'studentid' => $USER->id,
                 'active' => 0,
                 'peerreview' => $params['vote']]);

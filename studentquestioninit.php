@@ -100,14 +100,12 @@ $sql = "SELECT q.id
                {flashcards_q_status} fcs,
                {flashcards_q_stud_rel} fsr
          WHERE q.id = fcs.questionid
-           AND fsr.questionid = q.id
-           AND fcs.fcid = :fid
+           AND fcs.id = fsr.fqid
+           AND fcs.fcid = :fcid
            AND fsr.studentid = :userid
-           AND fsr.flashcardsid = fcs.fcid
            AND qtype = 'flashcard'
-           AND q.hidden <> 1
            AND currentbox IS NOT NULL";
-$importedfcs = $DB->get_fieldset_sql($sql, ['fid' => $flashcards->id, 'userid' => $USER->id]);
+$importedfcs = $DB->get_fieldset_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
 $added = count($importedfcs);
 
 if ($added == 0) {
@@ -115,19 +113,25 @@ if ($added == 0) {
 }
 
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
-$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs
+             AND qv.version = (SELECT MAX(v.version)
+             FROM {question_versions} v
+             WHERE qv.questionbankentryid = v.questionbankentryid)";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url, $tab);
-$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, q.createdby, q.timemodified, teachercheck,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 1) upvotes,
-    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.questionid = q.id AND sd.flashcardsid = $flashcards->id AND sd.peerreview = 2) downvotes",
-    "{question} q LEFT JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
-                      LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.questionid = q.id AND fsr.flashcardsid = fcs.fcid AND fsr.studentid = $USER->id",
+$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck, fcs.id fqid, fcs.fcid flashcardsid,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
+    (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
+    "{question} q
+    JOIN {question_versions} qv ON qv.questionid = q.id
+    JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid
+    LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.qbankentryid AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
+
 $table->define_baseurl($PAGE->url);
 
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', false, true);
-$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.hidden <> 1 AND q.id $sqlwhereifcs";
+$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs";
 $sql = "SELECT COUNT(q.id)
           FROM {question} q
           JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
@@ -167,7 +171,6 @@ $tabs['added'] = new tabobject('added',
     false);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading($flashcards->name);
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 echo $OUTPUT->tabtree($tabs, $tab);
 

@@ -29,14 +29,15 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->dirroot . '/question/previewlib.php');
 require_once('locallib.php');
+
+use qbank_previewquestion\question_preview_options;
 
 global $PAGE, $DB, $OUTPUT, $USER;
 
 $id = required_param('id', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
-$flashcardsid = required_param('fcid', PARAM_INT);
+$flashcardsid = required_param('flashcardsid', PARAM_INT);
 
 list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);
@@ -53,7 +54,7 @@ $options->set_from_request();
 
 $params = array('id' => $question->id);
 $params['cmid'] = $context->instanceid;
-$params['fcid'] = $flashcardsid;
+$params['flashcardsid'] = $flashcardsid;
 
 $prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);
@@ -108,7 +109,7 @@ $params = array(
         'id' => $question->id,
         'cmid' => $cmid,
         'previewid' => $quba->get_id(),
-        'fcid' => $flashcardsid
+        'flashcardsid' => $flashcardsid
 );
 $params['courseid'] = $context->instanceid;
 
@@ -119,8 +120,10 @@ $statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $question->
 if ($statusrec === false) {
     $nostatus = true;
     $statusval = 0;
+    $fqid = 0;
 } else {
     $statusval = $statusrec->teachercheck;
+    $fqid = $statusrec->id;
 }
 
 if (!has_capability('mod/flashcards:editreview', $context)) {
@@ -134,7 +137,7 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
             if (optional_param('finish', null, PARAM_BOOL)) {
                 $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
                 if ($nostatus) {
-                    $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                    $fqid = $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
                 } else if ($statusrec->teachercheck != $teachercheck) {
                     $statusrec->teachercheck = $teachercheck;
                     $DB->update_record('flashcards_q_status', $statusrec);
@@ -193,15 +196,28 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 
-$templatecontent['actionurl'] = $actionurl;
-$templatecontent['sesskey'] = sesskey();
-$templatecontent['slot'] = $slot;
-$templatecontent['question'] = $quba->render_question($slot, $options, $displaynumber);
-$templatecontent['upvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, true);
-$templatecontent['downvotes'] = mod_flashcard_get_peer_review_votes($question->id, $flashcardsid, false);
-$templatecontent['questionid'] = $id;
-$templatecontent['fcid'] = $flashcardsid;
-$templatecontent['questiontitle'] = $question->name;
+$votes = mod_flashcard_get_peer_review_votes($fqid);
+$peerreviewvote = mod_flashcard_get_peer_review_vote_user($fqid);
+$helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
+$helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
+
+$templatecontent = [
+    'actionurl' => $actionurl,
+    'sesskey' => sesskey(),
+    'slot' => $slot,
+    'question' => $quba->render_question($slot, $options, $displaynumber),
+    'upvotes' => $votes['upvotes'],
+    'downvotes' => $votes['downvotes'],
+    'fqid' => $fqid,
+    'questiontitle' => $question->name,
+    'prbtncolorinfoup' => mod_flashcard_get_peer_review_info($peerreviewvote, true),
+    'prbtncolorinfodown' => mod_flashcard_get_peer_review_info($peerreviewvote, false),
+    'statval' => $statusval,
+    'upvote' => FLASHCARDS_PEER_REVIEW_UP,
+    'downvote' => FLASHCARDS_PEER_REVIEW_DOWN,
+    'helppeerreview' => $helppeerreview->export_for_template($OUTPUT),
+    'helpteachercheck' => $helpteachercheck->export_for_template($OUTPUT),
+];
 
 if ($canedit) {
     for ($i = 0; $i < 3; $i++) {
@@ -220,17 +236,6 @@ if ($canedit) {
     $templatecontent['checkicon']['title'] = get_string('statusval' . $statusval, 'mod_flashcards');
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
-
-$peerreviewvote = mod_flashcard_get_peer_review_vote_user($question->id, $flashcardsid);
-$templatecontent['prbtncolorinfoup'] = mod_flashcard_get_peer_review_info($peerreviewvote, true);
-$templatecontent['prbtncolorinfodown'] = mod_flashcard_get_peer_review_info($peerreviewvote, false);
-$templatecontent['statval'] = $statusval;
-$templatecontent['upvote'] = FLASHCARDS_PEER_REVIEW_UP;
-$templatecontent['downvote'] = FLASHCARDS_PEER_REVIEW_DOWN;
-$helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
-$templatecontent['helppeerreview'] = $helppeerreview->export_for_template($OUTPUT);
-$helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
-$templatecontent['helpteachercheck'] = $helpteachercheck->export_for_template($OUTPUT);
 
 // Edit button
 $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);

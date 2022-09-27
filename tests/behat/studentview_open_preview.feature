@@ -20,8 +20,7 @@ Feature: As a student I open the flashcard preview
       | Flash cards activity name | Test flash cards |
     And I log out
     Then I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:
@@ -35,8 +34,7 @@ Feature: As a student I open the flashcard preview
   @javascript
   Scenario: View Flashcard preview as Student
     When I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
     And I switch to the browser tab opened by the app

@@ -67,41 +67,41 @@ function mod_flashcards_check_student_rights($flashcardsid) {
 /**
  * Get the next question for the given student and box
  *
- * @param int $fid
+ * @param int $flashcardsid
  * @param int $boxid
  * @return int
  */
-function mod_flashcards_get_next_question($fid, $boxid) {
+function mod_flashcards_get_next_question($flashcardsid, $boxid) {
     global $DB, $USER;
 
     if ($boxid > 0) {
         try {
-            mod_flashcards_check_student_rights($fid);
+            mod_flashcards_check_student_rights($flashcardsid);
         } catch (require_login_exception $e) {
             return false;
         }
 
-        $sql = "SELECT min(questionid) AS questionid
-                 FROM {flashcards_q_stud_rel} q
-                 JOIN {question} qq ON qq.id = q.questionid
-                WHERE q.studentid = :userid
-                  AND q.currentbox = :box
-                  AND q.flashcardsid = :flashcardsid
-                  AND q.lastanswered =
+        $sql = "SELECT min(fq.questionid) AS questionid
+                 FROM {flashcards_q_stud_rel} fsr
+                 JOIN {flashcards_q_status} fq ON fsr.fqid = fq.id
+                WHERE fsr.studentid = :userid
+                  AND fsr.currentbox = :box
+                  AND fsr.flashcardsid = :flashcardsid
+                  AND fsr.lastanswered =
                       (SELECT min(lastanswered)
                         FROM {flashcards_q_stud_rel} subq
-                       WHERE subq.studentid = q.studentid
-                         AND subq.currentbox = q.currentbox
-                         AND subq.active = q.active
-                         AND subq.flashcardsid = q.flashcardsid)";
+                       WHERE subq.studentid = fsr.studentid
+                         AND subq.currentbox = fsr.currentbox
+                         AND subq.active = fsr.active
+                         AND subq.flashcardsid = fsr.flashcardsid)";
 
         $questionid = $DB->get_field_sql($sql,
-            ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $fid]);
+            ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $flashcardsid]);
 
         return $questionid;
     } else {
         // Return first element of array and remove it from the session array.
-        return array_shift($_SESSION[FLASHCARDS_LN . $fid]);
+        return array_shift($_SESSION[FLASHCARDS_LN . $flashcardsid]);
     }
 }
 
@@ -334,19 +334,17 @@ function mod_flashcard_get_peer_review_info(int $peerreviewvote, bool $isup) {
 /**
  * Returns the peer review vote of the current user for a certain question and flashcard.
  *
- * @param int $questionid
- * @param int $fcid
+ * @param int $fqid
  * @return int
  */
-function mod_flashcard_get_peer_review_vote_user(int $questionid, int $fcid) {
+function mod_flashcard_get_peer_review_vote_user(int $fqid) {
     global $DB, $USER;
 
     $sql = "SELECT peerreview
               FROM {flashcards_q_stud_rel} sd
-             WHERE sd.questionid = :questionid
-               AND sd.flashcardsid = :flashcardsid
+             WHERE sd.fqid = :fqid
                AND sd.studentid = :studentid";
-    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['questionid' => $questionid, 'flashcardsid' => $fcid, 'studentid' => $USER->id]);
+    $prvote = $DB->get_field('flashcards_q_stud_rel', 'peerreview', ['fqid' => $fqid, 'studentid' => $USER->id]);
 
     if (!$prvote) {
         return 0;
@@ -357,28 +355,19 @@ function mod_flashcard_get_peer_review_vote_user(int $questionid, int $fcid) {
 /**
  * Returns string with the number of up/down votes for the a flashcard in a certain flashcards activity.
  *
- * @param int $questionid
- * @param int $fcid
- * @param bool $upvotes
+ * @param int $fqid
  * @return int
  */
-function mod_flashcard_get_peer_review_votes(int $questionid, int $fcid, bool $upvotes) {
+function mod_flashcard_get_peer_review_votes(int $fqid) {
     global $DB;
-
-    $params['questionid'] = $questionid;
-    $params['fcid'] = $fcid;
-    $params['vote'] = 2;
-    if ($upvotes) {
-        $params['vote'] = 1;
-    }
 
     $sql = "SELECT COUNT(id)
               FROM {flashcards_q_stud_rel} sd
-             WHERE sd.questionid = :questionid
-               AND sd.flashcardsid = :fcid
+             WHERE sd.fqid = :fqid
                AND sd.peerreview = :vote";
 
-    $votes = $DB->count_records_sql($sql, $params);
+    $votes['upvotes'] = $DB->count_records_sql($sql, ['fqid' => $fqid, 'vote' => 1]);
+    $votes['downvotes'] = $DB->count_records_sql($sql, ['fqid' => $fqid, 'vote' => 2]);
 
     return $votes;
 }
@@ -491,10 +480,12 @@ function mod_flashcards_get_selected_qids($flashcardsid, $qids) {
 
     list($inids, $questionids) = $DB->get_in_or_equal($qids, SQL_PARAMS_NAMED);
 
-    $sql = "SELECT questionid
-              FROM {flashcards_q_status}
+    $sql = "SELECT fqs.id
+              FROM {flashcards_q_status} fqs
+              JOIN {question_versions} qv ON fqs.qbankentryid = qv.questionbankentryid
+              JOIN {question} q ON qv.questionid = q.id
              WHERE fcid = :fcid
-               AND questionid $inids";
+               AND q.id $inids";
 
     $questionids = $DB->get_fieldset_sql($sql, ['fcid' => $flashcardsid] + $questionids);
 

@@ -22,8 +22,7 @@ Feature: As a student I want to see the quality control info in the overview tab
       | Flash cards activity name | Test flash cards |
     And I log out
     Then I log in as "student1"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:
@@ -39,8 +38,7 @@ Feature: As a student I want to see the quality control info in the overview tab
     Given the following config values are set as admin:
       | authordisplay | 1 | flashcards |
     When I log in as "student2"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then I should see "Teacher check"
     And I should see "Peer review"

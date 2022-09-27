@@ -23,8 +23,7 @@ Feature: As a student I can delete my own questions
   @javascript
   Scenario: Students can not delete teacher questions
     When I log in as "teacher"
-    And I am on "Course 1" course homepage with editing mode on
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
@@ -34,16 +33,14 @@ Feature: As a student I can delete my own questions
     Then I should see "flashcard 1"
     And I log out
     Then I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     Then ".mod_flashcards_studentview_delete" "css_element" should not exist
 
   @javascript
   Scenario: Students can delete their own questions
     Then I log in as "student"
-    And I am on "Course 1" course homepage
-    And I follow "Test flash cards"
+    And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on "Create new flash card" "button"
     And I set the following fields to these values:

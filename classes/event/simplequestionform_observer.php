@@ -38,32 +38,37 @@ class simplequestionform_observer {
         global $DB;
 
         $data = $event->other;
+        $qbe = get_question_bank_entry($event->objectid);
+
         if ($data['changeextent']) {
             $sql = "SELECT fcqstatus.id AS id,
                            cm.id AS coursemodule
                       FROM {flashcards_q_status} fcqstatus
                       JOIN {modules} m ON m.name = 'flashcards'
                       JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
-                     WHERE fcqstatus.questionid = :questionid";
-            $records = $DB->get_records_sql($sql, ['questionid' => $event->objectid]);
+                     WHERE fcqstatus.qbankentryid = :qbankentryid";
+            $records = $DB->get_records_sql($sql, ['qbankentryid' => $qbe->id]);
             foreach ($records as $record) {
-                // Reset teachercheck only when a the editor doesn't have the right to (normally students).
+                // Reset teachercheck only when the editor doesn't have the right to (normally students).
                 $context = \context_module::instance($record->coursemodule, MUST_EXIST);
                 if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $data['userid'])) {
                     $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
                 }
-            }
-            // Reset peer review for all roles and move flashcard back to box 0.
-            $sql = "SELECT id
+                // Reset peer review for all roles and move flashcard back to box 0.
+                $sql = "SELECT id
                  FROM {flashcards_q_stud_rel}
-                 WHERE questionid =:questionid";
-            $records = $DB->get_fieldset_sql($sql, ['questionid' => $event->objectid]);
+                 WHERE fqid =:fqid";
 
-            if ($records) {
-                list($insql, $inparam) = $DB->get_in_or_equal($records, SQL_PARAMS_NAMED, 'id');
-                $DB->delete_records_select('flashcards_q_stud_rel', "id $insql", $inparam);
+                $studrelrecords = $DB->get_fieldset_sql($sql, ['fqid' => $record->id]);
+
+                if ($studrelrecords) {
+                    list($insql, $inparam) = $DB->get_in_or_equal($studrelrecords, SQL_PARAMS_NAMED, 'id');
+                    $DB->delete_records_select('flashcards_q_stud_rel', "id $insql", $inparam);
+                }
             }
         }
+
+        $DB->set_field('flashcards_q_status', 'questionid', $event->objectid, ['qbankentryid' => $qbe->id]);
     }
     /**
      * Triggered via question_created event. Resets teachercheck and PeerReview after creation of question.
@@ -78,12 +83,14 @@ class simplequestionform_observer {
         if (has_capability('mod/flashcards:editallquestions', $event->get_context())) {
             $tc = 1;
         }
-        $record = $DB->get_record('flashcards_q_status', ['questionid' => $event->objectid, 'fcid' => $data['fcid']]);
-        if (!$record) {
-            $DB->insert_record('flashcards_q_status', ['questionid' => $event->objectid, 'fcid' => $data['fcid'], 'teachercheck' => $tc]);
-        } else {
-            $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
+        $qbe = get_question_bank_entry($event->objectid);
+        if ($qbe) {
+            $record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]);
+            if (!$record) {
+                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc, 'questionid' => $event->objectid]);
+            } else {
+                $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
+            }
         }
-
     }
 }

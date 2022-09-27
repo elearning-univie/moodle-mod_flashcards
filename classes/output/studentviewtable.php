@@ -92,7 +92,7 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        $columns = array('select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'preview', 'edit', 'delete');
+        $columns = array('select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'version', 'preview', 'edit', 'delete');
 
         $this->define_columns($columns);
         $this->column_class('currentbox', 'flashcards_studentview_tc');
@@ -103,6 +103,7 @@ class studentviewtable extends table_sql {
         $this->column_class('downvotes', 'flashcards_down');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
+        $this->column_class('version', 'flashcards_studentview_dr');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('delete', 'flashcards_teacherview_dr');
@@ -121,6 +122,7 @@ class studentviewtable extends table_sql {
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('author', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
+            get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
             get_string('delete'));
@@ -134,6 +136,7 @@ class studentviewtable extends table_sql {
             null,
             null,
             new \help_icon('peerreview', 'mod_flashcards'),
+            null,
             null,
             null,
             null,
@@ -156,6 +159,7 @@ class studentviewtable extends table_sql {
         $this->pageable(true);
         $this->is_downloadable(false);
 
+        $this->no_sorting('version');
         $this->no_sorting('select');
         $this->no_sorting('peerreview');
         $this->no_sorting('edit');
@@ -216,7 +220,7 @@ class studentviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id));
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $this->fcobj->id));
         return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
             ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
@@ -262,7 +266,7 @@ class studentviewtable extends table_sql {
         }
 
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id, 'origin' => $this->returnurl));
+            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $values->fqid, 'origin' => $this->returnurl));
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext),
             ['class' => 'mod_flashcards_questioneditlink']);
@@ -278,7 +282,7 @@ class studentviewtable extends table_sql {
         global $OUTPUT;
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
-                array('id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $this->fcobj->id));
+                array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
 
         return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);

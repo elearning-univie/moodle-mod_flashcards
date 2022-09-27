@@ -1,10 +1,10 @@
 define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notification){
     return {
         init: function() {
-            $.mod_flashcards_teacher_check = function (questionid, fcid, oldval, valueselected) {
+            $.mod_flashcards_teacher_check = function (fqid, oldval, valueselected) {
                     ajax.call([{
                         methodname: 'mod_flashcards_set_preview_status',
-                        args: {flashcardsid: fcid, questionid: questionid, status: valueselected},
+                        args: {fqid: fqid, status: valueselected},
                         done: function() {
                             for (let i = 0; i < 3; i++) {
                                 $("#tcicon" + i).hide();
@@ -14,14 +14,14 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
                          fail: notification.exception
                     }]);
             };
-            $.mod_flashcards_peer_review = function (questionid, fcid, vote) {
+            $.mod_flashcards_peer_review = function (fqid, vote) {
                 var downvotebtncl = document.getElementById('downvotebtn').classList;
                 var upvotebtncl = document.getElementById('upvotebtn').classList;
                 var upvoteval = parseInt(document.getElementById('upvotescount').innerHTML);
                 var downvoteval = parseInt(document.getElementById('downvotescount').innerHTML);
                 ajax.call([{
                     methodname: 'mod_flashcards_set_peer_review_vote',
-                    args: {flashcardsid: fcid, questionid: questionid, vote: vote},
+                    args: {fqid: fqid, vote: vote},
                     done: function() {
                         if (upvotebtncl.contains('btn-up')) {
                             upvotebtncl.remove('btn-up');
