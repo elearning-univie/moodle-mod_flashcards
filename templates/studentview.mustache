@@ -36,6 +36,7 @@
                 "badgealt":"goole play app store"
             }
         ],
+        "appsavailable":true,
         "stats":{
             "totalquestioncount":2,
             "cardsavailable":true,
@@ -94,9 +95,11 @@
                 <p class="card-text mt-1 px-1">{{# str }} cardbehaviourexplained, mod_flashcards {{/ str }}</p>
                 <p class="card-text mt-1 px-1">{{# str }} proposecardsexplained, mod_flashcards {{/ str }}</p>
                 <div class="p-2 d-flex flex-row-reverse">
-                    <div id="mod-flashcards-show-app" class="btn btn-secondary btn-sm" onclick="$.mod_flashcards_show_app()" {{#displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
-                        {{# str }} showapp, mod_flashcards {{/ str }}{{# pix }} i/breadcrumbdivider, moodle {{/ pix }}
-                    </div>
+                    {{#appsavailable}}
+                        <div id="mod-flashcards-show-app" class="btn btn-secondary btn-sm" onclick="$.mod_flashcards_show_app()" {{#displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
+                            {{# str }} showapp, mod_flashcards {{/ str }}{{# pix }} i/breadcrumbdivider, moodle {{/ pix }}
+                        </div>
+                    {{/appsavailable}}
                 </div>
                 <div class="mt-auto text-white progress progress-bar rounded-0">
                     <div class="progress-bar progress-bar-striped rounded-0" role="progressbar"
