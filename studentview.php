@@ -66,6 +66,7 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     $applestoreurl = get_config('flashcards', 'applestoreapp');
     $googlestoreurl = get_config('flashcards', 'googlestoreapp');
+    $templatestablecontext['appsavailable'] = ($applestoreurl || $googlestoreurl);
     if (!empty($applestoreurl)) {
         $templatestablecontext['stores'][] = [
                 'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
@@ -83,7 +84,9 @@ if (has_capability('mod/flashcards:studentview', $context)) {
 
     $userpref = get_user_preferences('flashcards_showapp');
 
-    if (isset($userpref)) {
+    if (!$templatestablecontext['appsavailable']) {
+        $templatestablecontext['displaymobileapps'] = false;
+    } else if (isset($userpref)) {
         $templatestablecontext['displaymobileapps'] = $userpref;
     } else {
         $templatestablecontext['displaymobileapps'] = true;
