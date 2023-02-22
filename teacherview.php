@@ -41,9 +41,6 @@ if (!in_array($perpage, [10, 20, 50, 100], true)) {
 }
 $params['perpage'] = $perpage;
 
-list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
-        question_edit_setup('editq', '/mod/flashcards/teacherview.php', true);
-
 list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
@@ -70,6 +67,9 @@ if (!has_capability('mod/flashcards:teacherview', $context)) {
     echo $OUTPUT->footer();
     die();
 }
+
+list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
+    question_edit_setup('editq', '/mod/flashcards/teacherview.php', true);
 
 if ($deleteselected) {
     if (!$DB->record_exists('question', ['id' => $deleteselected])) {

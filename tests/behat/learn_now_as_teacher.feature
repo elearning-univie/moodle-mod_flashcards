@@ -37,4 +37,3 @@ Feature: As a teacher i want to test the learn now function
     And I click on "selectall" "checkbox"
     And I click on "Add flashcard(s)" "button"
     Then I click on "Back to overview" "button"
-    

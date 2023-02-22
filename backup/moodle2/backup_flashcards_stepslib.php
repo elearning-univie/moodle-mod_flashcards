@@ -42,13 +42,13 @@ class backup_flashcards_activity_structure_step extends backup_activity_structur
     protected function define_structure() {
 
         $flashcards = new backup_nested_element('flashcards', array('id'),
-                array('course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'studentsubcat'));
+                array('course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat'));
 
         $flashcards->set_source_table('flashcards', array('id' => backup::VAR_ACTIVITYID));
         $flashcards->annotate_files('mod_flashcards', 'intro', null);
 
         $flashcardsqstatus = new backup_nested_element('flashcards_q_status', array('id'),
-        array('questionid', 'fcid', 'teachercheck'));
+        array('questionid', 'qbankentryid', 'fcid', 'teachercheck'));
 
         $flashcards->add_child($flashcardsqstatus);
 

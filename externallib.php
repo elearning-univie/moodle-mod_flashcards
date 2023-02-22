@@ -283,18 +283,16 @@ class mod_flashcards_external extends external_api {
         $params = self::validate_parameters(self::init_questions_parameters(),
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
-        $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-
-        $questionids = mod_flashcards_get_selected_qids($record->id, $params['qids']);
+        $questionids = mod_flashcards_get_selected_qids($flashcardsid, $params['qids']);
         $questionarray = [];
 
         foreach ($questionids as $question) {
-            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'fqid' => $question, 'studentid' => $USER->id]);
+            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
                 $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => 1]);
             } else {
                 $questionentry =
-                array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
+                array('flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id, 'active' => 1,
                       'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0, 'fqid' => $question);
                 $questionarray[] = $questionentry;
             }
@@ -317,17 +315,16 @@ class mod_flashcards_external extends external_api {
         $params = self::validate_parameters(self::remove_questions_parameters(),
             array('flashcardsid' => $flashcardsid, 'qids' => $qids));
 
-        $record = $DB->get_record('flashcards', ['id' => $params['flashcardsid']]);
-        $questionids = mod_flashcards_get_selected_qids($record->id, $params['qids']);
+        $questionids = mod_flashcards_get_selected_qids($flashcardsid, $params['qids']);
         $questionarray = [];
 
-        foreach ($questionids as $question) {
-            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id]);
+        foreach ($questionids as $questionid) {
+            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id]);
             if ($recid) {
                 $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => null]);
             } else {
                 $questionentry =
-                array('flashcardsid' => $record->id, 'questionid' => $question, 'studentid' => $USER->id, 'active' => 1,
+                array('flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id, 'active' => 1,
                     'currentbox' => null, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
                 $questionarray[] = $questionentry;
             }

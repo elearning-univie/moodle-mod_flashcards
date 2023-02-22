@@ -42,7 +42,7 @@ class edit_renderer extends \plugin_renderer_base {
     /**
      * edit_flashcards
      * @param \moodle_url $pageurl
-     * @param \question_edit_contexts $contexts
+     * @param \core_question\local\bank\question_edit_contexts $contexts
      * @param array $pagevars
      * @return string
      */
