@@ -21,11 +21,12 @@
  * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/questionlib.php');
 require_once(__DIR__ . '/locallib.php');
 
-global $PAGE, $OUTPUT, $USER, $DB;
+global $PAGE, $OUTPUT, $USER, $DB, $CFG;
 
 $id = required_param('id', PARAM_INT);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
@@ -133,6 +134,11 @@ if (has_capability('mod/flashcards:studentview', $context)) {
         $formatoptions->noclean = true;
         $templatestablecontext['intro'] = $renderer->box(format_text($flashcards->intro, $flashcards->introformat, $formatoptions),
             'generalbox', 'intro');
+    }
+
+    $moodle4 = ($CFG->version >= 2022041900) ? true : false;
+    if ($moodle4) {
+        $templatestablecontext['intro'] = null;
     }
 
     echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);

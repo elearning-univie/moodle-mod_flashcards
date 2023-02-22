@@ -142,7 +142,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022011000, 'flashcards');
     }
 
-    if ($oldversion < 2022090100) {
+    if ($oldversion < 2022112203) {
 
         // Define field fcstatusid to be added to flashcards_q_stud_rel.
         $table = new xmldb_table('flashcards_q_stud_rel');
@@ -163,6 +163,13 @@ function xmldb_flashcards_upgrade($oldversion) {
 
             $key = new xmldb_key('flashcards_q_stud_rel', XMLDB_KEY_UNIQUE, ['flashcardsid', 'fqid', 'studentid']);
             $dbman->add_key($table, $key);
+        }
+
+        $field = new xmldb_field('questionid');
+
+        // Conditionally launch drop field studentid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
         }
 
         $table = new xmldb_table('flashcards_q_status');
@@ -186,7 +193,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         }
 
         // Flashcards savepoint reached.
-        upgrade_mod_savepoint(true, 2022090100, 'flashcards');
+        upgrade_mod_savepoint(true, 2022112203, 'flashcards');
     }
 
     return true;

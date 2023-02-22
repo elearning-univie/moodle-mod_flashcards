@@ -33,12 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_name_text_column extends \core_question\bank\question_name_column {
+class question_name_text_column extends \qbank_viewquestionname\viewquestionname_column_helper {
     /**
      * get_name
      * @return string
      */
-    public function get_name() {
+    public function get_name(): string {
         return 'questionnametext';
     }
 
@@ -47,7 +47,7 @@ class question_name_text_column extends \core_question\bank\question_name_column
      * @param object $question
      * @param string $rowclasses
      */
-    protected function display_content($question, $rowclasses) {
+    protected function display_content($question, $rowclasses): void {
         if ($this->qbank->flashcards_contains($question->id)) {
             $class = 'greyed';
         }
@@ -67,11 +67,10 @@ class question_name_text_column extends \core_question\bank\question_name_column
      * get_required_fields
      * @return string[]
      */
-    public function get_required_fields() {
+    public function get_required_fields(): array {
         $fields = parent::get_required_fields();
         $fields[] = 'q.questiontext';
         $fields[] = 'q.questiontextformat';
-        $fields[] = 'q.idnumber';
         return $fields;
     }
 

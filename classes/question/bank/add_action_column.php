@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class add_action_column extends \core_question\bank\action_column_base {
+class add_action_column extends \core_question\local\bank\action_column_base {
     /** @var string caches a lang string used repeatedly. */
     protected $stradd;
 
@@ -41,7 +41,7 @@ class add_action_column extends \core_question\bank\action_column_base {
      * init function
      * @throws \coding_exception
      */
-    public function init() {
+    public function init(): void {
         parent::init();
         $this->stradd = get_string('addtoquiz', 'quiz');
     }

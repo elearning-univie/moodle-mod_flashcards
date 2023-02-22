@@ -36,7 +36,7 @@ use question_bank;
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class custom_view extends \core_question\bank\view {
+class custom_view extends \core_question\local\bank\view {
     /** @var \stdClass the quiz settings. */
     protected $flashcards = false;
     /** @var array the flashcards questionlist. */
@@ -81,10 +81,9 @@ class custom_view extends \core_question\bank\view {
 
     /**
      * wanted_columns
-     * @return \question_bank_column_base[]
-     * @throws coding_exception
+     * @return array
      */
-    protected function wanted_columns() {
+    protected function wanted_columns(): array {
         global $CFG;
 
         if (empty($CFG->quizquestionbankcolumns)) {
@@ -103,11 +102,13 @@ class custom_view extends \core_question\bank\view {
             if (!class_exists($fullname)) {
                 if (class_exists('mod_flashcards\\question\\bank\\' . $fullname)) {
                     $fullname = 'mod_flashcards\\question\\bank\\' . $fullname;
-                } else if (class_exists('core_question\\bank\\' . $fullname)) {
-                    $fullname = 'core_question\\bank\\' . $fullname;
+                } else if (class_exists('qbank_previewquestion\\' . $fullname)) {
+                    $fullname = 'qbank_previewquestion\\' . $fullname;
+                } else if (class_exists('qbank_viewquestiontype\\' . $fullname)) {
+                    $fullname = 'qbank_viewquestiontype\\' . $fullname;
                 } else if (class_exists('question_bank_' . $fullname)) {
                     debugging('Legacy question bank column class question_bank_' .
-                            $fullname . ' should be renamed to mod_quiz\\question\\bank\\' .
+                            $fullname . ' should be renamed to mod_flashcards\\question\\bank\\' .
                             $fullname, DEBUG_DEVELOPER);
                     $fullname = 'question_bank_' . $fullname;
                 } else {
@@ -124,7 +125,7 @@ class custom_view extends \core_question\bank\view {
      *
      * @return string Column name for the heading
      */
-    protected function heading_column() {
+    protected function heading_column(): string {
         return 'mod_flashcards\\question\\bank\\question_name_text_column';
     }
 
@@ -132,9 +133,9 @@ class custom_view extends \core_question\bank\view {
      * default_sort
      * @return int[]
      */
-    protected function default_sort() {
+    protected function default_sort(): array {
         return array(
-                'core_question\\bank\\question_type_column' => 1,
+                'qbank_viewquestiontype\\question_type_column' => 1,
                 'mod_flashcards\\question\\bank\\question_name_text_column' => 1,
         );
     }
@@ -183,7 +184,15 @@ class custom_view extends \core_question\bank\view {
     public function render($tabname, $page, $perpage, $cat, $recurse, $showhidden,
             $showquestiontext, $tagids = []) {
         ob_start();
-        $this->display($tabname, $page, $perpage, $cat, $recurse, $showhidden, $showquestiontext, $tagids);
+        $pagevars = [];
+        $pagevars['qpage'] = $page;
+        $pagevars['qperpage'] = $perpage;
+        $pagevars['cat'] = $cat;
+        $pagevars['recurse'] = $recurse;
+        $pagevars['showhidden'] = $showhidden;
+        $pagevars['qbshowtext'] = $showquestiontext;
+        $pagevars['tagids'] = $tagids;
+        $this->display($pagevars, $tabname);
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
@@ -192,20 +201,15 @@ class custom_view extends \core_question\bank\view {
     /**
      * Prints the table of questions in a category with interactions
      *
-     * @param array      $contexts    Not used!
      * @param \moodle_url $pageurl     The URL to reload this page.
      * @param string     $categoryandcontext 'categoryID,contextID'.
-     * @param \stdClass  $cm          Not used!
      * @param int        $recurse     Whether to include subcategories.
      * @param int        $page        The number of the page to be displayed
      * @param int        $perpage     Number of questions to show per page
-     * @param bool       $showhidden  Not used! This is now controlled in a different way.
-     * @param bool       $showquestiontext Not used! This is now controlled in a different way.
      * @param array      $addcontexts contexts where the user is allowed to add new questions.
      */
-    protected function display_question_list($contexts, $pageurl, $categoryandcontext,
-            $cm = null, $recurse=1, $page=0, $perpage=100, $showhidden=false,
-            $showquestiontext = false, $addcontexts = array()) {
+    protected function display_question_list($pageurl, $categoryandcontext,
+           $recurse=1, $page=0, $perpage=100, $addcontexts = array()): void {
         global $OUTPUT;
 
         // This function can be moderately slow with large question counts and may time out.
@@ -281,7 +285,7 @@ class custom_view extends \core_question\bank\view {
         }
         echo '</div>';
 
-        $this->display_bottom_controls($totalnumber, $recurse, $category, $catcontext, $addcontexts);
+        $this->display_bottom_controls($catcontext);
 
         echo '</fieldset>';
         echo "</form>\n";
@@ -289,13 +293,9 @@ class custom_view extends \core_question\bank\view {
 
     /**
      * Display the controls at the bottom of the list of questions.
-     * @param int       $totalnumber Total number of questions that might be shown (if it was not for paging).
-     * @param bool      $recurse     Whether to include subcategories.
-     * @param \stdClass $category    The question_category row from the database.
      * @param \context  $catcontext  The context of the category being displayed.
-     * @param array     $addcontexts contexts where the user is allowed to add new questions.
      */
-    protected function display_bottom_controls($totalnumber, $recurse, $category, \context $catcontext, array $addcontexts) {
+    protected function display_bottom_controls(\context $catcontext): void {
         $cmoptions = new \stdClass();
         $cmoptions->hasattempts = !empty($this->quizhasattempts);
 
@@ -322,12 +322,11 @@ class custom_view extends \core_question\bank\view {
 
     /**
      * Prints a form to choose categories.
-     * @param string $categoryandcontext 'categoryID,contextID'.
      * @deprecated since Moodle 2.6 MDL-40313.
      * @see \core_question\bank\search\category_condition
      * @todo MDL-41978 This will be deleted in Moodle 2.8
      */
-    protected function print_choose_category_message($categoryandcontext) {
+    protected function print_choose_category_message(): void {
         global $OUTPUT;
         debugging('print_choose_category_message() is deprecated, ' .
                 'please use \core_question\bank\search\category_condition instead.', DEBUG_DEVELOPER);
@@ -347,7 +346,7 @@ class custom_view extends \core_question\bank\view {
      * @param false $showtextoption
      */
     protected function display_options_form($showquestiontext, $scriptpath = '/mod/flashcards/teacherview.php',
-            $showtextoption = false) {
+        $showtextoption = false): void {
         // Overridden just to change the default values of the arguments.
         parent::display_options_form($showquestiontext, $scriptpath, $showtextoption);
     }
@@ -399,7 +398,7 @@ class custom_view extends \core_question\bank\view {
      * @param \stdClass $category
      * @param bool $canadd
      */
-    protected function create_new_question_form($category, $canadd) {
+    protected function create_new_question_form($category, $canadd): void {
         // Don't display this.
     }
 
@@ -408,7 +407,7 @@ class custom_view extends \core_question\bank\view {
      * because we don't want to print the headers in the fragment
      * for the modal.
      */
-    protected function display_question_bank_header() {
+    protected function display_question_bank_header(): void {
     }
 
     /**
@@ -419,7 +418,7 @@ class custom_view extends \core_question\bank\view {
      * Unfortunately the best we can do is to look at the URL for
      * those parameters (only marginally better really).
      */
-    protected function init_sort_from_params() {
+    protected function init_sort_from_params(): void {
         $this->sort = [];
         for ($i = 1; $i <= self::MAX_SORTS; $i++) {
             if (!$sort = $this->baseurl->param('qbs' . $i)) {
@@ -445,12 +444,11 @@ class custom_view extends \core_question\bank\view {
      * Create the SQL query to retrieve the indicated questions, based on
      * \core_question\bank\search\condition filters.
      */
-    protected function build_query() {
-        global $DB;
+    protected function build_query(): void {
 
         // Get the required tables and fields.
         $joins = array();
-        $fields = array('q.hidden', 'q.category');
+        $fields = ['qv.status', 'qc.id as categoryid', 'qv.version', 'qv.id as versionid', 'qbe.id as questionbankentryid'];
         foreach ($this->requiredcolumns as $column) {
             $extrajoins = $column->get_extra_joins();
             foreach ($extrajoins as $prefix => $join) {
@@ -492,6 +490,9 @@ class custom_view extends \core_question\bank\view {
         $sql = ' FROM {question} q ' . implode(' ', $joins);
         $sql .= ' WHERE ' . implode(' AND ', $tests);
         $sql .= '   AND q.qtype IN (' . $qtypes . ') ';
+        $sql .= 'AND qv.version = (SELECT MAX(v.version)
+                                     FROM {question_versions} v
+                                    WHERE qv.questionbankentryid = v.questionbankentryid)';
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
                                       JOIN {tag_instance} ti ON ti.itemid = qu.id
                                       JOIN {tag} t ON t.id = ti.tagid

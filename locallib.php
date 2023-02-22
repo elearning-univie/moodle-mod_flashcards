@@ -462,9 +462,10 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
             $questionid = mod_flashcards_multianswer_to_flashcard($question, $flashcardsid);
             break;
     }
+    $qbe = get_question_bank_entry($questionid);
 
     $trans = $DB->start_delegated_transaction();
-    $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
+    $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
     $trans->allow_commit();
 }
 
@@ -484,7 +485,7 @@ function mod_flashcards_get_selected_qids($flashcardsid, $qids) {
               FROM {flashcards_q_status} fqs
               JOIN {question_versions} qv ON fqs.qbankentryid = qv.questionbankentryid
               JOIN {question} q ON qv.questionid = q.id
-             WHERE fcid = :fcid
+             WHERE fqs.fcid = :fcid
                AND q.id $inids";
 
     $questionids = $DB->get_fieldset_sql($sql, ['fcid' => $flashcardsid] + $questionids);
@@ -581,28 +582,16 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
  * @return int $flashcardsid
  */
 function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
-    global $DB, $USER, $CFG;
+    global $DB, $CFG;
 
     require_once($CFG->dirroot . '/lib/questionlib.php');
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
     $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 
-    $answers = $question->answers;
-    $fcquestionext = $question->questiontext . '<ul style="list-style-type:circle;">';
-    foreach ($answers as $answer) {
-        $fcquestionext .= '<li>' . $answer->answer . '</li>';
-    }
-    $fcquestionext .= '</ul>';
-    $fcanswerext = $question->questiontext . '<ul style="list-style-type:circle;">';
-    foreach ($answers as $answer) {
-        if ( $answer->fraction > 0) {
-            $fcanswerext .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
-            '" style="font-weight: bold; font-size:110%; list-style-type:disc">('. get_string('statusval1', 'flashcards') . ')' . $answer->answer . '</li>';
-        } else {
-            $fcanswerext .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">('. get_string('statusval2', 'flashcards') . ')' . $answer->answer . '</li>';
-        }
-    }
+    list($answeroptions, $correctanswer) = mod_flashcards_mc_html_answer_list($question->answers, 'circle');
+    $fcquestionext = $question->questiontext . $answeroptions;
+    $fcanswerext = $question->questiontext . $correctanswer;
 
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
@@ -623,7 +612,7 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
  * @return int $flashcardsid
  */
 function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
-    global $DB, $USER, $CFG;
+    global $DB, $CFG;
 
     require_once($CFG->dirroot . '/lib/questionlib.php');
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
@@ -631,7 +620,6 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
     $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 
     $rightanswer = $question->rightanswer;
-
     $fcquestionext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
                      . get_string('trueorfalse', 'mod_flashcards') . '<br></p>';
     $fcquestionext = $fcquestionext . $question->questiontext;
@@ -639,12 +627,12 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
         $tfanswerid = $question->trueanswerid;
         $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
                        . get_string('true', 'qtype_truefalse')
-                       . '<br></p>' . $question->truefeedback;
+                       . '<br></p>';
     } else {
         $tfanswerid = $question->falseanswerid;
         $fcanswerext = '<p dir="ltr" style="font-weight: bold; font-size:130%;">'
                        . get_string('false', 'qtype_truefalse')
-                       . '<br></p>' . $question->falsefeedback;;
+                       . '<br></p>';
     }
 
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
@@ -665,27 +653,15 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
  * @return int $flashcardsid
  */
 function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
-    global $DB, $USER, $CFG;
+    global $DB, $CFG;
 
     require_once($CFG->dirroot . '/lib/questionlib.php');
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
     $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 
-    $answers = $question->answers;
     $fcquestionext = $question->questiontext;
-
-    $fcanswerext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
-                  . get_string('possibleanswers', 'mod_flashcards')
-                  . '<br></p> <ul style="list-style-type:circle;">';
-    foreach ($answers as $answer) {
-        // for the shortanswer show only answers that are 100% correct
-        if ($answer->fraction == 1) {
-            $fcanswerext = $fcanswerext . '<li style="list-style-type:disc">'
-                           . $answer->answer . '</li>';
-        }
-    }
-    $fcanswerext = $fcanswerext . '</ul>';
+    $fcanswerext = mod_flashcards_short_answer_html_list_sorted($question->answers);
 
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
@@ -705,7 +681,7 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
  * @return int $flashcardsid
  */
 function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
-    global $DB, $USER, $CFG;
+    global $DB, $CFG;
 
     require_once($CFG->dirroot . '/lib/questionlib.php');
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
@@ -713,8 +689,8 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
     $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 
     $dropdown = ['MULTICHOICE', 'MC', 'MULTICHOICE_S', 'MCS'];
-    $horizontal = ['MULTICHOICE_H', 'MCH', 'MULTICHOICE_HS', 'MCHS', 'MULTIRESPONSE_H', 'MRH', 'MULTIRESPONSE_HS', 'MRHS'];
-    $vertical = ['MULTICHOICE_V', 'MCV', 'MULTICHOICE_VS', 'MCVS', 'MULTIRESPONSE', 'MR MULTIRESPONSE_S', 'MRS'];
+    $radiobutton = ['MULTICHOICE_H', 'MCH', 'MULTICHOICE_HS', 'MCHS', 'MULTICHOICE_V', 'MCV', 'MULTICHOICE_VS', 'MCVS'];
+    $checkbox = ['MULTIRESPONSE_H', 'MRH', 'MULTIRESPONSE_HS', 'MRHS', 'MULTIRESPONSE', 'MR, MULTIRESPONSE_S', 'MRS'];
 
     $subquestions = $question->subquestions;
     $rawquestiontext = $question->questiontext;
@@ -736,52 +712,17 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
         if (get_class($subquestion->qtype) == 'qtype_multichoice') {
             preg_match('/M[A-Z]+_?[A-Z]?/', $subquestion->questiontext, $mcsubtext);
             if (in_array($mcsubtext[0], $dropdown)) {
-                foreach ($answers as $answer) {
-                    $answeroptions .= ' | ' .$answer->answer;
-                    if ($answer->fraction > 0) {
-                        $correctanswer .= '| <b> ' . $answer->answer . '</b>';
-                    } else {
-                        $correctanswer .= '| ' . $answer->answer;
-                    }
-                }
-                $correctanswer .= ' |';
-                $answeroptions .= ' |';
-            } else if (in_array($mcsubtext[0], $horizontal)) {
-                $answeroptions = '<table><tbody><tr>';
-                $correctanswer = '<table><tbody><tr>';
-                foreach ($answers as $answer) {
-                    $answeroptions .= '<td class="pr-5"> &#9675; ' . $answer->answer . '</td> ';
-                    if ($answer->fraction > 0) {
-                        $correctanswer .= '<td aria-label="' . get_string('answeriscorrect', 'flashcards') . '" class="pr-5"><b> &#9679;' . $answer->answer . '</b></td> ';
-                    } else {
-                        $correctanswer .= '<td aria-label="' . get_string('answeriswrong', 'flashcards') . '" class="pr-5"> &#9675; ' . $answer->answer . '</td> ';
-                    }
-                }
-                $answeroptions .= '</tr></tbody></table>';
-                $correctanswer .= '</tr></tbody></table>';
-            } else if (in_array($mcsubtext[0], $vertical)) {
-                $answeroptions = '<ul style="list-style-type:circle;">';
-                $correctanswer = '<ul style="list-style-type:circle;">';
-                foreach ($answers as $answer) {
-                    $answeroptions .= '<li>' . $answer->answer . '</li>';
-                    if ( $answer->fraction > 0) {
-                        $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
-                        '" style="list-style-type:disc; font-weight: bold;">' . $answer->answer . '</li>';
-                    } else {
-                        $correctanswer .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">' . $answer->answer . '</li>';
-                    }
-                }
-                $answeroptions .= '</ul>';
-                $correctanswer .= '</ul>';
+                list($answeroptions, $correctanswer) = mod_flashcards_mc_html_answer_list($answers, 'circle');
+                $answeroptions = ' _______ ' . $answeroptions;
+                $correctanswer = ' _______ ' . $correctanswer;
+            } else if (in_array($mcsubtext[0], $radiobutton)) {
+                list($answeroptions, $correctanswer) = mod_flashcards_mc_html_answer_list($answers, 'circle');
+            } else if (in_array($mcsubtext[0], $checkbox)) {
+                list($answeroptions, $correctanswer) = mod_flashcards_mc_html_answer_list($answers, 'square');
             }
         } else if (get_class($subquestion->qtype) == 'qtype_shortanswer' || get_class($subquestion->qtype) == 'qtype_numerical') {
             $answeroptions = ' _______ ';
-            foreach ($answers as $answer) {
-                if ($answer->fraction == 1) {
-                    $correctanswer .= '| <b> ' . $answer->answer . '</b> ';
-                }
-            }
-            $correctanswer .= '|';
+            $correctanswer = ' _______ ' . mod_flashcards_short_answer_html_list_sorted($answers);
         }
 
         $rawquestiontext = str_replace($placeholders[$i], $answeroptions, $rawquestiontext);
@@ -800,6 +741,97 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
+}
+/**
+ * add 2fc tag to origin question
+ *
+ * @param array $options
+ * @param string $type
+ * @return array
+ */
+function mod_flashcards_mc_html_answer_list(array $options, string $type) {
+
+    $checkboxopen = '';
+    $checkboxclosed = '';
+    $correct = "disc";
+    if ($type == 'square') {
+        $type = 'none';
+        $correct = 'none';
+        $checkboxopen = '&#9634; ';
+        $checkboxclosed = '&#9635; ';
+    }
+    $answeroptions = '<ul style="margin-left: 20px;list-style-type:' . $type . ';">';
+    $correctanswer = $answeroptions;
+    foreach ($options as $option) {
+        $answeroptions .= '<li>' . $checkboxopen . strip_tags($option->answer) . '</li>';
+        if ( $option->fraction == 1) {
+            $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
+            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . strip_tags($option->answer) . ' ('
+                . intval(preg_replace('/[^\d.]/', '', ($option->fraction * 100)))
+            .'% ' . get_string('correct', 'flashcards') . ')</li>';
+        } else if ($option->fraction > 0 && $option->fraction != 1) {
+            $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
+            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . strip_tags($option->answer) . ' ('
+                . intval(preg_replace('/[^\d.]/', '', ($option->fraction * 100)))
+                .'% ' . get_string('correct', 'flashcards') . ')</li>';
+        } else {
+            $correctanswer .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">' . $checkboxopen
+                            . strip_tags($option->answer) . ' ('
+                            . get_string('statusval2', 'flashcards') .')</li>';
+        }
+    }
+    $answeroptions .= '</ul>';
+    $correctanswer .= '</ul>';
+
+    return array($answeroptions, $correctanswer);
+}
+/**
+ * add 2fc tag to origin question
+ *
+ * @param array $answers
+ * @return string
+ */
+function mod_flashcards_short_answer_html_list_sorted(array $answers) {
+
+    $fractions = [];
+    $numbercorrect = 0;
+    foreach ($answers as $answer) {
+        $fractions[$answer->id] = $answer->fraction;
+        if ($answer->fraction > 0) {
+            $numbercorrect++;
+        }
+    }
+    arsort($fractions);
+    $fcanswerext = '';
+    if ($numbercorrect > 1) {
+        $fcanswerext = '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+            . get_string('multipepossibleanswers', 'mod_flashcards')
+            . '<br></p>';
+    }
+    $fcanswerext .= '<p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+        . get_string('correctanswers', 'mod_flashcards')
+        . '<br></p> <ul style="margin-left: 20px;list-style-type:circle;">';
+    $partialcorrect = true;
+    foreach ($fractions as $key => $fraction) {
+        if ($fraction == 1) {
+            $fcanswerext = $fcanswerext . '<li style="list-style-type:disc">'
+                . $answers[$key]->answer . '</li>';
+        }
+        if ($fraction < 1 && $fraction != 0) {
+            if ($partialcorrect) {
+                $fcanswerext = $fcanswerext . '</ul><p dir="ltr" style="text-align: left; font-weight: bold; font-size:110%;">'
+                    . get_string('partialcorrectanswers', 'mod_flashcards')
+                    . '<br></p> <ul style="margin-left: 20px;list-style-type:circle;">';
+                    $partialcorrect = false;
+            }
+            $fcanswerext = $fcanswerext . '<li style="list-style-type:disc">'
+                . $answers[$key]->answer . ' (' . intval(preg_replace('/[^\d.]/', '', ($fraction * 100)))
+                .'% ' . get_string('correct', 'mod_flashcards') . ')</li>';
+        }
+    }
+
+        $fcanswerext = $fcanswerext . '</ul>';
+        return $fcanswerext;
 }
 /**
  * add 2fc tag to origin question
@@ -864,17 +896,13 @@ function mod_flashcards_save_image_files_for_flashcards($question, $question2fci
             if ($file->filearea == 'questiontext' || $file->filearea == 'answer') {
                 mod_flashcards_save_file($file, $question2fcid, 'questiontext');
                 mod_flashcards_save_file($file, $answerid, 'answer');
-            } else {
-                mod_flashcards_save_file($file, $question2fcid, 'generalfeedback');
             }
         }
         if ($question->get_type_name() == 'truefalse') {
-            if ($file->filearea == 'answer' || $file->filearea == 'answerfeedback') {
+            if ($file->filearea == 'answer') {
                 mod_flashcards_save_file($file, $answerid, 'answer');
             } else if ($file->filearea == 'questiontext') {
                 mod_flashcards_save_file($file, $question2fcid, 'questiontext');
-            } else {
-                mod_flashcards_save_file($file, $question2fcid, 'generalfeedback');
             }
         }
         if ($question->get_type_name() == 'shortanswer') {

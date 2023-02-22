@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class checkbox_column extends \core_question\bank\checkbox_column {
+class checkbox_column extends \core_question\local\bank\checkbox_column {
     /** @var string caches a lang string used repeatedly. */
     protected $strselect;
 
@@ -41,7 +41,7 @@ class checkbox_column extends \core_question\bank\checkbox_column {
      * @param object $question
      * @param string $rowclasses
      */
-    protected function display_content($question, $rowclasses) {
+    protected function display_content($question, $rowclasses): void {
         if ($this->qbank->flashcards_contains($question->id)) {
             echo '<input title="' . $this->strselect . '" type="checkbox" name="q' .
                 $question->id . '" id="checkq' . $question->id . '" value="1" ' .

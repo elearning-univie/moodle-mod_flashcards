@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+if (!defined('MOD_PURPOSE_COLLABORATION')) {
+    define('MOD_PURPOSE_COLLABORATION', 'collaboration');
+}
 /**
  * Returns the information on whether the module supports a feature
  *
@@ -40,6 +43,8 @@ function flashcards_supports($feature) {
             return true;
         case FEATURE_USES_QUESTIONS:
             return true;
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_COLLABORATION;
         default:
             return null;
     }
