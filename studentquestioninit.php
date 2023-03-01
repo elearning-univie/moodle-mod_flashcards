@@ -54,7 +54,7 @@ if ($node) {
 $PAGE->set_title(get_string('pagetitle', 'flashcards'));
 $PAGE->set_heading($course->fullname);
 
-if (!has_capability('mod/flashcards:studentview', $context)) {
+if (!has_capability('mod/flashcards:view', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
