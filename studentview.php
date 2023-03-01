@@ -51,7 +51,7 @@ if (has_capability('mod/flashcards:teacherview', $context) ) {
 
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context)) {
+if (has_capability('mod/flashcards:view', $context)) {
     $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
     $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));

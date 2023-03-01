@@ -47,7 +47,7 @@ $PAGE->set_heading($course->fullname);
 
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:studentview', $context)) {
+if (has_capability('mod/flashcards:view', $context)) {
     $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
     echo $OUTPUT->heading($flashcards->name);
 
