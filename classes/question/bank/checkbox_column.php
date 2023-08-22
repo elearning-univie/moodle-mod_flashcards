@@ -23,7 +23,6 @@
  */
 
 namespace mod_flashcards\question\bank;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * A column with a checkbox for each question with name q{questionid}.

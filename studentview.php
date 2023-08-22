@@ -45,112 +45,110 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
-if (has_capability('mod/flashcards:teacherview', $context) ) {
-    redirect(new moodle_url('/mod/flashcards/teacherview.php', array('cmid' => $id)));
-}
+$isteacher = has_capability('mod/flashcards:teacherview', $context) ? 1 : 0;
 
 echo $OUTPUT->header();
 
-if (has_capability('mod/flashcards:view', $context)) {
-    $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
-    $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
-    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
-
-    $templatestablecontext['icons'] = [
-            'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
-            'phone' => $OUTPUT->image_url('mobile', 'mod_flashcards'),
-            'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards')
-    ];
-
-    $templatestablecontext['stores'] = array();
-
-    $applestoreurl = get_config('flashcards', 'applestoreapp');
-    $googlestoreurl = get_config('flashcards', 'googlestoreapp');
-    $templatestablecontext['appsavailable'] = ($applestoreurl || $googlestoreurl);
-    if (!empty($applestoreurl)) {
-        $templatestablecontext['stores'][] = [
-                'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
-                'redirecturl' => $applestoreurl,
-                'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
-        ];
-    }
-    if (!empty($googlestoreurl)) {
-        $templatestablecontext['stores'][] = [
-                'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
-                'redirecturl' => $googlestoreurl,
-                'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
-        ];
-    }
-
-    $userpref = get_user_preferences('flashcards_showapp');
-
-    if (!$templatestablecontext['appsavailable']) {
-        $templatestablecontext['displaymobileapps'] = false;
-    } else if (isset($userpref)) {
-        $templatestablecontext['displaymobileapps'] = $userpref;
-    } else {
-        $templatestablecontext['displaymobileapps'] = true;
-    }
-
-    $sql = "SELECT count(q.id)
-              FROM {question} q,
-                   {flashcards_q_status} s
-             WHERE q.id = s.qbankentryid
-               AND fcid = :fcid
-               AND s.id NOT IN (SELECT fqid
-                                  FROM {flashcards_q_stud_rel}
-                                 WHERE studentid = :userid
-                                   AND currentbox IS NOT NULL)";
-    $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
-
-    $sql = "SELECT count(q.id)
-              FROM {question} q,
-                   {flashcards_q_status} s
-             WHERE q.id = s.qbankentryid
-               AND fcid = :fcid";
-    $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
-
-    $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
-    $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
-    $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
-
-    $templatestablecontext['stats'] = [
-            'totalquestioncount' => $totalquestioncount,
-            'cardsavailable' => $totalquestioncount > 0,
-            'boxzeroquestioncount' => $boxzeroquestioncount,
-            'unselectedcardsavailable' => $boxzeroquestioncount > 0,
-            'usedquestioncount' => $usedquestioncount,
-            'halfusedquestioncount' => ceil($usedquestioncount / 2),
-            'selectedcardsavailable' => $usedquestioncount > 0,
-            'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : (1 - $boxzeroquestioncount / $totalquestioncount) * 100
-    ];
-
-    $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
-    $templatestablecontext['boxes'] = $boxarray;
-    $templatestablecontext['selectquestionsurl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
-    $templatestablecontext['flashcardsid'] = $flashcards->id;
-
-    $renderer = $PAGE->get_renderer('core');
-
-    if (trim(strip_tags($flashcards->intro))) {
-        $formatoptions = new stdClass();
-        $formatoptions->noclean = true;
-        $templatestablecontext['intro'] = $renderer->box(format_text($flashcards->intro, $flashcards->introformat, $formatoptions),
-            'generalbox', 'intro');
-    }
-
-    $moodle4 = ($CFG->version >= 2022041900) ? true : false;
-    if ($moodle4) {
-        $templatestablecontext['intro'] = null;
-    }
-
-    echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
-    echo $OUTPUT->footer();
-} else {
+if (!has_capability('mod/flashcards:view', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
     echo $OUTPUT->footer();
     die();
 }
+
+$PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
+$PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
+$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+
+$templatestablecontext['icons'] = [
+        'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
+        'phone' => $OUTPUT->image_url('mobile', 'mod_flashcards'),
+        'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards')
+];
+
+$templatestablecontext['stores'] = array();
+
+$applestoreurl = get_config('flashcards', 'applestoreapp');
+$googlestoreurl = get_config('flashcards', 'googlestoreapp');
+$templatestablecontext['appsavailable'] = ($applestoreurl || $googlestoreurl);
+if (!empty($applestoreurl)) {
+    $templatestablecontext['stores'][] = [
+            'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
+            'redirecturl' => $applestoreurl,
+            'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
+    ];
+}
+if (!empty($googlestoreurl)) {
+    $templatestablecontext['stores'][] = [
+            'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
+            'redirecturl' => $googlestoreurl,
+            'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
+    ];
+}
+
+$userpref = get_user_preferences('flashcards_showapp');
+
+if (!$templatestablecontext['appsavailable']) {
+    $templatestablecontext['displaymobileapps'] = false;
+} else if (isset($userpref)) {
+    $templatestablecontext['displaymobileapps'] = $userpref;
+} else {
+    $templatestablecontext['displaymobileapps'] = true;
+}
+
+$sql = "SELECT count(q.id)
+          FROM {question} q,
+               {flashcards_q_status} s
+         WHERE q.id = s.qbankentryid
+           AND fcid = :fcid
+           AND s.id NOT IN (SELECT fqid
+                              FROM {flashcards_q_stud_rel}
+                             WHERE studentid = :userid
+                               AND currentbox IS NOT NULL)";
+$boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
+
+$sql = "SELECT count(q.id)
+          FROM {question} q,
+               {flashcards_q_status} s
+         WHERE q.id = s.qbankentryid
+           AND fcid = :fcid";
+$totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
+
+$usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
+$boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
+$boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
+
+$templatestablecontext['stats'] = [
+        'totalquestioncount' => $totalquestioncount,
+        'cardsavailable' => $totalquestioncount > 0,
+        'boxzeroquestioncount' => $boxzeroquestioncount,
+        'unselectedcardsavailable' => $boxzeroquestioncount > 0,
+        'usedquestioncount' => $usedquestioncount,
+        'halfusedquestioncount' => ceil($usedquestioncount / 2),
+        'selectedcardsavailable' => $usedquestioncount > 0,
+        'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : (1 - $boxzeroquestioncount / $totalquestioncount) * 100
+];
+
+$templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
+$templatestablecontext['boxes'] = $boxarray;
+$templatestablecontext['selectquestionsurl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
+$templatestablecontext['flashcardsid'] = $flashcards->id;
+
+$renderer = $PAGE->get_renderer('core');
+
+if (trim(strip_tags($flashcards->intro))) {
+    $formatoptions = new stdClass();
+    $formatoptions->noclean = true;
+    $templatestablecontext['intro'] = null;
+}
+
+if ($isteacher) {
+    $overviewlink = new moodle_url('/mod/flashcards/overview.php', ['cmid' => $id]);
+    $templatestablecontext['isteacher'] = 1;
+    $templatestablecontext['overviewlink'] = $overviewlink->out(false);
+}
+
+echo $renderer->render_from_template('mod_flashcards/studentview', $templatestablecontext);
+echo $OUTPUT->footer();
 
 /**
  * Calculates the number of questions in each box, ordered by box id

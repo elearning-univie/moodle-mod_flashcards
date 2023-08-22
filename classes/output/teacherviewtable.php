@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace mod_flashcards\output;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/tablelib.php');
@@ -88,7 +89,8 @@ class teacherviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show.
-        $columns = array('name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'version', 'preview', 'edit', 'remove');
+        $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby',
+            'timemodified', 'version', 'preview', 'edit', 'remove'];
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('upvotes', 'flashcards_up');
@@ -151,7 +153,8 @@ class teacherviewtable extends table_sql {
      * @return string
      */
     public function col_name($values) {
-        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
+        return html_writer::div($values->name, null,
+            ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
                 'class' => 'qtitle_tooltip']);
     }
 
@@ -182,9 +185,11 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
-        return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
-                ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
+            ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
+        return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'],
+            $checkinfo['icon']['title']), $checkinfo['color']),
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
         /**
@@ -217,7 +222,8 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $values->fqid, 'origin' => $this->editreturnurl));
+            ['action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid,
+                'fcid' => $values->fqid, 'origin' => $this->editreturnurl]);
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
     }
@@ -231,7 +237,8 @@ class teacherviewtable extends table_sql {
     public function col_preview($values) {
         global $OUTPUT;
 
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
+            ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
 
         return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
@@ -247,9 +254,9 @@ class teacherviewtable extends table_sql {
         global $OUTPUT;
 
         $durl = new moodle_url('/mod/flashcards/teacherview.php',
-            array('cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(), 'delete' => true, 'fcid' => $values->fqid));
+            ['cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(),
+                'delete' => true, 'fcid' => $values->fqid]);
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
     }
-
 }

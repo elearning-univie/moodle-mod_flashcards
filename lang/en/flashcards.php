@@ -205,3 +205,16 @@ $string['timemodified'] = 'Last modified';
 $string['trueorfalse'] = 'True or False?';
 $string['userpreferences'] = 'User preferences';
 $string['version'] = 'Version';
+
+$string['questioncount'] = 'Number of flashcards';
+$string['overviewinfo'] = 'This is the overview info text!!';
+$string['teacherview'] = 'Flashcard collection';
+$string['teacherviewedit'] = 'Edit flashcard collection';
+$string['viewstudentview'] = 'Studentview';
+$string['viewstudentviewinfo'] = 'In the studentview you can do stuff';
+$string['filter'] = 'Filter';
+$string['filterall'] = 'All';
+$string['filternew'] = 'New';
+$string['filterstud'] = 'Student questions';
+$string['filterteacher'] = 'Teacher questions';
+$string['qbank'] = 'Questionbank';

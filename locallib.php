@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
 define('FLASHCARDS_LN', 'mod_flashcards_ln_');
 define('FLASHCARDS_LN_COUNT', 'mod_flashcards_ln_count_');
 define('FLASHCARDS_LN_KNOWN', 'mod_flashcards_ln_known_');
@@ -186,7 +185,7 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
     }
     require_once($CFG->dirroot . '/lib/questionlib.php');
     if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid)) {
-        print_error('deletion_not_allowed', 'flashcards');
+        throw new \moodle_exception('deletion_not_allowed', 'flashcards');
         return;
     }
     if (questions_in_use(array($questionid))) {
@@ -465,7 +464,8 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     $qbe = get_question_bank_entry($questionid);
 
     $trans = $DB->start_delegated_transaction();
-    $DB->insert_record('flashcards_q_status', ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
+    $DB->insert_record('flashcards_q_status',
+        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
     $trans->allow_commit();
 }
 
@@ -516,7 +516,8 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
     $eventtriggered = false;
 
     $eventsrec = $DB->get_record('flashcards_stud_xp_events', ['fcid' => $flashcardsid, 'studentid' => $USER->id]);
-    $countfirstcard = $DB->count_records_select('flashcards_q_stud_rel', 'currentbox is not null AND studentid = :studid AND flashcardsid = :fcid',
+    $countfirstcard = $DB->count_records_select('flashcards_q_stud_rel',
+        'currentbox is not null AND studentid = :studid AND flashcardsid = :fcid',
         ['studid' => $USER->id, 'fcid' => $flashcardsid]);
 
     if (!$eventsrec) {
@@ -535,7 +536,8 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
             $eventsrec->firstquestion = 1;
             $eventtriggered = true;
         } else {
-            $countmaxbox = $DB->count_records('flashcards_q_stud_rel', ['studentid' => $USER->id, 'flashcardsid' => $flashcardsid, 'currentbox' => 5]);
+            $countmaxbox = $DB->count_records('flashcards_q_stud_rel',
+                ['studentid' => $USER->id, 'flashcardsid' => $flashcardsid, 'currentbox' => 5]);
 
             if ($countmaxbox) {
                 $questioncount = $DB->count_records('flashcards_q_status', ['fcid' => $flashcardsid]);
@@ -598,7 +600,7 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
-    // set 2fc tag to mc question
+    // Set 2fc tag to mc question.
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
@@ -640,7 +642,7 @@ function mod_flashcards_truefalse_to_flashcard($question, $flashcardsid) {
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid, $tfanswerid);
 
-    // set 2fc tag to mc question
+    // Set 2fc tag to mc question.
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
@@ -668,7 +670,7 @@ function mod_flashcards_shortanswer_to_flashcard($question, $flashcardsid) {
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
-    // set 2fc tag to mc question
+    // Set 2fc tag to mc question.
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
@@ -737,7 +739,7 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
     $answerid = array_key_first($question2fc->answers);
 
     mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
-    // set 2fc tag to mc question
+    // Set 2fc tag to mc question.
     mod_flashcards_add_2fc_tag($question->id, $context->id);
 
     return $question2fc->id;
@@ -842,7 +844,7 @@ function mod_flashcards_short_answer_html_list_sorted(array $answers) {
 function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
     global $DB, $USER;
 
-    // get tag id
+    // Get tag id.
     $tag = $DB->get_record('tag', ['name' => '2fc']);
 
     if (!$tag) {

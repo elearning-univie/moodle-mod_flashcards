@@ -287,7 +287,8 @@ class mod_flashcards_external extends external_api {
         $questionarray = [];
 
         foreach ($questionids as $question) {
-            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id]);
+            $recid = $DB->get_record('flashcards_q_stud_rel',
+                ['flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id]);
             if ($recid) {
                 $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => 1]);
             } else {
@@ -319,7 +320,8 @@ class mod_flashcards_external extends external_api {
         $questionarray = [];
 
         foreach ($questionids as $questionid) {
-            $recid = $DB->get_record('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id]);
+            $recid = $DB->get_record('flashcards_q_stud_rel',
+                ['flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id]);
             if ($recid) {
                 $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => null]);
             } else {
@@ -383,7 +385,9 @@ class mod_flashcards_external extends external_api {
         $params = self::validate_parameters(self::set_preview_status_parameters(),
                 array('fqid' => $fqid, 'status' => $status));
 
-        if ($params['status'] != FLASHCARDS_CHECK_NONE && $params['status'] != FLASHCARDS_CHECK_POS && $params['status'] != FLASHCARDS_CHECK_NEG) {
+        if ($params['status'] != FLASHCARDS_CHECK_NONE
+            && $params['status'] != FLASHCARDS_CHECK_POS
+            && $params['status'] != FLASHCARDS_CHECK_NEG) {
             return;
         }
 
@@ -418,7 +422,9 @@ class mod_flashcards_external extends external_api {
         $params = self::validate_parameters(self::set_peer_review_vote_parameters(),
             array('fqid' => $fqid, 'vote' => $vote));
 
-        if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP && $params['vote'] != FLASHCARDS_PEER_REVIEW_DOWN) {
+        if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE
+            && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP
+            && $params['vote'] != FLASHCARDS_PEER_REVIEW_DOWN) {
             return;
         }
 

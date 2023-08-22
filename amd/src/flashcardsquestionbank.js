@@ -20,28 +20,13 @@
  * @copyright 2021 University of Vienna
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(
-    [
-        'mod_flashcards/addquestionmodallauncher',
-        'mod_flashcards/modalflashcardsquestionbank'
-    ],
-    function(
-        AddQuestionModalLauncher,
-        ModalFlashcardsQuestionBank
-    ) {
+import AddQuestionModalLauncher from 'mod_flashcards/addquestionmodallauncher';
+import ModalFlashcardsQuestionBank from 'mod_flashcards/modalflashcardsquestionbank';
 
-    return {
-        /**
-         * Create the question bank modal.
-         *
-         * @param  {int} contextId Current context id.
-         */
-        init: function(contextId) {
-            AddQuestionModalLauncher.init(
-                ModalFlashcardsQuestionBank.TYPE,
-                '.menu [data-action="questionbank"]',
-                contextId
-            );
-        }
-    };
-});
+export const init = contextId => {
+    AddQuestionModalLauncher.init(
+        ModalFlashcardsQuestionBank.TYPE,
+        '.menu [data-action="questionbank"]',
+        contextId
+    );
+};

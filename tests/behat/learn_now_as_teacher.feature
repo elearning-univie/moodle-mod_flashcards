@@ -1,17 +1,19 @@
-@mod @mod_flashcards @amc
+@mod @mod_flashcards
 
 Feature: As a teacher i want to test the learn now function
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname | email               |
-      | teacher  | John   | Doe  | teacher@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Terry1    | Teacher1 | teacher1@example.com |
+      | student1 | Sam1      | Student1 | student1@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
       | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
-      | user    | course | role           |
-      | teacher | C1     | editingteacher |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | student1 | C1     | student        |
     And the following config values are set as admin:
       | contextlocking | 1 |
     And I log in as "admin"
@@ -29,7 +31,7 @@ Feature: As a teacher i want to test the learn now function
 
   @javascript
   Scenario: I switch role to student and test learn now
-    Given I am on the "C1" "Course" page logged in as "teacher"
+    Given I am on the "C1" "Course" page logged in as "teacher1"
     When I follow "Switch role to..." in the user menu
     And I press "Student"
     And I am on the "Test flash cards" "flashcards activity" page

@@ -23,8 +23,6 @@
  */
 namespace mod_flashcards\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * A task to cleanup old unused qubas.
  *

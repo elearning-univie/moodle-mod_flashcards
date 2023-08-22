@@ -22,8 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * xmldb_streamlti_upgrade is the function that upgrades
  * the streamlti module database when is needed
@@ -90,7 +88,8 @@ function xmldb_flashcards_upgrade($oldversion) {
 
                 if (!$DB->record_exists_sql($sql, ['questionid' => $q->id, 'fcid' => $flashcard->id])) {
                     $teachercheck = has_capability('mod/flashcards:editallquestions', $context, $q->createdby) ? 1 : 0;
-                    $DB->insert_record('flashcards_q_status', ['questionid' => $q->id, 'fcid' => $flashcard->id, 'teachercheck' => $teachercheck]);
+                    $DB->insert_record('flashcards_q_status',
+                        ['questionid' => $q->id, 'fcid' => $flashcard->id, 'teachercheck' => $teachercheck]);
                 }
             }
         }
@@ -142,7 +141,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022011000, 'flashcards');
     }
 
-    if ($oldversion < 2022112203) {
+    if ($oldversion < 2023042400) {
 
         // Define field fcstatusid to be added to flashcards_q_stud_rel.
         $table = new xmldb_table('flashcards_q_stud_rel');
@@ -153,7 +152,8 @@ function xmldb_flashcards_upgrade($oldversion) {
 
             $records = $DB->get_records('flashcards_q_stud_rel');
             foreach ($records as $record) {
-                $fqsrec = $DB->get_record('flashcards_q_status', ['questionid' => $record->questionid, 'fcid' => $record->flashcardsid]);
+                $fqsrec = $DB->get_record('flashcards_q_status',
+                    ['questionid' => $record->questionid, 'fcid' => $record->flashcardsid]);
                 $record->fqid = $fqsrec->id;
                 $DB->update_record('flashcards_q_stud_rel', $record);
             }
@@ -193,7 +193,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         }
 
         // Flashcards savepoint reached.
-        upgrade_mod_savepoint(true, 2022112203, 'flashcards');
+        upgrade_mod_savepoint(true, 2023042400, 'flashcards');
     }
 
     return true;

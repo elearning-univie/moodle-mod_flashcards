@@ -23,8 +23,6 @@
  */
 
 namespace mod_flashcards\question\bank;
-defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * A column type for the name followed by the start of the question text.

@@ -30,14 +30,15 @@ require_once('locallib.php');
 
 global $USER, $DB, $PAGE, $COURSE, $OUTPUT;
 
-$id = optional_param('id', 0, PARAM_INT); // question id
+$id = optional_param('id', 0, PARAM_INT); // Question id.
 $cmid = required_param('cmid', PARAM_INT);
 $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 $action = required_param('action', PARAM_ALPHA);
 $fcid = required_param('fcid', PARAM_INT);
 
-$url = new moodle_url('/mod/flashcards/simplequestion.php', ['cmid' => $cmid, 'origin' => $origin, 'action' => $action, 'fcid' => $fcid]);
+$url = new moodle_url('/mod/flashcards/simplequestion.php',
+    ['cmid' => $cmid, 'origin' => $origin, 'action' => $action, 'fcid' => $fcid]);
 if ($id) {
     $url->param('id', $id);
 }
@@ -71,7 +72,7 @@ $qtype = 'flashcard';
 
 if ($id) {
     if (!$question = $DB->get_record('question', array('id' => $id))) {
-        print_error('questiondoesnotexist', 'question', $origin);
+        throw new \moodle_exception('questiondoesnotexist', 'question', $origin);
     }
     // We can use $COURSE here because it's been initialised as part of the
     // require_login above. Passing it as the third parameter tells the function
@@ -83,7 +84,7 @@ if ($id) {
     $question->qtype = $qtype;
     $question->createdby = $USER->id;
     if (!question_bank::qtype_enabled($qtype)) {
-        print_error('cannotenable', 'question', $origin, $qtype);
+        throw new \moodle_exception('cannotenable', 'question', $origin, $qtype);
     }
     $question->options = new stdClass();
 }
@@ -94,7 +95,7 @@ if (isset($question->categoryobject)) {
     $category = $question->categoryobject;
 } else {
     if (!$category = $DB->get_record('question_categories', array('id' => $question->category))) {
-        print_error('categorydoesnotexist', 'question', $origin);
+        throw new \moodle_exception('categorydoesnotexist', 'question', $origin);
     }
 }
 
@@ -116,7 +117,7 @@ $mform->set_data($questioncopy);
 if ($mform->is_cancelled()) {
     redirect($origin);
 } else if ($fromform = $mform->get_data()) {
-    // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form
+    // Because we only have certain fields wie completely ignore the form object and ony save the ones in the form.
     $questioncopy->name = $fromform->name;
     $questioncopy->questiontext = $fromform->questiontext;
     $questioncopy->answer = $fromform->answer;
@@ -153,6 +154,11 @@ $streditingquestion = $qtypeobj->get_heading();
 $PAGE->set_title($streditingquestion);
 $PAGE->set_heading($COURSE->fullname);
 $PAGE->navbar->add($streditingquestion);
+$activityheader = $PAGE->activityheader;
+$activityheader->set_attrs([
+    'description' => '',
+    'hidecompletion' => true
+]);
 
 echo $OUTPUT->header();
 $mform->display();

@@ -92,7 +92,8 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        $columns = array('select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby', 'timemodified', 'version', 'preview', 'edit', 'delete');
+        $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby',
+            'timemodified', 'version', 'preview', 'edit', 'delete'];
 
         $this->define_columns($columns);
         $this->column_class('currentbox', 'flashcards_studentview_tc');
@@ -175,7 +176,8 @@ class studentviewtable extends table_sql {
      * @return string
      */
     public function col_name($values) {
-        return html_writer::div($values->name, null, ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
+        return html_writer::div($values->name, null,
+            ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
             'class' => 'qtitle_tooltip']);
     }
 
@@ -186,8 +188,9 @@ class studentviewtable extends table_sql {
      * @return string
      */
     public function col_select($values) {
-        return html_writer::tag('input', null, ['class' => 'mod-flashcards-checkbox', 'data-value' => $values->id, 'name' => 'selectbox',
-                    'type' => 'checkbox', 'autocomplete' => 'off', 'onChange' => '$.mod_flashcards_selected()']);
+        return html_writer::tag('input', null,
+            ['class' => 'mod-flashcards-checkbox', 'data-value' => $values->id, 'name' => 'selectbox',
+            'type' => 'checkbox', 'autocomplete' => 'off', 'onChange' => '$.mod_flashcards_selected()']);
     }
 
     /**
@@ -220,8 +223,10 @@ class studentviewtable extends table_sql {
         global $OUTPUT;
 
         $checkinfo = mod_flashcard_get_teacher_check_info($values->teachercheck);
-        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php', array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $this->fcobj->id));
-        return html_writer::link($qurl, html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
+            ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $this->fcobj->id]);
+        return html_writer::link($qurl,
+            html_writer::div($OUTPUT->pix_icon($checkinfo['icon']['key'], $checkinfo['icon']['title']), $checkinfo['color']),
             ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
@@ -266,7 +271,8 @@ class studentviewtable extends table_sql {
         }
 
         $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-            array('action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid, 'fcid' => $values->fqid, 'origin' => $this->returnurl));
+            ['action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid,
+                'fcid' => $values->fqid, 'origin' => $this->returnurl]);
 
         return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext),
             ['class' => 'mod_flashcards_questioneditlink']);
@@ -304,6 +310,7 @@ class studentviewtable extends table_sql {
         $durl = new moodle_url('/mod/flashcards/studentquestioninit.php',
                 array('id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()));
 
-        return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext), ['class' => 'mod_flashcards_studentview_delete']);
+        return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext),
+            ['class' => 'mod_flashcards_studentview_delete']);
     }
 }

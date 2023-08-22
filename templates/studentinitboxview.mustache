@@ -22,30 +22,27 @@
         "actionurl": "https://someurl",
         "id": "1",
         "sesskey": "1337XOXO",
-        "createbtnlink": "https://addflashcardlink"
+        "createbtnlink": "https://addflashcardlink",
+        "headertext": "Some header text"
     }
 }}
-<form method="get" action="{{{actionurl}}}" id="teacherviewform">
-    <input type="hidden" name="id" value="{{id}}"/>
-    <input type="hidden" name="sesskey" value="{{sesskey}}"/>
-    <input type="hidden" name="tab" value="{{tab}}"/>
-    <label for="perpage">{{# str }} pagesize, mod_flashcards {{/ str }}</label>
-    <select id="perpage" name="perpage" onchange="this.form.submit()">
-        <option value="10" title="10" {{#selected10}}selected{{/selected10}}>10</option>
-        <option value="20" title="20" {{#selected20}}selected{{/selected20}}>20</option>
-        <option value="50" title="50" {{#selected50}}selected{{/selected50}}>50</option>
-        <option value="100" title="100" {{#selected100}}selected{{/selected100}}>100</option>
-    </select>
-</form>
-
 <div class="btn-div">
     <button class="btn btn-secondary" onclick="window.location.href = '{{backtooverviewlink}}';">{{# str }} backtooverviewbutton, mod_flashcards {{/ str }}</button>
+    <button class="btn btn-secondary" onclick="window.location.href = '{{tabbtnlink}}';">{{tabbtntext}}</button><br/>
     {{#cbvis}}
+    <br/>
     <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
     {{/cbvis}}
+    <br/>
 </div>
+<h3>{{headertext}}</h3>
 {{#cbvis}}
 <div class="alert alert-info alert-block fade in " role="alert" data-aria-autofocus="true">
     {{# str }} studentquestioninitinfo, mod_flashcards {{/ str }}
 </div>
 {{/cbvis}}
+<button class="btn btn-primary btn-sm add_remove_btn_margins" id="maintanancebtn" onclick="{{{collectionchangefunc}}}" disabled="">
+    {{collectionchangetext}}
+</button>
+<br/>
+{{collectionchangetext}}: {{flashcardcount}}

@@ -37,7 +37,7 @@ Feature: As a student I open the flashcard preview
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I switch to the browser tab opened by the app
+    And I switch to a second window
     Then I should see "Show solution"
     And I should see "Teacher check"
     And I should see "Peer review"

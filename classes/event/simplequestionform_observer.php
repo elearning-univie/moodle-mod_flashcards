@@ -23,8 +23,6 @@
  */
 namespace mod_flashcards\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event observer for mod_flashcards.
  */
@@ -48,22 +46,15 @@ class simplequestionform_observer {
                       JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
                      WHERE fcqstatus.qbankentryid = :qbankentryid";
             $records = $DB->get_records_sql($sql, ['qbankentryid' => $qbe->id]);
+
             foreach ($records as $record) {
                 // Reset teachercheck only when the editor doesn't have the right to (normally students).
-                $context = \context_module::instance($record->coursemodule, MUST_EXIST);
+                $context = \context_module::instance($record->coursemodule);
                 if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $data['userid'])) {
                     $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
                 }
-                // Reset peer review for all roles and move flashcard back to box 0.
-                $sql = "SELECT id
-                 FROM {flashcards_q_stud_rel}
-                 WHERE fqid =:fqid";
-
-                $studrelrecords = $DB->get_fieldset_sql($sql, ['fqid' => $record->id]);
-
-                if ($studrelrecords) {
-                    list($insql, $inparam) = $DB->get_in_or_equal($studrelrecords, SQL_PARAMS_NAMED, 'id');
-                    $DB->delete_records_select('flashcards_q_stud_rel', "id $insql", $inparam);
+                if ($DB->record_exists('flashcards_q_stud_rel', ['fqid' => $record->id])) {
+                    $DB->delete_records('flashcards_q_stud_rel', ['fqid' => $record->id]);
                 }
             }
         }
@@ -79,14 +70,10 @@ class simplequestionform_observer {
         global $DB;
 
         $data = $event->other;
-        $tc = 0;
-        if (has_capability('mod/flashcards:editallquestions', $event->get_context())) {
-            $tc = 1;
-        }
-        $qbe = get_question_bank_entry($event->objectid);
-        if ($qbe) {
-            $record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]);
-            if (!$record) {
+        $tc = has_capability('mod/flashcards:editallquestions', $event->get_context()) ? 1 : 0;
+
+        if ($qbe = get_question_bank_entry($event->objectid)) {
+            if (!($record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
                 $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc, 'questionid' => $event->objectid]);
             } else {
                 $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);

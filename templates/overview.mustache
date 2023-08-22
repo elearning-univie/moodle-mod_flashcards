@@ -1,0 +1,64 @@
+{{!
+  This file is part of Moodle - http://moodle.org/
+
+  Moodle is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Moodle is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_flashcards/overview
+
+    Example context (json):
+    {
+    }
+}}
+<div class="container">
+    <div class="row py-3 alert-info infobox">
+        <div>
+            <div class="col">
+                {{#pix}} docs, core {{/pix}}{{notification}}
+                {{# str}} overviewinfo, mod_flashcards {{/str}}
+            </div>
+        </div>
+    </div>
+    <div class="row py-3">
+        <div class="col-auto pl-0">
+            <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-secondary" onclick="window.location.href = '{{teacherviewlink}}';">{{#str}} teacherviewedit, mod_flashcards {{/str}}</button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-secondary" onclick="window.location.href = '{{studentviewlink}}';">{{#str}} viewstudentview, mod_flashcards {{/str}}</button>
+        </div>
+        <div class="col"></div>
+    </div>
+    <div class="row py-3">
+        <h3>
+            {{# str }} overview, core_group {{/ str }}
+        </h3>
+    </div>
+    <div class="row py-3">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <tbody>
+                {{#listentries}}
+                    <tr>
+                        <td>{{text}}</td>
+                        <td><a href="{{link}}">{{value}}</a></td>
+                    </tr>
+                {{/listentries}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

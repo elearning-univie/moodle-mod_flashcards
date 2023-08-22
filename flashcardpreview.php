@@ -44,7 +44,7 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
 $question = question_bank::load_question($id);
-$PAGE->set_pagelayout('popup');
+// $PAGE->set_pagelayout('popup');
 
 // Get and validate display options.
 $maxvariant = 1;
@@ -68,18 +68,18 @@ if ($previewid) {
     } catch (Exception $e) {
         // This may not seem like the right error message to display, but
         // actually from the user point of view, it makes sense.
-        print_error('submissionoutofsequencefriendlymessage', 'question',
+        throw new \moodle_exception('submissionoutofsequencefriendlymessage', 'question',
                 $prevurl, null, $e);
     }
 
     if ($quba->get_owning_context()->instanceid != $context->instanceid) {
-        print_error('notyourpreview', 'question');
+        throw new \moodle_exception('notyourpreview', 'question');
     }
 
     $slot = $quba->get_first_question_number();
     $usedquestion = $quba->get_question($slot);
     if ($usedquestion->id != $question->id) {
-        print_error('questionidmismatch', 'question');
+        throw new \moodle_exception('questionidmismatch', 'question');
     }
     $question = $usedquestion;
     $options->variant = $quba->get_variant($slot);
@@ -137,7 +137,8 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
             if (optional_param('finish', null, PARAM_BOOL)) {
                 $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
                 if ($nostatus) {
-                    $fqid = $DB->insert_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                    $fqid = $DB->insert_record('flashcards_q_status',
+                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
                 } else if ($statusrec->teachercheck != $teachercheck) {
                     $statusrec->teachercheck = $teachercheck;
                     $DB->update_record('flashcards_q_status', $statusrec);
@@ -165,7 +166,7 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
             }
 
         } catch (question_out_of_sequence_exception $e) {
-            print_error('submissionoutofsequencefriendlymessage', 'question', $actionurl);
+            throw new \moodle_exception('submissionoutofsequencefriendlymessage', 'question', $actionurl);
 
         } catch (Exception $e) {
             // This sucks, if we display our own custom error message, there is no way
@@ -174,7 +175,7 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
             if (!empty($e->debuginfo)) {
                 $debuginfo = $e->debuginfo;
             }
-            print_error('errorprocessingresponses', 'question', $actionurl,
+            throw new \moodle_exception('errorprocessingresponses', 'question', $actionurl,
                     $e->getMessage(), $debuginfo);
         }
     }
@@ -194,6 +195,18 @@ $title = get_string('previewquestion', 'question', format_string($question->name
 $headtags = question_engine::initialise_js() . $quba->render_question_head_html($slot);
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
+$activityheader = $PAGE->activityheader;
+$activityheader->set_attrs([
+        'description' => '',
+        'hidecompletion' => true
+]);
+
+$node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
+if ($node) {
+    $node->make_active();
+}
+
+$PAGE->add_body_class('limitedwidth');
 echo $OUTPUT->header();
 
 $votes = mod_flashcard_get_peer_review_votes($fqid);
@@ -237,7 +250,7 @@ if ($canedit) {
     $templatecontent['teachercheckcolor'] = $checkinfo['color'];
 }
 
-// Edit button
+// Edit button.
 $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
     array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl, 'fcid' => $flashcardsid));

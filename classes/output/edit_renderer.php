@@ -23,7 +23,6 @@
  */
 
 namespace mod_flashcards\output;
-defined('MOODLE_INTERNAL') || die();
 
 use \mod_flashcards\structure;
 use \html_writer;
@@ -54,11 +53,12 @@ class edit_renderer extends \plugin_renderer_base {
             $thiscontext->id
         ]);
         $addmenu = html_writer::tag('span', $this->add_menu_actions($pageurl, $contexts, $pagevars),
-            array('class' => 'add-menu-outer mr-5'));
+            ['class' => 'add-menu-outer mr-5']);
 
         $output = html_writer::div($addmenu, 'add-menu-space');
 
         return $output;
+
     }
 
     /**
@@ -76,7 +76,6 @@ class edit_renderer extends \plugin_renderer_base {
             return '';
         }
         $menu = new \action_menu();
-        $menu->set_menu_left();
         $menu->set_constraint('.mod-flashcards-edit-content');
         $trigger = html_writer::tag('span', get_string('add', 'quiz'), array('class' => 'add-menu'));
         $menu->set_menu_trigger($trigger);
@@ -120,6 +119,12 @@ class edit_renderer extends \plugin_renderer_base {
         $attributes = array('class' => 'cm-edit-action questionbank',
             'data-header' => $title, 'data-action' => 'questionbank', 'onClick' => '');
         $actions['questionbank'] = new \action_menu_link_secondary($pageurl, $icon, $str->questionbank, $attributes);
+
+        $title = get_string('createflashcardbutton', 'mod_flashcards');
+        $attributes = array('class' => 'cm-edit-action questionbank',
+            'data-header' => $title, 'onClick' => '');
+        $link = new \moodle_url('/mod/flashcards/simplequestion.php', $pagevars['createlinkparams']);
+        $actions['creatquestion'] = new \action_menu_link_secondary($link, $icon, $title, $attributes);
 
         return $actions;
     }
