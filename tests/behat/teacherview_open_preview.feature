@@ -4,7 +4,7 @@ Feature: As a teacher I close the flashcard preview
 
   Background:
     Given the following "users" exist:
-      | username | firstname | lastname | email               |
+      | username | firstname | lastname | email        |
       | teacher  | John   | Doe  | teacher@example.com |
     And the following "courses" exist:
       | fullname | shortname | category |
@@ -27,7 +27,7 @@ Feature: As a teacher I close the flashcard preview
   @javascript
   Scenario: Close Flashcard preview as Teacher
     When I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I switch to the browser tab opened by the app
+    And I switch to a second window
     Then I should see "Show solution"
     And I should see "Teacher check"
     And I should see "Peer review"
@@ -35,7 +35,7 @@ Feature: As a teacher I close the flashcard preview
   @javascript
   Scenario: Set Flashcard Review as Teacher
     When I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I switch to the browser tab opened by the app
+    And I switch to a second window
     And I should see "correct"
     And I select "not yet evaluated" from the "teachercheck" singleselect
     And I reload the page

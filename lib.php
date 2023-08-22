@@ -22,11 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-if (!defined('MOD_PURPOSE_COLLABORATION')) {
-    define('MOD_PURPOSE_COLLABORATION', 'collaboration');
-}
 /**
  * Returns the information on whether the module supports a feature
  *
@@ -78,10 +73,8 @@ function flashcards_check_category($flashcards, $courseid) {
     require_once($CFG->dirroot . '/question/editlib.php');
     require_once($CFG->dirroot . '/question/category_class.php');
 
-    $context = [];
     $categorylist = [];
     $coursecontext = context_course::instance($courseid);
-    $context[] = $coursecontext;
     $contexts = [$coursecontext->id => $coursecontext];
 
     $defaultcategoryobj = question_make_default_categories($contexts);
@@ -156,7 +149,7 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
 
     if (!isset($flashcardsdb->categoryid)) {
-        print_error('invalidcategoryid');
+        throw new \moodle_exception('invalidcategoryid');
         return;
     }
 
@@ -227,7 +220,7 @@ function flashcards_question_pluginfile($course, $context, $component,
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/$component/$filearea/$relativepath";
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || $file->is_directory()) {
         send_file_not_found();
     }
 
@@ -294,3 +287,20 @@ function mod_flashcards_output_fragment_questionbank($args) {
     $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
     return $renderer->question_bank_contents($questionbank, $pagevars);
 }
+
+/**
+ * Adds module specific settings to the settings block
+ *
+ * @param settings_navigation $settingsnav The settings navigation object
+ * @param navigation_node $wordcloudnode The node to add module settings to
+ */
+function flashcards_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $wordcloudnode) {
+    if (has_capability('mod/flashcards:teacherview', $settingsnav->get_page()->context)) {
+        $url = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $settingsnav->get_page()->cm->id]);
+        $wordcloudnode->add(get_string('teacherview', 'mod_flashcards'), $url, navigation_node::TYPE_SETTING, null, 'mod_flashcards_teacherview');
+
+        $url = new moodle_url('/question/edit.php', ['courseid' => $settingsnav->get_page()->cm->course]);
+        $wordcloudnode->add(get_string('qbank', 'mod_flashcards'), $url, navigation_node::TYPE_SETTING, null, 'mod_flashcards_qbank')->set_force_into_more_menu(true);
+    }
+}
+

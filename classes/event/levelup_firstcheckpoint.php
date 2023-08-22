@@ -23,8 +23,6 @@
  */
 namespace mod_flashcards\event;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Event for mod_flashcards.
  */

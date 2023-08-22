@@ -53,6 +53,11 @@ if ($node) {
 
 $PAGE->set_title(get_string('pagetitle', 'flashcards'));
 $PAGE->set_heading($course->fullname);
+$activityheader = $PAGE->activityheader;
+$activityheader->set_attrs([
+        'description' => '',
+        'hidecompletion' => true
+]);
 
 if (!has_capability('mod/flashcards:view', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
@@ -119,7 +124,8 @@ $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs
              WHERE qv.questionbankentryid = v.questionbankentryid)";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url, $tab);
-$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck, fcs.id fqid, fcs.fcid flashcardsid,
+$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck,
+    fcs.id fqid, fcs.fcid flashcardsid,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q
@@ -139,50 +145,51 @@ $sql = "SELECT COUNT(q.id)
 $notadded = $DB->count_records_sql($sql, ['fcid' => $flashcards->id] + $importedfcids);
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
-$link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
+$createurl = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 $returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
 
-$renderer = $PAGE->get_renderer('core');
+if ($equalparam) {
+    $collectionchangefunc = '$.mod_flashcards_remove_questions(' . $flashcards->id . ')';
+    $collectionchangetext = get_string('removeflashcardbutton', 'mod_flashcards');
+    $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']);
+    $tabbtntext = get_string('tabflashcardsnotaddedtip', 'mod_flashcards');
+    $headertext = get_string('tabflashcardsaddedtip', 'mod_flashcards');
+} else {
+    $collectionchangefunc = '$.mod_flashcards_init_questions(' . $flashcards->id . ')';
+    $collectionchangetext = get_string('addflashcardbutton', 'mod_flashcards');
+    $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']);
+    $tabbtntext = get_string('tabflashcardsaddedtip', 'mod_flashcards');
+    $headertext = get_string('tabflashcardsnotaddedtip', 'mod_flashcards');
+    if ($flashcards->addfcstudent == 1) {
+        $cbvis = 1;
+    }
+}
 
-$templateinfo = ['createbtnlink' => $link->out(false),
+$templateinfo = ['createbtnlink' => $createurl->out(false),
     'backtooverviewlink' => $returnurl->out(false),
+    'aid' => $flashcards->id,
+    'cmid' => $cm->id,
+    'collectionchangefunc' => $collectionchangefunc,
+    'collectionchangetext' => $collectionchangetext,
+    'tabbtnlink' => $tabbtnlink->out(false),
+    'tabbtntext' => $tabbtntext,
+    'headertext' => $headertext,
+    'cbvis' => $cbvis ?? 0,
+    'flashcardcount' => $added
+];
+
+$optionsinfo = [
     'id' => $id,
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
-    'aid' => $flashcards->id,
-    'cmid' => $cm->id,
-    'tab' => $tab];
-$templateinfo['selected' . $perpage] = true;
+    'tab' => $tab,
+    'selected' . $perpage => true
+];
 
-if ($flashcards->addfcstudent == 1) {
-    $templateinfo['cbvis'] = 1;
-}
-
-$tabs = [];
-$tabs['notadded'] = new tabobject('notadded',
-    new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']),
-    get_string('tabflashcardsnotadded', 'flashcards', ['nonotadded' => $notadded]),
-    get_string('tabflashcardsnotaddedtip', 'flashcards'),
-    false);
-$tabs['added'] = new tabobject('added',
-    new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']),
-    get_string('tabflashcardsadded', 'flashcards', ['noadded' => $added]),
-    get_string('tabflashcardsaddedtip', 'flashcards'),
-    false);
+$renderer = $PAGE->get_renderer('core');
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
-echo $OUTPUT->tabtree($tabs, $tab);
-
-if ($equalparam) {
-    $addlink = '$.mod_flashcards_remove_questions(' . $flashcards->id . ')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink,  'disabled' => '']);
-    echo get_string('removeflashcardbutton', 'mod_flashcards');
-} else {
-    $addlink = '$.mod_flashcards_init_questions(' . $flashcards->id . ')';
-    echo html_writer::start_tag('button', ['class' => 'btn btn-primary btn-sm add_remove_btn_margins', 'id' => 'maintanancebtn', 'onClick' => $addlink, 'disabled' => '']);
-    echo get_string('addflashcardbutton', 'mod_flashcards');
-}
-echo html_writer::end_tag('button');
 $table->out($perpage, false);
+echo $renderer->render_from_template('mod_flashcards/optionssection', $optionsinfo);
 echo $OUTPUT->footer();

@@ -29,8 +29,6 @@ use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\userlist;
 use \core_privacy\local\request\approved_userlist;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * The mod_flashcards module does not store any data.
  *
@@ -44,12 +42,11 @@ class provider implements
 // This plugin currently implements the original plugin_provider interface.
 \core_privacy\local\request\plugin\provider,
 
-// This plugin saves user preferences
+// This plugin saves user preferences.
 \core_privacy\local\request\user_preference_provider,
 
 // This plugin is capable of determining which users have data within it.
-\core_privacy\local\request\core_userlist_provider
-{
+\core_privacy\local\request\core_userlist_provider {
     /**
      * get metadata
      *

@@ -30,7 +30,7 @@ global $DB, $PAGE, $OUTPUT;
 $id = required_param('id', PARAM_INT);   // Course id.
 
 if (!$course = $DB->get_record('course', array('id' => $id))) {
-    print_error('Course ID is incorrect');
+    throw new \moodle_exception('Course ID is incorrect');
 }
 $coursecontext = context_course::instance($course->id);
 
@@ -77,7 +77,7 @@ foreach ($flashcards as $flashcards) {
             format_string($flashcards->name, true));
     }
 
-    if ($course->format == 'weeks' or $course->format == 'topics') {
+    if ($course->format == 'weeks' || $course->format == 'topics') {
         $table->data[] = array($flashcards->section, $link);
     } else {
         $table->data[] = array($link);

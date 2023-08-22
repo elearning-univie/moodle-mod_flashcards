@@ -22,8 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Define the complete flashcards structure for backup, with file and id annotations
  *
@@ -41,8 +39,8 @@ class backup_flashcards_activity_structure_step extends backup_activity_structur
      */
     protected function define_structure() {
 
-        $flashcards = new backup_nested_element('flashcards', array('id'),
-                array('course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat'));
+        $flashcards = new backup_nested_element('flashcards', ['id'],
+                ['course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat']);
 
         $flashcards->set_source_table('flashcards', array('id' => backup::VAR_ACTIVITYID));
         $flashcards->annotate_files('mod_flashcards', 'intro', null);

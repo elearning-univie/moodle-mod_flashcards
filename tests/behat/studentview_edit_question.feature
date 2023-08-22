@@ -36,7 +36,7 @@ Feature: As a student I edit the an existing flashcard
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I switch to the browser tab opened by the app
+    And I switch to a second window
     And I should see "Peer review"
     And I click on "upvotebtn" "button"
     And I switch to the main window
@@ -51,7 +51,7 @@ Feature: As a student I edit the an existing flashcard
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I click on ".mod_flashcards_questionpreviewlink" "css_element"
-    And I switch to the browser tab opened by the app
+    And I switch to a second window
     And I should see "Peer review"
     And I click on "upvotebtn" "button"
     And I switch to the main window

@@ -70,12 +70,14 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $knownwidth = $knowncount / $cardcount * 100;
         $unknownwidth = $unknowncount / $cardcount * 100;
 
-        $result = '<div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:' . $knownwidth . '%">';
+        $result = '<div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:'
+            . $knownwidth . '%">';
         $result .= '<h3 class="justify-content-center align-self-center my-auto">';
         $result .= get_string('progressknowncards', 'mod_flashcards', $knowncount);
         $result .= '</h3>';
         $result .= '</div>';
-        $result .= '<div class="progress-bar progress-bar-striped bg-danger border-0" role="progressbar" style="width:' . $unknownwidth . '%">';
+        $result .= '<div class="progress-bar progress-bar-striped bg-danger border-0" role="progressbar" style="width:'
+            . $unknownwidth . '%">';
         $result .= '<h3 class="justify-content-center align-self-center my-auto">';
         $result .= get_string('progressunknowncards', 'mod_flashcards', $unknowncount);
         $result .= '</h3>';

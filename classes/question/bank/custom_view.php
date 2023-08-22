@@ -28,7 +28,6 @@ use coding_exception;
 use mod_flashcards;
 use question_bank;
 
-
 /**
  * Subclass to customise the view of the question bank for the quiz editing screen.
  *

@@ -79,7 +79,22 @@
         "flashcardsid":"1"
     }
 }}
-
+{{#isteacher}}
+    <div class="add-menu-space">
+        <div class="add-menu-space">
+            <button class="btn btn-secondary" onclick="window.location.href = '{{overviewlink}}';">{{#str}} backtooverviewbutton, mod_flashcards {{/str}}</button>
+        </div>
+        <h2>
+            {{#str}} viewstudentview, mod_flashcards {{/str}}
+        </h2>
+        <div class="alert-info infobox">
+            <div class="infospacing">
+                {{# str}} viewstudentviewinfo, mod_flashcards {{/str}}
+            </div>
+        </div>
+        <br/>
+    </div>
+{{/isteacher}}
 <div class="flex-container">
     {{#intro}}
         {{{intro}}}

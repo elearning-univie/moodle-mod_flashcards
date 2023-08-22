@@ -1,4 +1,4 @@
-@mod @mod_flashcards @amc @mod_flashcards
+@mod @mod_flashcards
 
 Feature: As a student I can delete my own questions
 

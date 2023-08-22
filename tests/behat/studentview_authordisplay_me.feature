@@ -1,4 +1,4 @@
-@mod @mod_flashcards @amc @mod_flashcards
+@mod @mod_flashcards
 
 Feature: As a student I want to see my name, if I create a flashcard
 

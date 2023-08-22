@@ -23,8 +23,6 @@
  */
 
 namespace mod_flashcards\question\bank;
-defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * A column type for the add this question to the quiz action.

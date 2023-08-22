@@ -47,7 +47,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
 
-        $mform->addElement('text', 'name', get_string('flashcardname', 'flashcards'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('flashcardname', 'flashcards'), ['size' => '64']);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
@@ -62,7 +62,10 @@ class mod_flashcards_mod_form extends moodleform_mod {
             $contexts[] = $context;
 
             if (optional_param('missingcategory', 0, PARAM_INT)) {
-                $mform->addElement('questioncategory', 'category', get_string('category', 'question'), array('contexts' => $contexts));
+                $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
+                    ['contexts' => $contexts]);
+            } else {
+                $mform->addElement('hidden', 'category');
             }
 
             $mform->setType('category', PARAM_RAW);

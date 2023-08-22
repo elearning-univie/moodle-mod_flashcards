@@ -205,3 +205,16 @@ $string['timemodified'] = 'Zuletzt verändert';
 $string['trueorfalse'] = 'Wahr oder Falsch?';
 $string['userpreferences'] = 'Benutzereigenschaften';
 $string['version'] = 'Version';
+
+$string['questioncount'] = 'Vorhandene Lernkarten';
+$string['overviewinfo'] = 'This is the overview info text!!';
+$string['teacherview'] = 'Lernkartensammlung';
+$string['teacherviewedit'] = 'Lernkartensammlung verwalten';
+$string['viewstudentview'] = 'Studierenden-Vorschau';
+$string['viewstudentviewinfo'] = 'In der Studierendenansicht können sie sachen machen';
+$string['filter'] = 'Filter';
+$string['filterall'] = 'Alle';
+$string['filternew'] = 'Neu';
+$string['filterstud'] = 'Studierende Fragen';
+$string['filterteacher'] = 'Lehrende Fragen';
+$string['qbank'] = 'Fragensammlung';
