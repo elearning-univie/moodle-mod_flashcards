@@ -154,16 +154,22 @@ if ($equalparam) {
     $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']);
     $tabbtntext = get_string('tabflashcardsnotaddedtip', 'mod_flashcards');
     $headertext = get_string('tabflashcardsaddedtip', 'mod_flashcards');
+    $helpicon = new help_icon('tabflashcardsaddedtip', 'mod_flashcards');
+    $flashcardcount = $added;
 } else {
     $collectionchangefunc = '$.mod_flashcards_init_questions(' . $flashcards->id . ')';
     $collectionchangetext = get_string('addflashcardbutton', 'mod_flashcards');
     $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']);
     $tabbtntext = get_string('tabflashcardsaddedtip', 'mod_flashcards');
     $headertext = get_string('tabflashcardsnotaddedtip', 'mod_flashcards');
+    $helpicon = new help_icon('tabflashcardsnotaddedtip', 'mod_flashcards');
+    $flashcardcount = $notadded;
     if ($flashcards->addfcstudent == 1) {
         $cbvis = 1;
     }
 }
+
+$renderer = $PAGE->get_renderer('core');
 
 $templateinfo = ['createbtnlink' => $createurl->out(false),
     'backtooverviewlink' => $returnurl->out(false),
@@ -175,7 +181,8 @@ $templateinfo = ['createbtnlink' => $createurl->out(false),
     'tabbtntext' => $tabbtntext,
     'headertext' => $headertext,
     'cbvis' => $cbvis ?? 0,
-    'flashcardcount' => $added
+    'flashcardcount' => $flashcardcount,
+    'helpicon' => $helpicon->export_for_template($renderer)
 ];
 
 $optionsinfo = [
@@ -185,8 +192,6 @@ $optionsinfo = [
     'tab' => $tab,
     'selected' . $perpage => true
 ];
-
-$renderer = $PAGE->get_renderer('core');
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);

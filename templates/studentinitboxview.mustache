@@ -35,14 +35,14 @@
     {{/cbvis}}
     <br/>
 </div>
-<h3>{{headertext}}</h3>
-{{#cbvis}}
-<div class="alert alert-info alert-block fade in " role="alert" data-aria-autofocus="true">
-    {{# str }} studentquestioninitinfo, mod_flashcards {{/ str }}
-</div>
-{{/cbvis}}
+<h3>
+    {{headertext}}
+    {{#helpicon}}
+        {{>core/help_icon}}
+    {{/helpicon}}
+</h3><br/>
 <button class="btn btn-primary btn-sm add_remove_btn_margins" id="maintanancebtn" onclick="{{{collectionchangefunc}}}" disabled="">
     {{collectionchangetext}}
 </button>
 <br/>
-{{collectionchangetext}}: {{flashcardcount}}
+{{# str}} questioncount, mod_flashcards {{/ str }}: {{flashcardcount}}

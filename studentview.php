@@ -117,6 +117,9 @@ $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
 $boxrecords = get_regular_box_count_records($USER->id, $flashcards->id);
 $boxarray = create_regular_boxvalue_array($boxrecords, $id, $usedquestioncount);
 
+$renderer = $PAGE->get_renderer('core');
+$helpicon = new help_icon('viewstudentview', 'flashcards');
+
 $templatestablecontext['stats'] = [
         'totalquestioncount' => $totalquestioncount,
         'cardsavailable' => $totalquestioncount > 0,
@@ -132,8 +135,7 @@ $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
 $templatestablecontext['boxes'] = $boxarray;
 $templatestablecontext['selectquestionsurl'] = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id]);
 $templatestablecontext['flashcardsid'] = $flashcards->id;
-
-$renderer = $PAGE->get_renderer('core');
+$templatestablecontext['helpicon'] = $helpicon->export_for_template($renderer);
 
 if (trim(strip_tags($flashcards->intro))) {
     $formatoptions = new stdClass();

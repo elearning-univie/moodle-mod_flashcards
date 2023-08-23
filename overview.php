@@ -63,14 +63,14 @@ $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
-             WHERE q.id = s.qbankentryid
+             WHERE q.id = s.questionid
                AND fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
-             WHERE q.id = s.qbankentryid
+             WHERE q.id = s.questionid
                AND fcid = :fcid
                AND teachercheck = 0";
 $newquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
@@ -90,16 +90,16 @@ $sql = "SELECT count(fqs.id)
 $studentquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'qcname' => get_string('createdbystudents', 'mod_flashcards')]);
 
 
-$testlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 1]);
-$testlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 2]);
-$testlink3 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 3]);
-$testlink4 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 4]);
+$filterlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 1]);
+$filterlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 2]);
+$filterlink3 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 3]);
+$filterlink4 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 4]);
 
 $tabledata = [
-  ['text' => 'test', 'link' => $testlink1->out(false), 'value' => $totalquestioncount],
-    ['text' => 'teacher q', 'link' => $testlink2->out(false), 'value' => $totalquestioncount - $studentquestioncount],
-    ['text' => 'student q', 'link' => $testlink3->out(false), 'value' => $studentquestioncount],
-    ['text' => 'new q', 'link' => $testlink4->out(false), 'value' => $newquestioncount]
+  ['text' => get_string('overviewall', 'flashcards'), 'link' => $filterlink1->out(false), 'value' => $totalquestioncount],
+    ['text' => get_string('overviewtq', 'flashcards'), 'link' => $filterlink2->out(false), 'value' => $totalquestioncount - $studentquestioncount],
+    ['text' => get_string('overviewsq', 'flashcards'), 'link' => $filterlink3->out(false), 'value' => $studentquestioncount],
+    ['text' => get_string('overviewnq', 'flashcards'), 'link' => $filterlink4->out(false), 'value' => $newquestioncount]
 ];
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];

@@ -32,7 +32,7 @@ $fqid = optional_param('fcid', null, PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
-$filter = optional_param('filter', null, PARAM_INT);
+$filter = optional_param('filter', 1, PARAM_INT);
 
 $params = array();
 $params['cmid'] = $cmid;
@@ -172,16 +172,16 @@ $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $renderer = $PAGE->get_renderer('core');
 
-$templateinfo = ['cmid' => $cmid,
-        'sesskey' => sesskey(),
-        'actionurl' => $PAGE->url];
-$templateinfo['selected' . $perpage] = true;
-$pagevars = ['createlinkparams' => $params];
+$templateinfo = [
+    'cmid' => $cmid,
+    'sesskey' => sesskey(),
+    'actionurl' => $PAGE->url,
+    'selected2' . $filter => true,
+    'filter' => 1,
+    'selected' . $perpage => true
+];
 
-if ($filter) {
-    $templateinfo['selected2' . $filter] = true;
-    $templateinfo['filter'] = 1;
-}
+$pagevars = ['createlinkparams' => $params];
 
 if (has_capability('mod/flashcards:editallquestions', $context)) {
     if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
