@@ -177,13 +177,13 @@ function xmldb_flashcards_upgrade($oldversion) {
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
+        }
 
-            $records = $DB->get_records('flashcards_q_status');
-            foreach ($records as $record) {
-                $qvrec = $DB->get_record('question_versions', ['questionid' => $record->questionid]);
-                $record->qbankentryid = $qvrec->questionbankentryid;
-                $DB->update_record('flashcards_q_status', $record);
-            }
+        $records = $DB->get_records('flashcards_q_status');
+        foreach ($records as $record) {
+            $qvrec = $DB->get_record('question_versions', ['questionid' => $record->questionid]);
+            $record->qbankentryid = $qvrec ? $qvrec->questionbankentryid : 0;
+            $DB->update_record('flashcards_q_status', $record);
         }
 
         $field = new xmldb_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');

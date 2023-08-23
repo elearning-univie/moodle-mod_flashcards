@@ -218,3 +218,11 @@ $string['filternew'] = 'Neu';
 $string['filterstud'] = 'Studierende Fragen';
 $string['filterteacher'] = 'Lehrende Fragen';
 $string['qbank'] = 'Fragensammlung';
+$string['overviewall'] = 'Lernkarten gesamt';
+$string['overviewtq'] = 'Lernkarten von Lehrenden';
+$string['overviewsq'] = 'Lernkarten von Studierenden';
+$string['overviewnq'] = 'Neue Lernkarten/Lehrenden-Check erforderlich';
+$string['viewstudentview_help'] = 'In der Studierendvorschau können sie die Lernkarten aus der Perspektive von Studenten testen.';
+$string['tabflashcardsaddedtip_help'] = 'test';
+$string['tabflashcardsnotaddedtip_help'] = 'test2';
+
