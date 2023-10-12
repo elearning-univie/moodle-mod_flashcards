@@ -106,11 +106,11 @@ $sql = "SELECT count(q.id)
                                AND currentbox IS NOT NULL)";
 $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
 
-$sql = "SELECT count(q.id)
+$sql = "SELECT COUNT(q.id)
           FROM {question} q,
                {flashcards_q_status} s
          WHERE q.id = s.qbankentryid
-           AND fcid = :fcid";
+           AND s.fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;

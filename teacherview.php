@@ -202,11 +202,11 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
     }
 }
 
-$sql = "SELECT count(q.id)
+$sql = "SELECT COUNT(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
              WHERE q.id = s.qbankentryid
-               AND fcid = :fcid";
+               AND s.fcid = :fcid";
 $templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 echo $OUTPUT->header();
