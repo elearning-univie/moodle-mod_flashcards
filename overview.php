@@ -1,4 +1,6 @@
 <?php
+use core\context;
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,7 +25,7 @@
  */
 require('../../config.php');
 
-global $PAGE, $OUTPUT, $DB, $CFG;
+global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
 
 $cmid = required_param('cmid', PARAM_INT);
 
@@ -32,6 +34,7 @@ $params['cmid'] = $cmid;
 
 list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);
+
 require_login($course, false, $cm);
 
 $pageurl = new moodle_url("/mod/flashcards/overview.php", $params);
@@ -75,20 +78,27 @@ $sql = "SELECT count(q.id)
                AND teachercheck = 0";
 $newquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
-$sql = "SELECT count(fqs.id)
-              FROM {flashcards} fc,
-                   {question_categories} qc,
-                   {question_bank_entries} qbe,
-                   {flashcards_q_status} fqs,
-                   {question} q
-             WHERE fc.id = :fcid
-               AND qc.parent = fc.categoryid
-               AND qc.name = :qcname
-               AND qc.id = qbe.questioncategoryid
-               AND qbe.id = fqs.qbankentryid
-               AND q.id = fqs.questionid";
-$studentquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'qcname' => get_string('createdbystudents', 'mod_flashcards')]);
-
+$studentarch = get_archetype_roles('student');
+$archetypeids = array();
+foreach ($studentarch AS $type) {
+    $archetypeids[] = $type->id;
+}
+list($stsql, $stparams) = $DB->get_in_or_equal($archetypeids, SQL_PARAMS_NAMED, 'atid');
+$stparams['fcid'] = $flashcards->id;
+$stparams['courseid'] = $course->id;
+$sql = "SELECT COUNT(q.id)
+              FROM {question} q,
+                   {flashcards_q_status} s
+             WHERE q.id = s.questionid
+               AND s.fcid = :fcid
+               AND q.createdby IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id 
+                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = :courseid
+                                       AND ra.roleid " . $stsql . ")";
+$studentquestioncount = $DB->count_records_sql($sql, $stparams);
 
 $filterlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 1]);
 $filterlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 2]);

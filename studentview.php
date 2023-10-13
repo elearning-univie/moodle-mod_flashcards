@@ -98,7 +98,7 @@ if (!$templatestablecontext['appsavailable']) {
 $sql = "SELECT count(q.id)
           FROM {question} q,
                {flashcards_q_status} s
-         WHERE q.id = s.qbankentryid
+         WHERE q.id = s.questionid
            AND fcid = :fcid
            AND s.id NOT IN (SELECT fqid
                               FROM {flashcards_q_stud_rel}
