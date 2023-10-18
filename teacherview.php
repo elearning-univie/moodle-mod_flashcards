@@ -37,7 +37,7 @@ $filter = optional_param('filter', 1, PARAM_INT);
 $params = array();
 $params['cmid'] = $cmid;
 
-if (!in_array($perpage, [10, 20, 50, 100], true)) {
+if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 $params['perpage'] = $perpage;
