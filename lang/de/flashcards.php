@@ -234,4 +234,4 @@ $string['overviewnq'] = 'Trainer/innen-Check notwendig';
 $string['viewstudentview_help'] = 'In der Teilnehmer/innen-Vorschau können Sie als Trainer/in den gesamten Prozess aus Sicht von Teilnehmer/innen durchführen. Fügen Sie Lernkarten unter "Meine Lernkartei" hinzu um diese zu lernen, genauso wie parallel mittels Lernkartei-App über Ihr Smartphone zu testen.';
 $string['tabflashcardsaddedtip_help'] = 'Unter "Meine Lernkartei" werden alle Lernkarten aufgelistet, die bereits in den persönlichen Lernprozess aufgenommen wurden.';
 $string['tabflashcardsnotaddedtip_help'] = 'In der Lernkartensammlung finden Sie alle Lernkarten, die bisher noch nicht in Ihren Lernprozess - in Ihre persönliche Lernkartei - aufgenommen wurden. Es handelt sich hierbei um neue und/ oder bisher noch nicht eingesetzte Lernkarten.';
-
+$string['dropdownall'] = 'Alle';

@@ -234,3 +234,4 @@ $string['overviewnq'] = 'New flashcards/teacher check necessary';
 $string['viewstudentviewinfo'] = 'In the student preview you can use the flashcards activity from the perspective of students.<br>Add flashcard questions to your personal flashcards and learn them out of boxes (starting with box 1) or randomly via "Learn now".';
 $string['tabflashcardsaddedtip_help'] = 'In "My flashcards" all flashcards are listed that have already been used in the personal learning process.';
 $string['tabflashcardsnotaddedtip_help'] = 'In the flashcards collection you see all flashcards that have not yet been included in your learning process - in your personal flashcards. These are new and/or not yet used flashcards.';
+$string['dropdownall'] = 'All';

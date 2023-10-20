@@ -32,7 +32,7 @@ $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $tab = optional_param('tab', 'notadded', PARAM_ALPHAEXT);
 
-if (!in_array($perpage, [10, 20, 50, 100], true)) {
+if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 
