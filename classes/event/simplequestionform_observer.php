@@ -74,7 +74,8 @@ class simplequestionform_observer {
 
         if ($qbe = get_question_bank_entry($event->objectid)) {
             if (!($record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
-                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc, 'questionid' => $event->objectid, 'addedby' => $USER->id]);
+                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
+                    'questionid' => $event->objectid, 'addedby' => $USER->id]);
             } else {
                 $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
             }
