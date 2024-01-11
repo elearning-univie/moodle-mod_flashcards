@@ -89,8 +89,6 @@ class teacherviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the list of columns to show. TODO: createdby zu addedby umschreiben
-//         $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'createdby',
-//             'timemodified', 'version', 'preview', 'edit', 'remove'];
         $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'addedby',
             'timemodified', 'version', 'preview', 'edit', 'remove'];
         $this->define_columns($columns);
@@ -116,7 +114,6 @@ class teacherviewtable extends table_sql {
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
             get_string('v1author', 'mod_flashcards'),
             get_string('modifiedby', 'mod_flashcards'),
-            //get_string('author', 'mod_flashcards'),
             get_string('addedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('version', 'mod_flashcards'),
@@ -178,10 +175,10 @@ class teacherviewtable extends table_sql {
         } else {
             $author = $this->authors[$values->v1createdby];
         }
-        
+
         return $author;
     }
- 
+
     /**
      * Prepares column addedby for display
      *
@@ -199,25 +196,9 @@ class teacherviewtable extends table_sql {
         } else {
             $author = $this->authors[$values->addedby];
         }
-        
+
         return $author;
     }
-    /**
-     * Prepares column createdby for display
-     *
-     * @param object $values
-     * @return string
-     */
-//     public function col_createdby($values) {
-//         if (!key_exists($values->createdby, $this->authors)) {
-//             $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
-//             $this->authors[$values->createdby] = $author;
-//         } else {
-//             $author = $this->authors[$values->createdby];
-//         }
-
-//         return $author;
-//     }
 
     /**
      * Prepares column modifiedby for display
@@ -232,10 +213,10 @@ class teacherviewtable extends table_sql {
         } else {
             $author = $this->authors[$values->modifiedby];
         }
-        
+
         return $author;
     }
-    
+
     /**
      * Prepares column teachercheck for display
      *

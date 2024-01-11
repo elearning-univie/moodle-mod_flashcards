@@ -1,6 +1,4 @@
 <?php
-use core\context;
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -141,41 +139,41 @@ $addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_s
 if ($addedbyisnull > 0) {
     $tabledata = [
         ['text' => get_string('overviewall', 'flashcards'),
-            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])], 
+            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])],
         ['text' => get_string('overviewtq', 'flashcards'),
             'link' => get_string('overviewtlink', 'flashcards', ['linkt' => $filterlink2->out(false), 'valuet' => $teacherquestioncount])],
         ['text' => get_string('overviewsq', 'flashcards'),
             'link' => get_string('overviewslink', 'flashcards', ['linkst' => $filterlink3->out(false), 'valuest' => $studentquestioncount])],
         ['text' => get_string('overviewnq', 'flashcards'),
             'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
-    ];  
-} else {    
+    ];
+} else {
     $sql = "SELECT COUNT(q.id)
-             FROM {question} q 
-             JOIN {question_versions} v ON v.questionid = q.id 
+             FROM {question} q
+             JOIN {question_versions} v ON v.questionid = q.id
              JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
             WHERE v.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
               AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
               AND fcs.addedby IN (SELECT u.id
                                     FROM {user} u
-                                    JOIN {role_assignments} ra ON ra.userid = u.id 
-                                    JOIN {context} mc ON mc.id = ra.contextid 
+                                    JOIN {role_assignments} ra ON ra.userid = u.id
+                                    JOIN {context} mc ON mc.id = ra.contextid
                                     JOIN {course} mc2 ON mc2.id = mc.instanceid
                                    WHERE mc2.id = :courseid
                                      AND ra.roleid " . $stsql . ")";
-    $teacherquestioncountadd =  $DB->count_records_sql($sql, $stparams);
+    $teacherquestioncountadd = $DB->count_records_sql($sql, $stparams);
     $sql = "SELECT COUNT(q.id)
-             FROM {question} q 
-             JOIN {question_versions} v ON v.questionid = q.id 
+             FROM {question} q
+             JOIN {question_versions} v ON v.questionid = q.id
              JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
             WHERE v.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
               AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
               AND fcs.addedby IN (SELECT u.id
                                     FROM {user} u
-                                    JOIN {role_assignments} ra ON ra.userid = u.id 
-                                    JOIN {context} mc ON mc.id = ra.contextid 
+                                    JOIN {role_assignments} ra ON ra.userid = u.id
+                                    JOIN {context} mc ON mc.id = ra.contextid
                                     JOIN {course} mc2 ON mc2.id = mc.instanceid
                                    WHERE mc2.id = :courseid
                                      AND ra.roleid NOT " . $stsql . ")". "
@@ -186,12 +184,12 @@ if ($addedbyisnull > 0) {
                                  JOIN {course} mc2 ON mc2.id = mc.instanceid
                                  WHERE mc2.id = :courseid2
                                  AND ra.roleid " . $stsql2 . ")";
-    
+
     $studentquestioncountadd = $DB->count_records_sql($sql, $stparams);
-    
+
     $tabledata = [
         ['text' => get_string('overviewall', 'flashcards'),
-            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])],        
+            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])],
         ['text' => get_string('overviewtqadd', 'flashcards'),
             'link' => get_string('overviewtaddlinks', 'flashcards', ['linkcreated' => $filterlink2->out(false), 'valuecreated' => $teacherquestioncount,
                 'linkadded' => $filterlink5->out(false), 'valueadded' => $teacherquestioncountadd])],
@@ -200,7 +198,6 @@ if ($addedbyisnull > 0) {
                 'linkadded' => $filterlink6->out(false), 'valueadded' => $studentquestioncountadd])],
         ['text' => get_string('overviewnq', 'flashcards'),
             'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
-        
     ];
 }
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];

@@ -125,47 +125,47 @@ if ($filter) {
     switch ($filter) {
         case 1:
             break;
-        case 2: //created by teacher
+        case 2: // created by teacher.
             $sqlwhere .= " AND q.createdby IN (SELECT u.id
                                       FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 3: //created by student
+        case 3: // created by student.
             $sqlwhere .= " AND q.createdby IN (SELECT u.id
                                       FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid NOT " . $archstr . ")" . "
                             AND q.createdby NOT IN (SELECT u.id
                                       FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 5: // added by teacher
+        case 5: // added by teacher.
             $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
                                       FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 6: // added by student
+        case 6: // added by student.
             $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
                                       FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
-                                     WHERE mc2.id = $course->id 
+                                     WHERE mc2.id = $course->id
                                        AND ra.roleid NOT " . $archstr . ")" . "
                             AND fcs.addedby NOT IN (SELECT u.id
                                       FROM {user} u
@@ -178,7 +178,6 @@ if ($filter) {
         case 4:
             $sqlwhere .= " AND teachercheck = 0";
             break;
-            
     }
 }
 
@@ -186,8 +185,9 @@ $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $flashc
 
 $table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.modifiedby, q.timemodified, teachercheck, fcs.id fqid,
     fcs.fcid flashcardsid, fcs.addedby,
-    (SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id 
-      WHERE v.questionbankentryid  = fcs.qbankentryid AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)) v1createdby,
+    (SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = fcs.qbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)) v1createdby,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q
