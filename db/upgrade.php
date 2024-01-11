@@ -196,7 +196,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023042400, 'flashcards');
     }
 
-    if ($oldversion < 2023042402) {
+    if ($oldversion < 2023042403) {
 
         // Define field addedby to be added to flashcards_q_status.
         $table = new xmldb_table('flashcards_q_status');
@@ -208,7 +208,7 @@ function xmldb_flashcards_upgrade($oldversion) {
         }
 
         // Flashcards savepoint reached.
-        upgrade_mod_savepoint(true, 2023042402, 'flashcards');
+        upgrade_mod_savepoint(true, 2023042403, 'flashcards');
     }
 
     return true;

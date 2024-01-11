@@ -28,7 +28,7 @@
 <br/>
 <br/>
 <h4>
-    <a class="icons-collapse-expand notextdecoration collapsed" data-toggle="collapse" href="#collapseOptions" aria-expanded="false" aria-controls="collapseOptions">
+    <a class="icons-collapse-expand notextdecoration" data-toggle="collapse" href="#collapseOptions" aria-expanded="false" aria-controls="collapseOptions">
         <span class="collapsed-icon icon-no-margin mr-1"
               title="{{#str}} expand, core {{/str}}">
                 <span class="dir-rtl-hide">{{#pix}} t/collapsedchevron, core {{/pix}}</span>
@@ -43,7 +43,7 @@
         {{# str }} options, question {{/ str }}
     </a>
 </h4>
-<div class="collapse" id="collapseOptions">
+<div class="collapse show" id="collapseOptions">
     <form method="get" action="{{{actionurl}}}" id="teacherviewform">
     {{#filter}}
         <input type="hidden" name="cmid" value="{{cmid}}"/>

@@ -86,21 +86,27 @@ $stparams['courseid'] = $course->id;
 $stparams['courseid2'] = $course->id;
 $stparams += $stparams2;
 
+$sqlv1createdby = "(SELECT q.createdby
+                      FROM {question} q
+                      JOIN {question_versions} v ON v.questionid = q.id
+                     WHERE v.questionbankentryid  = fcs.qbankentryid
+                       AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid))";
+
 $sql = "SELECT COUNT(q.id)
              FROM {question} q
-             JOIN {question_versions} v ON v.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
-            WHERE v.questionbankentryid  = fcs.qbankentryid
-              AND fcs.fcid = :fcid
-              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
-              AND q.createdby IN (SELECT u.id
+             JOIN {question_versions} qv ON qv.questionid = q.id
+             JOIN {flashcards_q_status} fcs ON qv.questionbankentryid = fcs.qbankentryid
+            WHERE fcs.fcid = :fcid
+              AND q.qtype = 'flashcard'
+              AND qv.version = (SELECT MAX(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)
+              AND $sqlv1createdby IN (SELECT u.id
                                     FROM {user} u
                                     JOIN {role_assignments} ra ON ra.userid = u.id
                                     JOIN {context} mc ON mc.id = ra.contextid
                                     JOIN {course} mc2 ON mc2.id = mc.instanceid
                                    WHERE mc2.id = :courseid
                                      AND ra.roleid NOT " . $stsql . ")". "
-             AND q.createdby NOT IN (SELECT u.id
+             AND $sqlv1createdby NOT IN (SELECT u.id
                                  FROM {user} u
                                  JOIN {role_assignments} ra ON ra.userid = u.id
                                  JOIN {context} mc ON mc.id = ra.contextid
@@ -112,12 +118,12 @@ $studentquestioncount = $DB->count_records_sql($sql, $stparams);
 
 $sql = "SELECT COUNT(q.id)
              FROM {question} q
-             JOIN {question_versions} v ON v.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
-            WHERE v.questionbankentryid  = fcs.qbankentryid
+             JOIN {question_versions} qv ON qv.questionid = q.id
+             JOIN {flashcards_q_status} fcs ON qv.questionbankentryid = fcs.qbankentryid
+            WHERE qv.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
-              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
-              AND q.createdby IN (SELECT u.id
+              AND qv.version = (SELECT MAX(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)
+              AND $sqlv1createdby IN (SELECT u.id
                                     FROM {user} u
                                     JOIN {role_assignments} ra ON ra.userid = u.id
                                     JOIN {context} mc ON mc.id = ra.contextid

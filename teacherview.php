@@ -121,12 +121,18 @@ AND qv.version = (SELECT MAX(v.version)
     FROM {question_versions} v
     WHERE qv.questionbankentryid = v.questionbankentryid) ";
 
+$sqlv1createdby = "(SELECT q.createdby
+                      FROM {question} q
+                      JOIN {question_versions} v ON v.questionid = q.id
+                     WHERE v.questionbankentryid  = fcs.qbankentryid
+                       AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid))";
+
 if ($filter) {
     switch ($filter) {
         case 1:
             break;
         case 2: // created by teacher.
-            $sqlwhere .= " AND q.createdby IN (SELECT u.id
+            $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
                                       JOIN {context} mc ON mc.id = ra.contextid
@@ -135,14 +141,14 @@ if ($filter) {
                                        AND ra.roleid " . $archstr . ")";
             break;
         case 3: // created by student.
-            $sqlwhere .= " AND q.createdby IN (SELECT u.id
+            $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
                                       JOIN {context} mc ON mc.id = ra.contextid
                                       JOIN {course} mc2 ON mc2.id = mc.instanceid
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid NOT " . $archstr . ")" . "
-                            AND q.createdby NOT IN (SELECT u.id
+                            AND $sqlv1createdby NOT IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
                                       JOIN {context} mc ON mc.id = ra.contextid
@@ -247,6 +253,7 @@ $templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashc
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');
+print_object($table->sql);
 echo $output->edit_flashcards($pageurl, $contexts, $pagevars);
 $table->out($perpage, false);
 echo $renderer->render_from_template('mod_flashcards/optionssection', $templateinfo);
