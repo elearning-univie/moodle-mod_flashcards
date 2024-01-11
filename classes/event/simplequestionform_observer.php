@@ -33,7 +33,7 @@ class simplequestionform_observer {
      * @param \mod_flashcards\event\simplequestion_updated $event
      */
     public static function simplequestion_updated(\mod_flashcards\event\simplequestion_updated $event) {
-        global $DB;
+        global $DB, $USER;
 
         $data = $event->other;
         $qbe = get_question_bank_entry($event->objectid);
@@ -67,14 +67,14 @@ class simplequestionform_observer {
      * @param \mod_flashcards\event\simplequestion_created $event
      */
     public static function simplequestion_created(\mod_flashcards\event\simplequestion_created $event) {
-        global $DB;
+        global $DB, $USER;
 
         $data = $event->other;
         $tc = has_capability('mod/flashcards:editallquestions', $event->get_context()) ? 1 : 0;
 
         if ($qbe = get_question_bank_entry($event->objectid)) {
             if (!($record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
-                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc, 'questionid' => $event->objectid]);
+                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc, 'questionid' => $event->objectid, 'addedby' => $USER->id]);
             } else {
                 $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
             }

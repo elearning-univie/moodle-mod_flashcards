@@ -88,14 +88,18 @@ class teacherviewtable extends table_sql {
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
-        // Define the list of columns to show.
-        $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'createdby',
+        // Define the list of columns to show. TODO: createdby zu addedby umschreiben
+//         $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'createdby',
+//             'timemodified', 'version', 'preview', 'edit', 'remove'];
+        $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'addedby',
             'timemodified', 'version', 'preview', 'edit', 'remove'];
         $this->define_columns($columns);
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('upvotes', 'flashcards_up');
         $this->column_class('sep', 'flashcards_sep');
         $this->column_class('downvotes', 'flashcards_down');
+        $this->column_class('v1createdby', 'flashcards_studentview_tc');
+        $this->column_class('modifiedby', 'flashcards_studentview_tc');
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('version', 'flashcards_studentview_dr');
@@ -110,7 +114,10 @@ class teacherviewtable extends table_sql {
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
             "/",
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
-            get_string('author', 'mod_flashcards'),
+            get_string('v1author', 'mod_flashcards'),
+            get_string('modifiedby', 'mod_flashcards'),
+            //get_string('author', 'mod_flashcards'),
+            get_string('addedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
@@ -159,22 +166,76 @@ class teacherviewtable extends table_sql {
     }
 
     /**
+     * Prepares column v1createdby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_v1createdby($values) {
+        if (!key_exists($values->v1createdby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->v1createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->v1createdby] = $author;
+        } else {
+            $author = $this->authors[$values->v1createdby];
+        }
+        
+        return $author;
+    }
+ 
+    /**
+     * Prepares column addedby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_addedby($values) {
+
+        if (is_null($values->addedby)) {
+            return "-";
+        }
+        if (!key_exists($values->addedby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->addedby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->addedby] = $author;
+        } else {
+            $author = $this->authors[$values->addedby];
+        }
+        
+        return $author;
+    }
+    /**
      * Prepares column createdby for display
      *
      * @param object $values
      * @return string
      */
-    public function col_createdby($values) {
-        if (!key_exists($values->createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
-            $this->authors[$values->createdby] = $author;
-        } else {
-            $author = $this->authors[$values->createdby];
-        }
+//     public function col_createdby($values) {
+//         if (!key_exists($values->createdby, $this->authors)) {
+//             $author = mod_flashcards_get_author_display_name($values->createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+//             $this->authors[$values->createdby] = $author;
+//         } else {
+//             $author = $this->authors[$values->createdby];
+//         }
 
+//         return $author;
+//     }
+
+    /**
+     * Prepares column modifiedby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_modifiedby($values) {
+        if (!key_exists($values->modifiedby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->modifiedby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->modifiedby] = $author;
+        } else {
+            $author = $this->authors[$values->modifiedby];
+        }
+        
         return $author;
     }
-
+    
     /**
      * Prepares column teachercheck for display
      *

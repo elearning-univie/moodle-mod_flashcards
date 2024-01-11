@@ -437,7 +437,7 @@ function mod_flashcards_question_tostring($question, $showicon = false, $showque
  * @throws dml_transaction_exception
  */
 function mod_flashcards_add_question($questionid, $flashcardsid) {
-    global $DB;
+    global $DB, $USER;
 
     if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
         return false;
@@ -465,7 +465,7 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
 
     $trans = $DB->start_delegated_transaction();
     $DB->insert_record('flashcards_q_status',
-        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
+        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0, 'addedby' => $USER->id]);
     $trans->allow_commit();
 }
 

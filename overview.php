@@ -78,40 +78,131 @@ $sql = "SELECT count(q.id)
                AND teachercheck = 0";
 $newquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
-$studentarch = get_archetype_roles('student');
-$archetypeids = array();
-foreach ($studentarch AS $type) {
-    $archetypeids[] = $type->id;
-}
-list($stsql, $stparams) = $DB->get_in_or_equal($archetypeids, SQL_PARAMS_NAMED, 'atid');
+
+$teacherarchs = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+
+list($stsql, $stparams) = $DB->get_in_or_equal($teacherarchs, SQL_PARAMS_NAMED, 'atid');
+list($stsql2, $stparams2) = $DB->get_in_or_equal($teacherarchs, SQL_PARAMS_NAMED, 'atid2');
 $stparams['fcid'] = $flashcards->id;
 $stparams['courseid'] = $course->id;
+$stparams['courseid2'] = $course->id;
+$stparams += $stparams2;
+
 $sql = "SELECT COUNT(q.id)
-              FROM {question} q,
-                   {flashcards_q_status} s
-             WHERE q.id = s.questionid
-               AND s.fcid = :fcid
-               AND q.createdby IN (SELECT u.id
-                                      FROM {user} u
-                                      JOIN {role_assignments} ra ON ra.userid = u.id 
-                                      JOIN {context} mc ON mc.id = ra.contextid 
-                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
-                                     WHERE mc2.id = :courseid
-                                       AND ra.roleid " . $stsql . ")";
+             FROM {question} q
+             JOIN {question_versions} v ON v.questionid = q.id
+             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+            WHERE v.questionbankentryid  = fcs.qbankentryid
+              AND fcs.fcid = :fcid
+              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
+              AND q.createdby IN (SELECT u.id
+                                    FROM {user} u
+                                    JOIN {role_assignments} ra ON ra.userid = u.id
+                                    JOIN {context} mc ON mc.id = ra.contextid
+                                    JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                   WHERE mc2.id = :courseid
+                                     AND ra.roleid NOT " . $stsql . ")". "
+             AND q.createdby NOT IN (SELECT u.id
+                                 FROM {user} u
+                                 JOIN {role_assignments} ra ON ra.userid = u.id
+                                 JOIN {context} mc ON mc.id = ra.contextid
+                                 JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                 WHERE mc2.id = :courseid2
+                                 AND ra.roleid " . $stsql2 . ")";
+
 $studentquestioncount = $DB->count_records_sql($sql, $stparams);
+
+$sql = "SELECT COUNT(q.id)
+             FROM {question} q
+             JOIN {question_versions} v ON v.questionid = q.id
+             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+            WHERE v.questionbankentryid  = fcs.qbankentryid
+              AND fcs.fcid = :fcid
+              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
+              AND q.createdby IN (SELECT u.id
+                                    FROM {user} u
+                                    JOIN {role_assignments} ra ON ra.userid = u.id
+                                    JOIN {context} mc ON mc.id = ra.contextid
+                                    JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                   WHERE mc2.id = :courseid
+                                     AND ra.roleid " . $stsql . ")";
+$teacherquestioncount = $DB->count_records_sql($sql, $stparams);
 
 $filterlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 1]);
 $filterlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 2]);
 $filterlink3 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 3]);
 $filterlink4 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 4]);
+$filterlink5 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 5]);
+$filterlink6 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 6]);
 
-$tabledata = [
-  ['text' => get_string('overviewall', 'flashcards'), 'link' => $filterlink1->out(false), 'value' => $totalquestioncount],
-    ['text' => get_string('overviewtq', 'flashcards'), 'link' => $filterlink2->out(false), 'value' => $totalquestioncount - $studentquestioncount],
-    ['text' => get_string('overviewsq', 'flashcards'), 'link' => $filterlink3->out(false), 'value' => $studentquestioncount],
-    ['text' => get_string('overviewnq', 'flashcards'), 'link' => $filterlink4->out(false), 'value' => $newquestioncount]
-];
+// if flashcardsversion is older than 2023042401, dont show added by counts and filters, since field values are NULL
+$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_status} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
 
+if ($addedbyisnull > 0) {
+    $tabledata = [
+        ['text' => get_string('overviewall', 'flashcards'),
+            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])], 
+        ['text' => get_string('overviewtq', 'flashcards'),
+            'link' => get_string('overviewtlink', 'flashcards', ['linkt' => $filterlink2->out(false), 'valuet' => $teacherquestioncount])],
+        ['text' => get_string('overviewsq', 'flashcards'),
+            'link' => get_string('overviewslink', 'flashcards', ['linkst' => $filterlink3->out(false), 'valuest' => $studentquestioncount])],
+        ['text' => get_string('overviewnq', 'flashcards'),
+            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
+    ];  
+} else {    
+    $sql = "SELECT COUNT(q.id)
+             FROM {question} q 
+             JOIN {question_versions} v ON v.questionid = q.id 
+             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+            WHERE v.questionbankentryid  = fcs.qbankentryid
+              AND fcs.fcid = :fcid
+              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
+              AND fcs.addedby IN (SELECT u.id
+                                    FROM {user} u
+                                    JOIN {role_assignments} ra ON ra.userid = u.id 
+                                    JOIN {context} mc ON mc.id = ra.contextid 
+                                    JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                   WHERE mc2.id = :courseid
+                                     AND ra.roleid " . $stsql . ")";
+    $teacherquestioncountadd =  $DB->count_records_sql($sql, $stparams);
+    $sql = "SELECT COUNT(q.id)
+             FROM {question} q 
+             JOIN {question_versions} v ON v.questionid = q.id 
+             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+            WHERE v.questionbankentryid  = fcs.qbankentryid
+              AND fcs.fcid = :fcid
+              AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
+              AND fcs.addedby IN (SELECT u.id
+                                    FROM {user} u
+                                    JOIN {role_assignments} ra ON ra.userid = u.id 
+                                    JOIN {context} mc ON mc.id = ra.contextid 
+                                    JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                   WHERE mc2.id = :courseid
+                                     AND ra.roleid NOT " . $stsql . ")". "
+             AND q.createdby NOT IN (SELECT u.id
+                                 FROM {user} u
+                                 JOIN {role_assignments} ra ON ra.userid = u.id
+                                 JOIN {context} mc ON mc.id = ra.contextid
+                                 JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                 WHERE mc2.id = :courseid2
+                                 AND ra.roleid " . $stsql2 . ")";
+    
+    $studentquestioncountadd = $DB->count_records_sql($sql, $stparams);
+    
+    $tabledata = [
+        ['text' => get_string('overviewall', 'flashcards'),
+            'link' => get_string('overviewttotallink', 'flashcards', ['linktotal' => $filterlink1->out(false), 'valuetotal' => $totalquestioncount])],        
+        ['text' => get_string('overviewtqadd', 'flashcards'),
+            'link' => get_string('overviewtaddlinks', 'flashcards', ['linkcreated' => $filterlink2->out(false), 'valuecreated' => $teacherquestioncount,
+                'linkadded' => $filterlink5->out(false), 'valueadded' => $teacherquestioncountadd])],
+        ['text' => get_string('overviewsqadd', 'flashcards'),
+            'link' => get_string('overviewsaddlinks', 'flashcards', ['linkcreated' => $filterlink3->out(false), 'valuecreated' => $studentquestioncount,
+                'linkadded' => $filterlink6->out(false), 'valueadded' => $studentquestioncountadd])],
+        ['text' => get_string('overviewnq', 'flashcards'),
+            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
+        
+    ];
+}
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
 $createbtnlink = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 $teacherviewlink = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id]);

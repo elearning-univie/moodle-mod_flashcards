@@ -138,7 +138,7 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
                 $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
                 if ($nostatus) {
                     $fqid = $DB->insert_record('flashcards_q_status',
-                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck, 'addedby' => $USER->id]);
                 } else if ($statusrec->teachercheck != $teachercheck) {
                     $statusrec->teachercheck = $teachercheck;
                     $DB->update_record('flashcards_q_status', $statusrec);

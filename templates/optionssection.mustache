@@ -62,14 +62,25 @@
             <option value="5000" title="5000" {{#selected5000}}selected{{/selected5000}}>{{# str }} dropdownall, mod_flashcards {{/ str }}</option>
         </select>
         <br/>
-        {{#filter}}
-            <label for="filter">{{# str }} filter, mod_flashcards {{/ str }}</label>
+         {{#filter}}
+           <label for="filter">{{# str }} filter, mod_flashcards {{/ str }}</label>
             <select id="filter" name="filter" onchange="this.form.submit()">
                 <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
-                <option value="2" title="{{# str }} filterteacher, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteacher, mod_flashcards {{/ str }}</option>
-                <option value="3" title="{{# str }} filterstud, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstud, mod_flashcards {{/ str }}</option>
+                <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
+                <option value="5" title="{{# str }} filterteacheradded, mod_flashcards {{/ str }}" {{#selected25}}selected{{/selected25}}>{{# str }} filterteacheradded, mod_flashcards {{/ str }}</option>
+                <option value="3" title="{{# str }} filterstudcreated, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstudcreated, mod_flashcards {{/ str }}</option>
+                <option value="6" title="{{# str }} filterstudadded, mod_flashcards {{/ str }}" {{#selected26}}selected{{/selected26}}>{{# str }} filterstudadded, mod_flashcards {{/ str }}</option>
                 <option value="4" title="{{# str }} filternew, mod_flashcards {{/ str }}" {{#selected24}}selected{{/selected24}}>{{# str }} filternew, mod_flashcards {{/ str }}</option>
             </select>
         {{/filter}}
+	    {{^filter}}
+	      <label for="filter">{{# str }} filter, mod_flashcards {{/ str }}</label>
+	       <select id="filter" name="filter" onchange="this.form.submit()">
+	           <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
+	           <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
+	           <option value="3" title="{{# str }} filterstudcreated, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstudcreated, mod_flashcards {{/ str }}</option>
+	           <option value="4" title="{{# str }} filternew, mod_flashcards {{/ str }}" {{#selected24}}selected{{/selected24}}>{{# str }} filternew, mod_flashcards {{/ str }}</option>
+	       </select>
+	   {{/filter}}
     </form>
 </div>
