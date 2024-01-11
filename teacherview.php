@@ -253,7 +253,6 @@ $templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashc
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');
-print_object($table->sql);
 echo $output->edit_flashcards($pageurl, $contexts, $pagevars);
 $table->out($perpage, false);
 echo $renderer->render_from_template('mod_flashcards/optionssection', $templateinfo);
