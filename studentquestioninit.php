@@ -196,5 +196,5 @@ $optionsinfo = [
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 $table->out($perpage, false);
-echo $renderer->render_from_template('mod_flashcards/optionssection', $optionsinfo);
+echo $renderer->render_from_template('mod_flashcards/optionssectionstudent', $optionsinfo);
 echo $OUTPUT->footer();
