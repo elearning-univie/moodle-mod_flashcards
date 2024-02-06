@@ -25,9 +25,19 @@
 namespace mod_flashcards\question\bank;
 
 use coding_exception;
+
 use mod_flashcards;
 use question_bank;
+use core\output\datafilter;
+use core_question\local\bank\column_base;
+use core_question\local\bank\condition;
+use core_question\local\bank\question_version_status;
+use qbank_managecategories\category_condition;
+use qbank_deletequestion\hidden_condition;
+use core_question\local\bank\filter_condition_manager;
+use mod_flashcards\question\bank\filter\custom_category_condition;
 
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 /**
  * Subclass to customise the view of the question bank for the quiz editing screen.
  *
@@ -36,6 +46,8 @@ use question_bank;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_view extends \core_question\local\bank\view {
+    /** @var int number of questions per page to show in the add from question bank modal. */
+    const DEFAULT_PAGE_SIZE = 20;
     /** @var \stdClass the quiz settings. */
     protected $flashcards = false;
     /** @var array the flashcards questionlist. */
@@ -51,74 +63,117 @@ class custom_view extends \core_question\local\bank\view {
      * @param \stdClass $cm activity settings.
      * @param \stdClass $flashcards flashcards settings.
      */
-    public function __construct($contexts, $pageurl, $course, $cm, $flashcards) {
-        global $DB;
-        $this->contexts = $contexts;
-        $this->baseurl = $pageurl;
-        $this->course = $course;
-        $this->cm = $cm;
-        $this->flashcards = $flashcards;
-        $this->questionlist = $DB->get_fieldset_select('flashcards_q_status', 'questionid', 'fcid = ' . $this->flashcards->id);
+//     public function __construct($contexts, $pageurl, $course, $cm, $flashcards) {
+//         global $DB;
+//         $this->contexts = $contexts;
+//         $this->baseurl = $pageurl;
+//         $this->course = $course;
+//         $this->cm = $cm;
+//         $this->flashcards = $flashcards;
+//         $this->questionlist = $DB->get_fieldset_select('flashcards_q_status', 'questionid', 'fcid = ' . $this->flashcards->id);
 
-        // Create the url of the new question page to forward to.
-        $returnurl = $pageurl->out_as_local_url(false);
-        $this->editquestionurl = new \moodle_url('/question/question.php',
-            array('returnurl' => $returnurl));
-        if ($cm !== null) {
-            $this->editquestionurl->param('cmid', $cm->id);
-        } else {
-            $this->editquestionurl->param('courseid', $this->course->id);
-        }
+//         // Create the url of the new question page to forward to.
+//         $returnurl = $pageurl->out_as_local_url(false);
+//         $this->editquestionurl = new \moodle_url('/question/question.php',
+//             array('returnurl' => $returnurl));
+//         if ($cm !== null) {
+//             $this->editquestionurl->param('cmid', $cm->id);
+//         } else {
+//             $this->editquestionurl->param('courseid', $this->course->id);
+//         }
 
-        $this->lastchangedid = optional_param('lastchanged', 0, PARAM_INT);
+//         $this->lastchangedid = optional_param('lastchanged', 0, PARAM_INT);
 
-        $this->init_columns($this->wanted_columns(), $this->heading_column());
-        $this->init_sort();
-        $this->init_search_conditions();
+//         $this->init_columns($this->wanted_columns(), $this->heading_column());
+//         $this->init_sort();
+//         $this->init_search_conditions();
 
-    }
-
-    /**
-     * wanted_columns
-     * @return array
-     */
-    protected function wanted_columns(): array {
-        global $CFG;
-
-        if (empty($CFG->quizquestionbankcolumns)) {
-            $quizquestionbankcolumns = array(
-                    'add_action_column',
-                    'checkbox_column',
-                    'question_type_column',
-                    'question_name_text_column',
-                    'preview_action_column',
-            );
-        } else {
-            $quizquestionbankcolumns = explode(',', $CFG->quizquestionbankcolumns);
-        }
-
-        foreach ($quizquestionbankcolumns as $fullname) {
-            if (!class_exists($fullname)) {
-                if (class_exists('mod_flashcards\\question\\bank\\' . $fullname)) {
-                    $fullname = 'mod_flashcards\\question\\bank\\' . $fullname;
-                } else if (class_exists('qbank_previewquestion\\' . $fullname)) {
-                    $fullname = 'qbank_previewquestion\\' . $fullname;
-                } else if (class_exists('qbank_viewquestiontype\\' . $fullname)) {
-                    $fullname = 'qbank_viewquestiontype\\' . $fullname;
-                } else if (class_exists('question_bank_' . $fullname)) {
-                    debugging('Legacy question bank column class question_bank_' .
-                            $fullname . ' should be renamed to mod_flashcards\\question\\bank\\' .
-                            $fullname, DEBUG_DEVELOPER);
-                    $fullname = 'question_bank_' . $fullname;
-                } else {
-                    throw new coding_exception('Invalid quiz question bank column', $fullname);
-                }
+//     }
+    public function __construct($contexts, $pageurl, $course, $cm, $params, $extraparams, $flashcards = null) {
+        // Default filter condition.
+        if (!isset($params['filter'])) {
+            $params['filter']  = [];
+            [$categoryid, $contextid] = custom_category_condition::validate_category_param($params['cat']);
+            if (!is_null($categoryid)) {
+                $category = custom_category_condition::get_category_record($categoryid, $contextid);
+                $params['filter']['category'] = [
+                    'jointype' => custom_category_condition::JOINTYPE_DEFAULT,
+                    'values' => [$category->id],
+                    'filteroptions' => ['includesubcategories' => false],
+                ];
             }
-            $this->requiredcolumns[$fullname] = new $fullname($this);
         }
-        return $this->requiredcolumns;
+        $this->init_columns($this->wanted_columns(), $this->heading_column());
+        if (is_null($flashcards)) {
+            parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
+            [$this->flashcards, ] = get_module_from_cmid($cm->id);
+        } else {
+            parent::__construct($contexts, $pageurl, $course, $cm);
+            $this->flashcards = $flashcards;
+        }
+        
     }
+//     /**
+//      * wanted_columns
+//      * @return array
+//      */
+//     protected function wanted_columns(): array {
+//         global $CFG;
 
+//         if (empty($CFG->quizquestionbankcolumns)) {
+//             $quizquestionbankcolumns = array(
+//                     'add_action_column',
+//                     'checkbox_column',
+//                     'question_type_column',
+//                     'question_name_text_column',
+//                     'preview_action_column',
+//             );
+//         } else {
+//             $quizquestionbankcolumns = explode(',', $CFG->quizquestionbankcolumns);
+//         }
+
+//         foreach ($quizquestionbankcolumns as $fullname) {
+//             if (!class_exists($fullname)) {
+//                 if (class_exists('mod_flashcards\\question\\bank\\' . $fullname)) {
+//                     $fullname = 'mod_flashcards\\question\\bank\\' . $fullname;
+//                 } else if (class_exists('qbank_previewquestion\\' . $fullname)) {
+//                     $fullname = 'qbank_previewquestion\\' . $fullname;
+//                 } else if (class_exists('qbank_viewquestiontype\\' . $fullname)) {
+//                     $fullname = 'qbank_viewquestiontype\\' . $fullname;
+//                 } else if (class_exists('question_bank_' . $fullname)) {
+//                     debugging('Legacy question bank column class question_bank_' .
+//                             $fullname . ' should be renamed to mod_flashcards\\question\\bank\\' .
+//                             $fullname, DEBUG_DEVELOPER);
+//                     $fullname = 'question_bank_' . $fullname;
+//                 } else {
+//                     throw new coding_exception('Invalid quiz question bank column', $fullname);
+//                 }
+//             }
+//             $this->requiredcolumns[$fullname] = new $fullname($this);
+//         }
+//         return $this->requiredcolumns;
+//     }
+    
+    protected function get_question_bank_plugins(): array {
+        $questionbankclasscolumns = [];
+        $customviewcolumns = [
+            'mod_offlinequiz\question\bank\add_action_column' . column_base::ID_SEPARATOR  . 'add_action_column',
+            'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
+            'qbank_viewquestiontype\question_type_column' . column_base::ID_SEPARATOR . 'question_type_column',
+            'mod_offlinequiz\question\bank\question_name_text_column' . column_base::ID_SEPARATOR . 'question_name_text_column',
+            'mod_offlinequiz\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',
+        ];
+        
+        foreach ($customviewcolumns as $columnid) {
+            [$columnclass, $columnname] = explode(column_base::ID_SEPARATOR, $columnid, 2);
+            if (class_exists($columnclass)) {
+                $questionbankclasscolumns[$columnid] = $columnclass::from_column_name($this, $columnname);
+            }
+        }
+        
+        return $questionbankclasscolumns;
+    }
+    
     /**
      * Specify the column heading
      *
@@ -161,42 +216,87 @@ class custom_view extends \core_question\local\bank\view {
         $params['addquestion'] = $questionid;
         $params['sesskey'] = sesskey();
         $params['addsingle'] = true;
+        $params['cmid'] = $this->cm->id;
         return new \moodle_url('/mod/flashcards/teacherview.php', $params);
     }
 
-    /**
-     * Renders the html question bank (same as display, but returns the result).
-     *
-     * Note that you can only output this rendered result once per page, as
-     * it contains IDs which must be unique.
-     *
-     * @param string $tabname question bank edit tab name, for permission checking.
-     * @param int $page the page number to show.
-     * @param int $perpage the number of questions per page to show.
-     * @param string $cat 'categoryid,contextid'.
-     * @param int $recurse     Whether to include subcategories.
-     * @param bool $showhidden  whether deleted questions should be displayed.
-     * @param bool $showquestiontext whether the text of each question should be shown in the list. Deprecated.
-     * @param array $tagids current list of selected tags.
-     * @return false|string HTML code for the form
-     */
-    public function render($tabname, $page, $perpage, $cat, $recurse, $showhidden,
-            $showquestiontext, $tagids = []) {
+//     /**
+//      * Renders the html question bank (same as display, but returns the result).
+//      *
+//      * Note that you can only output this rendered result once per page, as
+//      * it contains IDs which must be unique.
+//      *
+//      * @param string $tabname question bank edit tab name, for permission checking.
+//      * @param int $page the page number to show.
+//      * @param int $perpage the number of questions per page to show.
+//      * @param string $cat 'categoryid,contextid'.
+//      * @param int $recurse     Whether to include subcategories.
+//      * @param bool $showhidden  whether deleted questions should be displayed.
+//      * @param bool $showquestiontext whether the text of each question should be shown in the list. Deprecated.
+//      * @param array $tagids current list of selected tags.
+//      * @return false|string HTML code for the form
+//      */
+//     public function render($tabname, $page, $perpage, $cat, $recurse, $showhidden,
+//             $showquestiontext, $tagids = []) {
+//         ob_start();
+//         $pagevars = [];
+//         $pagevars['qpage'] = $page;
+//         $pagevars['qperpage'] = $perpage;
+//         $pagevars['cat'] = $cat;
+//         $pagevars['recurse'] = $recurse;
+//         $pagevars['showhidden'] = $showhidden;
+//         $pagevars['qbshowtext'] = $showquestiontext;
+//         $pagevars['tagids'] = $tagids;
+//         $this->display($pagevars, $tabname);
+//         $out = ob_get_contents();
+//         ob_end_clean();
+//         return $out;
+//     }
+    public function render($pagevars, $tabname): string {
         ob_start();
-        $pagevars = [];
-        $pagevars['qpage'] = $page;
-        $pagevars['qperpage'] = $perpage;
-        $pagevars['cat'] = $cat;
-        $pagevars['recurse'] = $recurse;
-        $pagevars['showhidden'] = $showhidden;
-        $pagevars['qbshowtext'] = $showquestiontext;
-        $pagevars['tagids'] = $tagids;
-        $this->display($pagevars, $tabname);
+        
+        
+        /*$pagevars = [];
+         $pagevars['qpage'] = $page;
+         $pagevars['qperpage'] = $perpage;
+         $pagevars['cat'] = $cat;
+         $pagevars['recurse'] = $recurse;
+         $pagevars['showhidden'] = $showhidden;
+         $pagevars['qbshowtext'] = $showquestiontext;
+         $pagevars['qtagids'] = $tagids;
+         $pagevars['tabname'] = 'questions';
+         $pagevars['qperpage'] = DEFAULT_QUESTIONS_PER_PAGE;
+         $pagevars['filter']  = [];*/
+        [$categoryid, $contextid] = category_condition::validate_category_param($pagevars['cat']);
+        if (!is_null($categoryid)) {
+            $category = category_condition::get_category_record($categoryid, $contextid);
+            $pagevars['filter']['category'] = [
+                'jointype' => category_condition::JOINTYPE_DEFAULT,
+                'values' => [$category->id],
+                'filteroptions' => ['includesubcategories' => false],
+            ];
+        }
+        $pagevars['filter']['hidden'] = [
+            'jointype' => hidden_condition::JOINTYPE_DEFAULT,
+            'values' => [0],
+        ];
+        $pagevars['jointype'] = datafilter::JOINTYPE_ALL;
+        if (!empty($pagevars['filter'])) {
+            $pagevars['filter'] = filter_condition_manager::unpack_filteroptions_param($pagevars['filter']);
+        }
+        if (isset($pagevars['filter']['jointype'])) {
+            $pagevars['jointype'] = $pagevars['filter']['jointype'];
+            unset($pagevars['filter']['jointype']);
+        }
+        
+        $this->set_pagevars($pagevars);
+        
+        $this->display();
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
     }
-
+    
     /**
      * Prints the table of questions in a category with interactions
      *
@@ -511,4 +611,23 @@ class custom_view extends \core_question\local\bank\view {
         }
         return false;
     }
+
+    public function add_standard_search_conditions(): void {
+        foreach ($this->plugins as $componentname => $plugin) {
+            if (\core\plugininfo\qbank::is_plugin_enabled($componentname)) {
+                $pluginentrypointobject = new $plugin();
+                if ($componentname === 'qbank_managecategories') {
+                    $pluginentrypointobject = new flashcards_managecategories_feature();
+                }
+                if ($componentname === 'qbank_viewquestiontext' || $componentname === 'qbank_deletequestion') {
+                    continue;
+                }
+                $pluginobjects = $pluginentrypointobject->get_question_filters($this);
+                foreach ($pluginobjects as $pluginobject) {
+                    $this->add_searchcondition($pluginobject, $pluginobject->get_condition_key());
+                }
+            }
+        }
+    }
+
 }
