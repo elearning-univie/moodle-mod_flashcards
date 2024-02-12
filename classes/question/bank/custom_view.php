@@ -25,17 +25,13 @@
 namespace mod_flashcards\question\bank;
 
 use coding_exception;
-
-use mod_flashcards;
-use question_bank;
 use core\output\datafilter;
 use core_question\local\bank\column_base;
 use core_question\local\bank\condition;
 use core_question\local\bank\question_version_status;
-use qbank_managecategories\category_condition;
-use qbank_deletequestion\hidden_condition;
-use core_question\local\bank\filter_condition_manager;
+use mod_flashcards;
 use mod_flashcards\question\bank\filter\custom_category_condition;
+use question_bank;
 
 require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 /**
@@ -104,13 +100,15 @@ class custom_view extends \core_question\local\bank\view {
             }
         }
         $this->init_columns($this->wanted_columns(), $this->heading_column());
-        if (is_null($flashcards)) {
+        parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
+        [$this->flashcards, ] = get_module_from_cmid($cm->id);
+        /*if (is_null($flashcards)) {
             parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
             [$this->flashcards, ] = get_module_from_cmid($cm->id);
         } else {
             parent::__construct($contexts, $pageurl, $course, $cm);
             $this->flashcards = $flashcards;
-        }
+        }*/
         
     }
 //     /**
@@ -157,11 +155,11 @@ class custom_view extends \core_question\local\bank\view {
     protected function get_question_bank_plugins(): array {
         $questionbankclasscolumns = [];
         $customviewcolumns = [
-            'mod_offlinequiz\question\bank\add_action_column' . column_base::ID_SEPARATOR  . 'add_action_column',
-            'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
+            'mod_flashcards\question\bank\add_action_column' . column_base::ID_SEPARATOR  . 'add_action_column',
+            /*'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
             'qbank_viewquestiontype\question_type_column' . column_base::ID_SEPARATOR . 'question_type_column',
-            'mod_offlinequiz\question\bank\question_name_text_column' . column_base::ID_SEPARATOR . 'question_name_text_column',
-            'mod_offlinequiz\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',
+            'mod_flashcards\question\bank\question_name_text_column' . column_base::ID_SEPARATOR . 'question_name_text_column',
+            'mod_flashcards\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',*/
         ];
         
         foreach ($customviewcolumns as $columnid) {
@@ -252,21 +250,21 @@ class custom_view extends \core_question\local\bank\view {
 //         ob_end_clean();
 //         return $out;
 //     }
-    public function render($pagevars, $tabname): string {
-        ob_start();
-        
-        
-        /*$pagevars = [];
-         $pagevars['qpage'] = $page;
-         $pagevars['qperpage'] = $perpage;
-         $pagevars['cat'] = $cat;
-         $pagevars['recurse'] = $recurse;
-         $pagevars['showhidden'] = $showhidden;
-         $pagevars['qbshowtext'] = $showquestiontext;
-         $pagevars['qtagids'] = $tagids;
-         $pagevars['tabname'] = 'questions';
-         $pagevars['qperpage'] = DEFAULT_QUESTIONS_PER_PAGE;
-         $pagevars['filter']  = [];*/
+    /* public function render($pagevars, $tabname): string {
+         ob_start();
+
+
+       /*$pagevars = [];
+          $pagevars['qpage'] = $page;
+          $pagevars['qperpage'] = $perpage;
+          $pagevars['cat'] = $cat;
+          $pagevars['recurse'] = $recurse;
+          $pagevars['showhidden'] = $showhidden;
+          $pagevars['qbshowtext'] = $showquestiontext;
+          $pagevars['qtagids'] = $tagids;
+          $pagevars['tabname'] = 'questions';
+          $pagevars['qperpage'] = DEFAULT_QUESTIONS_PER_PAGE;
+          $pagevars['filter']  = [];
         [$categoryid, $contextid] = category_condition::validate_category_param($pagevars['cat']);
         if (!is_null($categoryid)) {
             $category = category_condition::get_category_record($categoryid, $contextid);
@@ -295,6 +293,13 @@ class custom_view extends \core_question\local\bank\view {
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
+    }*/
+    public function render($pagevars, $tabname): string {
+        ob_start();
+        $this->display();
+        $out = ob_get_contents();
+        ob_end_clean();
+        return $out;
     }
     
     /**
@@ -307,7 +312,7 @@ class custom_view extends \core_question\local\bank\view {
      * @param int        $perpage     Number of questions to show per page
      * @param array      $addcontexts contexts where the user is allowed to add new questions.
      */
-    protected function display_question_list($pageurl, $categoryandcontext,
+    /*protected function display_question_list($pageurl, $categoryandcontext,
            $recurse=1, $page=0, $perpage=100, $addcontexts = array()): void {
         global $OUTPUT;
 
@@ -388,7 +393,7 @@ class custom_view extends \core_question\local\bank\view {
 
         echo '</fieldset>';
         echo "</form>\n";
-    }
+    }*/
 
     /**
      * Display the controls at the bottom of the list of questions.
@@ -546,56 +551,53 @@ class custom_view extends \core_question\local\bank\view {
     protected function build_query(): void {
 
         // Get the required tables and fields.
-        $joins = array();
-        $fields = ['qv.status', 'qc.id as categoryid', 'qv.version', 'qv.id as versionid', 'qbe.id as questionbankentryid'];
-        foreach ($this->requiredcolumns as $column) {
-            $extrajoins = $column->get_extra_joins();
-            foreach ($extrajoins as $prefix => $join) {
-                if (isset($joins[$prefix]) && $joins[$prefix] != $join) {
-                    throw new \coding_exception('Join ' . $join . ' conflicts with previous join ' . $joins[$prefix]);
-                }
-                $joins[$prefix] = $join;
-            }
-            $fields = array_merge($fields, $column->get_required_fields());
-        }
-
-        $fields = array_unique($fields);
+        [$fields, $joins] = $this->get_component_requirements(array_merge($this->requiredcolumns, $this->questionactions));
 
         // Build the order by clause.
-        $sorts = array();
-        foreach ($this->sort as $sort => $order) {
-            list($colname, $subsort) = $this->parse_subsort($sort);
-            $sorts[] = $this->requiredcolumns[$colname]->sort_expression($order < 0, $subsort);
+        $sorts = [];
+        foreach ($this->sort as $sortname => $sortorder) {
+            [$colname, $subsort] = $this->parse_subsort($sortname);
+            $sorts[] = $this->requiredcolumns[$colname]->sort_expression($sortorder == SORT_DESC, $subsort);
         }
 
         // Build the where clause.
-        $tests = array('q.parent = 0');
-        $this->sqlparams = array();
-
+        $latestversion = 'qv.version = (SELECT MAX(v.version)
+                                          FROM {question_versions} v
+                                          JOIN {question_bank_entries} be
+                                            ON be.id = v.questionbankentryid
+                                         WHERE be.id = qbe.id)';
+        $onlyready = '((' . "qv.status = '" . question_version_status::QUESTION_STATUS_READY . "'" .'))';
+        $this->sqlparams = [];
+        $conditions = [];
         foreach ($this->searchconditions as $searchcondition) {
             if ($searchcondition->where()) {
-                $tests[] = '((' . $searchcondition->where() .'))';
+                $conditions[] = '((' . $searchcondition->where() .'))';
             }
             if ($searchcondition->params()) {
                 $this->sqlparams = array_merge($this->sqlparams, $searchcondition->params());
             }
         }
+        $majorconditions = ['q.parent = 0', $latestversion, $onlyready];
+        // Get higher level filter condition.
+        $jointype = isset($this->pagevars['jointype']) ? (int)$this->pagevars['jointype'] : condition::JOINTYPE_DEFAULT;
+        $nonecondition = ($jointype === datafilter::JOINTYPE_NONE) ? ' NOT ' : '';
+        $separator = ($jointype === datafilter::JOINTYPE_ALL) ? ' AND ' : ' OR ';
+        // Build the SQL.
+        $sql = ' FROM {question} q ' . implode(' ', $joins);
+        $sql .= ' WHERE ' . implode(' AND ', $majorconditions);
 
         $qtypes = '\'flashcard\', \'multichoice\', \'truefalse\', \'shortanswer\', \'multianswer\'';
         if (question_bank::qtype_exists('multichoiceset')) {
             $qtypes = $qtypes . ', \'multichoiceset\'';
         }
-        // Build the SQL.
-        $sql = ' FROM {question} q ' . implode(' ', $joins);
-        $sql .= ' WHERE ' . implode(' AND ', $tests);
-        $sql .= '   AND q.qtype IN (' . $qtypes . ') ';
-        $sql .= 'AND qv.version = (SELECT MAX(v.version)
-                                     FROM {question_versions} v
-                                    WHERE qv.questionbankentryid = v.questionbankentryid)';
-        $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
-                                      JOIN {tag_instance} ti ON ti.itemid = qu.id
-                                      JOIN {tag} t ON t.id = ti.tagid
-                                     WHERE t.name = '2fc') ";
+
+        $sql .= '   AND q.qtype IN (' . $qtypes . ')';
+
+        if (!empty($conditions)) {
+            $sql .= ' AND ' . $nonecondition . ' ( ';
+            $sql .= implode($separator, $conditions);
+            $sql .= ' ) ';
+        }
         $this->countsql = 'SELECT count(1)' . $sql;
         $this->loadsql = 'SELECT ' . implode(', ', $fields) . $sql . ' ORDER BY ' . implode(', ', $sorts);
     }

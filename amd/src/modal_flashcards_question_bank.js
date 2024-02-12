@@ -93,7 +93,7 @@ export default class ModalFlashcardsQuestionBank extends Modal {
         // Load the question bank fragment to be displayed in the modal.
         this.setBody(Fragment.loadFragment(
             'mod_flashcards',
-            'questionbank',
+            'flashcards_question_bank',
             this.getContextId(),
             {
                 querystring,

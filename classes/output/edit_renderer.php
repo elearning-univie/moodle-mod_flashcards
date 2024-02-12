@@ -58,7 +58,6 @@ class edit_renderer extends \plugin_renderer_base {
         $output = html_writer::div($addmenu, 'add-menu-space');
 
         return $output;
-
     }
 
     /**
@@ -138,9 +137,9 @@ class edit_renderer extends \plugin_renderer_base {
      */
     public function question_bank_contents(\mod_flashcards\question\bank\custom_view $questionbank, array $pagevars) {
 
-        $qbank = $questionbank->render('editq', $pagevars['qpage'], $pagevars['qperpage'],
+        $qbank = $questionbank->render('editq', $pagevars['qpage']/*, $pagevars['qperpage'],
             $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'], $pagevars['qbshowtext'],
-            $pagevars['qtagids']);
+            $pagevars['qtagids']*/);
         return html_writer::div(html_writer::div($qbank, 'bd'), 'questionbankformforpopup');
     }
 }
