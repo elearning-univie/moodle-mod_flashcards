@@ -156,10 +156,10 @@ class custom_view extends \core_question\local\bank\view {
         $questionbankclasscolumns = [];
         $customviewcolumns = [
             'mod_flashcards\question\bank\add_action_column' . column_base::ID_SEPARATOR  . 'add_action_column',
-            /*'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
+            'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
             'qbank_viewquestiontype\question_type_column' . column_base::ID_SEPARATOR . 'question_type_column',
             'mod_flashcards\question\bank\question_name_text_column' . column_base::ID_SEPARATOR . 'question_name_text_column',
-            'mod_flashcards\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',*/
+            'mod_flashcards\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',
         ];
         
         foreach ($customviewcolumns as $columnid) {
@@ -608,9 +608,9 @@ class custom_view extends \core_question\local\bank\view {
      * @return bool
      */
     public function flashcards_contains($questionid) {
-        if (in_array($questionid, $this->questionlist)) {
+        /*if (in_array($questionid, $this->questionlist)) {
             return true;
-        }
+        }*/
         return false;
     }
 
