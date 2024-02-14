@@ -24,8 +24,8 @@
 
 namespace mod_flashcards\output;
 
-use \mod_flashcards\structure;
-use \html_writer;
+use mod_flashcards\structure;
+use html_writer;
 
 /**
  * Renderer outputting the quiz editing UI.
@@ -50,7 +50,7 @@ class edit_renderer extends \plugin_renderer_base {
         // Include the contents of any other popups required.
         $thiscontext = $contexts->lowest();
         $this->page->requires->js_call_amd('mod_flashcards/modal_flashcards_question_bank', 'init', [
-            $thiscontext->id
+            $thiscontext->id,
         ]);
         $addmenu = html_writer::tag('span', $this->add_menu_actions($pageurl, $contexts, $pagevars),
             ['class' => 'add-menu-outer mr-5']);
