@@ -32,27 +32,26 @@ namespace mod_flashcards\question\bank;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class add_action_column extends \core_question\local\bank\column_base {
-    
+
     /** @var string caches a lang string used repeatedly. */
     protected $stradd;
-    
+
     public function init(): void {
         parent::init();
         $this->stradd = get_string('addtoquiz', 'quiz');
     }
-    
+
     public function get_extra_classes(): array {
         return ['iconcol'];
     }
-    
+
     public function get_title(): string {
         return '&#160;';
     }
-    
+
     public function get_name() {
         return 'addtoflashcardsaction';
     }
-    
     protected function display_content($question, $rowclasses) {
         global $OUTPUT;
         if (!question_has_capability_on($question, 'use')) {
