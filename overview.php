@@ -151,7 +151,7 @@ if ($addedbyisnull > 0) {
         ['text' => get_string('overviewsq', 'flashcards'),
             'link' => get_string('overviewslink', 'flashcards', ['linkst' => $filterlink3->out(false), 'valuest' => $studentquestioncount])],
         ['text' => get_string('overviewnq', 'flashcards'),
-            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
+            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])],
     ];
 } else {
     $sql = "SELECT COUNT(q.id)
@@ -203,7 +203,7 @@ if ($addedbyisnull > 0) {
             'link' => get_string('overviewsaddlinks', 'flashcards', ['linkcreated' => $filterlink3->out(false), 'valuecreated' => $studentquestioncount,
                 'linkadded' => $filterlink6->out(false), 'valueadded' => $studentquestioncountadd])],
         ['text' => get_string('overviewnq', 'flashcards'),
-            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])]
+            'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])],
     ];
 }
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
@@ -214,7 +214,7 @@ $studentviewlink = new moodle_url('/mod/flashcards/studentview.php', ['id' => $c
 $templateinfo = ['createbtnlink' => $createbtnlink->out(false),
     'teacherviewlink' => $teacherviewlink->out(false),
     'studentviewlink' => $studentviewlink->out(false),
-    'listentries' => array_values($tabledata)
+    'listentries' => array_values($tabledata),
 ];
 
 $renderer = $PAGE->get_renderer('core');

@@ -109,7 +109,7 @@ $params = array(
         'id' => $question->id,
         'cmid' => $cmid,
         'previewid' => $quba->get_id(),
-        'flashcardsid' => $flashcardsid
+        'flashcardsid' => $flashcardsid,
 );
 $params['courseid'] = $context->instanceid;
 
@@ -198,7 +198,7 @@ $PAGE->set_heading($title);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
         'description' => '',
-        'hidecompletion' => true
+        'hidecompletion' => true,
 ]);
 
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
@@ -280,7 +280,7 @@ $event->trigger();
 
 $PAGE->requires->js_module('core_question_engine');
 $PAGE->requires->strings_for_js(array(
-        'closepreview'
+        'closepreview',
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');

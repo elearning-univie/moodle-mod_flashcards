@@ -43,7 +43,7 @@ $services = array(
                 'requiredcapability' => 'mod/flashcards:webservice',
                 'restrictedusers' => 0,
                 'enabled' => 1,
-        )
+        ),
 );
 
 $functions = array(
@@ -54,7 +54,7 @@ $functions = array(
             'description' => 'Update question progress of a student',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_load_learn_progress' => array(
             'classname' => 'mod_flashcards_external',
@@ -63,7 +63,7 @@ $functions = array(
             'description' => 'Loads a html progress bar for learn now',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_load_next_question' => array(
             'classname' => 'mod_flashcards_external',
@@ -72,7 +72,7 @@ $functions = array(
             'description' => 'Update question progress of a student',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_init_questions' => array(
             'classname' => 'mod_flashcards_external',
@@ -81,7 +81,7 @@ $functions = array(
             'description' => 'Load questions for a student',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_remove_questions' => array(
             'classname' => 'mod_flashcards_external',
@@ -90,7 +90,7 @@ $functions = array(
             'description' => 'Remove questions for a student from box 1',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_start_learn_now' => array(
             'classname' => 'mod_flashcards_external',
@@ -99,7 +99,7 @@ $functions = array(
             'description' => 'Initializes the learn now session',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_set_preview_status' => array(
             'classname' => 'mod_flashcards_external',
@@ -108,7 +108,7 @@ $functions = array(
             'description' => 'Sets the status of a flashcard',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_set_peer_review_vote' => array(
             'classname' => 'mod_flashcards_external',
@@ -117,7 +117,7 @@ $functions = array(
             'description' => 'Sets the users peer review vote of a flashcard',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
+            'loginrequired' => true,
         ),
         'mod_flashcards_set_showappinfo' => array(
             'classname' => 'mod_flashcards_external',
@@ -126,6 +126,6 @@ $functions = array(
             'description' => 'Sets the show app info preference',
             'type' => 'write',
             'ajax' => true,
-            'loginrequired' => true
-        )
+            'loginrequired' => true,
+        ),
 );

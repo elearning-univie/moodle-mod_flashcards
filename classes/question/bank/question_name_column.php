@@ -26,20 +26,20 @@ namespace mod_flashcards\question\bank;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class question_name_column extends \core_question\local\bank\column_base {
-    
+
     /**
      * @var null $checkboxespresent
      */
     protected $checkboxespresent = null;
-    
+
     public function get_name(): string {
         return 'questionname';
     }
-    
+
     public function get_title(): string {
         return get_string('question');
     }
-    
+
     protected function label_for($question): string {
         if (is_null($this->checkboxespresent)) {
             $this->checkboxespresent = $this->qbank->has_column('core_question\local\bank\checkbox_column');
@@ -50,7 +50,7 @@ class question_name_column extends \core_question\local\bank\column_base {
             return '';
         }
     }
-    
+
     protected function display_content($question, $rowclasses): void {
         $labelfor = $this->label_for($question);
         if ($labelfor) {
@@ -61,11 +61,11 @@ class question_name_column extends \core_question\local\bank\column_base {
             echo \html_writer::end_tag('label');
         }
     }
-    
+
     public function get_required_fields(): array {
         return ['q.id', 'q.name'];
     }
-    
+
     public function is_sortable() {
         return 'q.name';
     }

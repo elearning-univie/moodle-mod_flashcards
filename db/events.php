@@ -57,5 +57,5 @@ $observers = array(
         'eventname'   => '\mod_flashcards\event\levelup_thirdcheckpoint',
         'callback'    => '\mod_flashcards\event\levelup_thirdcheckpoint::get_name',
         'internal'    => false,
-    )
+    ),
 );

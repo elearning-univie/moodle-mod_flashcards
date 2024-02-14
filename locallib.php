@@ -510,7 +510,7 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
 
     $eventparams = array (
         'context' => $context,
-        'objectid' => $flashcardsid
+        'objectid' => $flashcardsid,
     );
 
     $eventtriggered = false;

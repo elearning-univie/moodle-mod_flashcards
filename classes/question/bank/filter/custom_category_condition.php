@@ -28,7 +28,7 @@ namespace mod_flashcards\question\bank\filter;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_category_condition extends \qbank_managecategories\category_condition {
-    
+
     public function get_initial_values() {
         $catmenu = custom_category_condition_helper::question_category_options($this->contexts, true, 0, true, -1, false);
         $values = [];

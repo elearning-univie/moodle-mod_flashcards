@@ -61,7 +61,7 @@ $PAGE->set_heading($course->fullname);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
-    'hidecompletion' => true
+    'hidecompletion' => true,
 ]);
 
 if (!has_capability('mod/flashcards:teacherview', $context)) {
@@ -219,7 +219,7 @@ $templateinfo = [
     'actionurl' => $PAGE->url,
     'selected2' . $filter => true,
     'filter' => $selswitch,
-    'selected' . $perpage => true
+    'selected' . $perpage => true,
 ];
 
 $pagevars = ['createlinkparams' => $params];

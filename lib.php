@@ -269,52 +269,28 @@ function mod_flashcards_get_fontawesome_icon_map() {
  * @param array $args The fragment arguments.
  * @return string The rendered mform fragment.
  */
-// function mod_flashcards_output_fragment_questionbank($args) {
-//     global $CFG, $DB, $PAGE;
-
-//     require_once($CFG->dirroot . '/question/editlib.php');
-
-//     $querystring = preg_replace('/^\?/', '', $args['querystring']);
-//     $params = [];
-//     parse_str($querystring, $params);
-
-//     list($thispageurl, $contexts, $cmid, $cm, $flashcards, $pagevars) =
-//             question_build_edit_resources('editq', '/mod/flashcards/teacherview.php', $params);
-
-//     $course = $DB->get_record('course', array('id' => $flashcards->course), '*', MUST_EXIST);
-//     require_capability('mod/flashcards:editallquestions', $contexts->lowest());
-
-//     $questionbank = new mod_flashcards\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $flashcards);
-
-//     $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
-//     return $renderer->question_bank_contents($questionbank, $pagevars);
-// }
 function mod_flashcards_output_fragment_flashcards_question_bank($args): string {
     global $PAGE;
-    
+
     // Retrieve params.
     $params = [];
     $extraparams = [];
     $querystring = parse_url($args['querystring'], PHP_URL_QUERY);
     parse_str($querystring, $params);
-    
+
     $viewclass = \mod_flashcards\question\bank\custom_view::class;
     $extraparams['view'] = $viewclass;
-    
+
     // Build required parameters.
     [$contexts, $thispageurl, $cm, $flashcards, $pagevars, $extraparams] =
     mod_flashcards_build_required_params_for_custom_view($params, $extraparams);
-    
-    /*list($thispageurl, $contexts, $cmid, $cm, $offlinequiz, $pagevars) =
-     question_edit_setup('editq', '/mod/offlinequiz/edit.php', false);*/
-    
+
     $course = get_course($cm->course);
     require_capability('mod/flashcards:editallquestions', $contexts->lowest());
-    
+
     // Custom View.
-    //$questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $pagevars, $extraparams);
     $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $pagevars, $extraparams, $flashcards);
-    
+
     // Output.
     $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
     return $renderer->question_bank_contents($questionbank, $pagevars);
@@ -336,10 +312,10 @@ function mod_flashcards_build_required_params_for_custom_view(array $params, arr
         '/mod/flashcards/teacherview.php',
         array_merge($params, $extraparams),
         $defaultpagesize);
-    
+
     // Add cmid so we can retrieve later in extra params.
     $extraparams['cmid'] = $cmid;
-    
+
     return [$contexts, $thispageurl, $cm, $module, $pagevars, $extraparams];
 }
 
@@ -354,10 +330,10 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     if (empty($args)) {
         return '';
     }
-    
+
     // Retrieve params from query string.
     [$params, $extraparams] = \core_question\local\bank\filter_condition_manager::extract_parameters_from_fragment_args($args);
-    
+
     // Build required parameters.
     $cmid = clean_param($args['cmid'], PARAM_INT);
     $thispageurl = new \moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cmid]);
@@ -365,15 +341,15 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     $contexts = new \core_question\local\bank\question_edit_contexts($thiscontext);
     $defaultcategory = question_make_default_categories($contexts->all());
     $params['cat'] = implode(',', [$defaultcategory->id, $defaultcategory->contextid]);
-    
+
     $course = get_course($params['courseid']);
     [, $cm] = get_module_from_cmid($cmid);
     $params['tabname'] = 'questions';
-    
+
     // Custom question bank View.
     $viewclass = clean_param($args['view'], PARAM_NOTAGS);
     $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $params, $extraparams);
-    
+
     // Question table.
     $questionbank->add_standard_search_conditions();
     ob_start();

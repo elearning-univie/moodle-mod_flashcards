@@ -101,7 +101,7 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $this->page->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
         $jsmodule = array(
                 'name' => 'core_question_engine',
-                'fullpath' => '/question/qengine.js'
+                'fullpath' => '/question/qengine.js',
         );
         $this->page->requires->js_init_call('M.core_question_engine.init_form',
                 array('#mod-flashcards-responseform'), false, $jsmodule);

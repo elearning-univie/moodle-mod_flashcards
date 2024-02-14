@@ -56,7 +56,7 @@ $PAGE->set_heading($course->fullname);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
         'description' => '',
-        'hidecompletion' => true
+        'hidecompletion' => true,
 ]);
 
 if (!has_capability('mod/flashcards:view', $context)) {
@@ -182,7 +182,7 @@ $templateinfo = ['createbtnlink' => $createurl->out(false),
     'headertext' => $headertext,
     'cbvis' => $cbvis ?? 0,
     'flashcardcount' => $flashcardcount,
-    'helpicon' => $helpicon->export_for_template($renderer)
+    'helpicon' => $helpicon->export_for_template($renderer),
 ];
 
 $optionsinfo = [
@@ -190,7 +190,7 @@ $optionsinfo = [
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
     'tab' => $tab,
-    'selected' . $perpage => true
+    'selected' . $perpage => true,
 ];
 
 echo $OUTPUT->header();
