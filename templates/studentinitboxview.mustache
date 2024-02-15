@@ -30,19 +30,19 @@
     <button class="btn btn-secondary" onclick="window.location.href = '{{backtooverviewlink}}';">{{# str }} backtooverviewbutton, mod_flashcards {{/ str }}</button>
     <button class="btn btn-secondary" onclick="window.location.href = '{{tabbtnlink}}';">{{tabbtntext}}</button><br/>
     {{#cbvis}}
-    <br/>
+    <br>
     <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
     {{/cbvis}}
-    <br/>
+    <br>
 </div>
 <h3>
     {{headertext}}
     {{#helpicon}}
         {{>core/help_icon}}
     {{/helpicon}}
-</h3><br/>
+</h3><br>
 <button class="btn btn-primary btn-sm add_remove_btn_margins" id="maintanancebtn" onclick="{{{collectionchangefunc}}}" disabled="">
     {{collectionchangetext}}
 </button>
-<br/>
+<br>
 {{# str}} questioncount, mod_flashcards {{/ str }}: {{flashcardcount}}
