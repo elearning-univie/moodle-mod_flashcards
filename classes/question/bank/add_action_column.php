@@ -72,6 +72,7 @@ class add_action_column extends \core_question\local\bank\column_base {
      *
      * {@inheritDoc}
      * @see \core_question\local\bank\column_base::display_content()
+     * @return string
      */
     protected function display_content($question, $rowclasses) {
         global $OUTPUT;

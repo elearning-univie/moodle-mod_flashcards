@@ -158,6 +158,7 @@ class custom_view extends \core_question\local\bank\view {
         return new \moodle_url('/mod/flashcards/teacherview.php', $params);
     }
     /**
+     * render
      *
      * @param array $pagevars
      * @param string $tabname

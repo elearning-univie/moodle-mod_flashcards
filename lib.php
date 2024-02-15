@@ -30,6 +30,7 @@
  */
 use core\context;
 /**
+ * flashcards_supports
  *
  * @param string $feature
  * @return boolean|string|NULL
