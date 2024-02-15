@@ -29,7 +29,11 @@
  * @return mixed true if the feature is supported, null if unknown
  */
 use core\context;
-
+/**
+ * 
+ * @param string $feature
+ * @return boolean|string|NULL
+ */
 function flashcards_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:
