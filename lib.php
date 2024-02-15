@@ -342,7 +342,7 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     // Build required parameters.
     $cmid = clean_param($args['cmid'], PARAM_INT);
     $thispageurl = new \moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cmid]);
-    $thiscontext = context::instance($cmid);
+    $thiscontext = \context_module::instance($cmid);
     $contexts = new \core_question\local\bank\question_edit_contexts($thiscontext);
     $defaultcategory = question_make_default_categories($contexts->all());
     $params['cat'] = implode(',', [$defaultcategory->id, $defaultcategory->contextid]);

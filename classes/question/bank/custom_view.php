@@ -51,7 +51,11 @@ class custom_view extends \core_question\local\bank\view {
     protected $questionlist;
     /** @var int The maximum displayed length of the category info. */
     const MAX_TEXT_LENGTH = 200;
-
+    /**
+     * @var string $component the component the api is used from.
+     */
+    public $component = 'mod_flashcards';
+    
     /**
      * Constructor
      * @param \question_edit_contexts $contexts
