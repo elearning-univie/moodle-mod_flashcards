@@ -63,8 +63,8 @@
         </select>
         <br>
          {{#filter}}
-           <label for="filter">{{# str }} filter, mod_flashcards {{/ str }}</label>
-            <select id="filter" name="filter" onchange="this.form.submit()">
+           <label for="fcfilter">{{# str }} filter, mod_flashcards {{/ str }}</label>
+            <select id="fcfilter" name="fcfilter" onchange="this.form.submit()">
                 <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
                 <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
                 <option value="5" title="{{# str }} filterteacheradded, mod_flashcards {{/ str }}" {{#selected25}}selected{{/selected25}}>{{# str }} filterteacheradded, mod_flashcards {{/ str }}</option>
@@ -74,8 +74,8 @@
             </select>
         {{/filter}}
 	    {{^filter}}
-	      <label for="filter">{{# str }} filter, mod_flashcards {{/ str }}</label>
-	       <select id="filter" name="filter" onchange="this.form.submit()">
+	      <label for="fcfilter">{{# str }} filter, mod_flashcards {{/ str }}</label>
+	       <select id="fcfilter" name="fcfilter" onchange="this.form.submit()">
 	           <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
 	           <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
 	           <option value="3" title="{{# str }} filterstudcreated, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstudcreated, mod_flashcards {{/ str }}</option>

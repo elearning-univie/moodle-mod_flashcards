@@ -132,12 +132,12 @@ $sql = "SELECT COUNT(q.id)
                                      AND ra.roleid " . $stsql . ")";
 $teacherquestioncount = $DB->count_records_sql($sql, $stparams);
 
-$filterlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 1]);
-$filterlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 2]);
-$filterlink3 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 3]);
-$filterlink4 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 4]);
-$filterlink5 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 5]);
-$filterlink6 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'filter' => 6]);
+$filterlink1 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 1]);
+$filterlink2 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 2]);
+$filterlink3 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 3]);
+$filterlink4 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 4]);
+$filterlink5 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 5]);
+$filterlink6 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 6]);
 
 // if flashcardsversion is older than 2023042401, dont show added by counts and filters, since field values are NULL
 $addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_status} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);

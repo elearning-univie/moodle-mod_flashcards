@@ -32,7 +32,7 @@ $fqid = optional_param('fcid', null, PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
-$filter = optional_param('filter', 1, PARAM_INT);
+$filter = optional_param('fcfilter', 1, PARAM_INT);
 
 $params = array();
 $params['cmid'] = $cmid;
