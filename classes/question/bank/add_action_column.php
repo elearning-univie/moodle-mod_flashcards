@@ -35,41 +35,41 @@ class add_action_column extends \core_question\local\bank\column_base {
 
     /** @var string caches a lang string used repeatedly. */
     protected $stradd;
-/**
- * 
- * {@inheritDoc}
- * @see \core_question\local\bank\view_component::init()
- */
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\view_component::init()
+     */
     public function init(): void {
         parent::init();
         $this->stradd = get_string('addtoquiz', 'quiz');
     }
-/**
- * 
- * {@inheritDoc}
- * @see \core_question\local\bank\column_base::get_extra_classes()
- */
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_extra_classes()
+     */
     public function get_extra_classes(): array {
         return ['iconcol'];
     }
-/**
- * 
- * {@inheritDoc}
- * @see \core_question\local\bank\column_base::get_title()
- */
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_title()
+     */
     public function get_title(): string {
         return '&#160;';
     }
-/**
- * 
- * {@inheritDoc}
- * @see \core_question\local\bank\column_base::get_name()
- */
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_name()
+     */
     public function get_name() {
         return 'addtoflashcardsaction';
     }
     /**
-     * 
+     *
      * {@inheritDoc}
      * @see \core_question\local\bank\column_base::display_content()
      */

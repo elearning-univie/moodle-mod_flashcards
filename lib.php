@@ -30,7 +30,7 @@
  */
 use core\context;
 /**
- * 
+ *
  * @param string $feature
  * @return boolean|string|NULL
  */
