@@ -90,7 +90,7 @@
                 {{>core/help_icon}}
             {{/helpicon}}
         </h2>
-        <br/>
+        <br>
     </div>
 {{/isteacher}}
 <div class="flex-container">
@@ -181,7 +181,7 @@
                                 <h2 class="box-title">
                                     {{boxheader}}
                                 </h2>
-                                <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
+                                <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}">
                             </div>
                             <div class="col">
                                 <div style="background-color: {{boxnumbercolor}};"
@@ -235,8 +235,7 @@
                     <div class="container mt-auto">
                         <div class="row">
                             <div class="col-auto m-0 p-0">
-                                <input size="6" class="mx-1 text-center h-100 rounded" id="mod-flashcards-range-slider-value" type="number" value="{{stats.halfusedquestioncount}}"
-                                       min="1" max="{{stats.usedquestioncount}}"/>
+                                <input type="number" size="6" class="mx-1 text-center h-100 rounded" id="mod-flashcards-range-slider-value" value="{{stats.halfusedquestioncount}}" min="1" max="{{stats.usedquestioncount}}">
                             </div>
                             <div class="col m-0 p-0">
                                 <div class="progress progress-bar rounded-0">
