@@ -277,32 +277,32 @@ img.mod-flashcards-appstore-badge {
 }
 
 #page-mod-flashcards-teacherview .question-bank-table {
-width: 100%;
+    width: 100%;
 }
 
 #page-mod-flashcards-teacherview .question-bank-table .iconcol {
-width: 16px;
-padding: 0;
-text-align: center;
+    width: 16px;
+    padding: 0;
+    text-align: center;
 }
 
 #page-mod-flashcards-teacherview .question-bank-table .checkbox {
-width: 32px;
-padding: 0;
-text-align: center;
+    width: 32px;
+    padding: 0;
+    text-align: center;
 }
 
 #page-mod-flashcards-teacherview .question-bank-table .qtype {
-width: 28px;
-padding: 0;
-text-align: center;
+    width: 28px;
+    padding: 0;
+    text-align: center;
 }
 
 #page-mod-flashcards-teacherview .question-bank-table .questionnametext {
-padding: 0 0.2em;
+    padding: 0 0.2em;
 }
 
-@media all{
+@media all {
     #page-mod-flashcards-teacherview #questionscontainer .justify-content-start {
         display: none !important;
     }
