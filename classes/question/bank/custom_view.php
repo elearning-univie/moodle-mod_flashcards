@@ -58,6 +58,8 @@ class custom_view extends \core_question\local\bank\view {
      * @param \moodle_url $pageurl
      * @param \stdClass $course course settings
      * @param \stdClass $cm activity settings.
+     * @param array $params
+     * @param array $extraparams
      * @param \stdClass $flashcards flashcards settings.
      */
     public function __construct($contexts, $pageurl, $course, $cm, $params, $extraparams, $flashcards = null) {
@@ -85,7 +87,11 @@ class custom_view extends \core_question\local\bank\view {
             $this->flashcards = $flashcards;
         }*/
     }
-
+/**
+ * 
+ * {@inheritDoc}
+ * @see \core_question\local\bank\view::get_question_bank_plugins()
+ */
     protected function get_question_bank_plugins(): array {
         $questionbankclasscolumns = [];
         $customviewcolumns = [
@@ -151,7 +157,12 @@ class custom_view extends \core_question\local\bank\view {
         $params['cmid'] = $this->cm->id;
         return new \moodle_url('/mod/flashcards/teacherview.php', $params);
     }
-
+/**
+ * 
+ * @param array $pagevars
+ * @param string $tabname
+ * @return string
+ */
     public function render($pagevars, $tabname): string {
         ob_start();
         $this->display();
@@ -378,7 +389,11 @@ class custom_view extends \core_question\local\bank\view {
         }*/
         return false;
     }
-
+/**
+ * 
+ * {@inheritDoc}
+ * @see \core_question\local\bank\view::add_standard_search_conditions()
+ */
     public function add_standard_search_conditions(): void {
         foreach ($this->plugins as $componentname => $plugin) {
             if (\core\plugininfo\qbank::is_plugin_enabled($componentname)) {
