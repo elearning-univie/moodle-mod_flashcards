@@ -69,9 +69,10 @@ class add_action_column extends \core_question\local\bank\column_base {
         return 'addtoflashcardsaction';
     }
     /**
+     * display_content
      *
-     * {@inheritDoc}
-     * @see \core_question\local\bank\column_base::display_content()
+     * @param \stdClass $question
+     * @param \stdClass $rowclasses
      * @return string
      */
     protected function display_content($question, $rowclasses) {
