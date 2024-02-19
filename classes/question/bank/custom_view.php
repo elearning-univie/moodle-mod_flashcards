@@ -377,12 +377,16 @@ class custom_view extends \core_question\local\bank\view {
                                       JOIN {tag_instance} ti ON ti.itemid = qu.id
                                       JOIN {tag} t ON t.id = ti.tagid
                                      WHERE t.name = '2fc') ";
+        $flashcards = $this->flashcards;
+        $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
+                                      JOIN {flashcards_q_status} fqs ON fqs.questionid = qu.id
+                                     WHERE fqs.fcid = $flashcards->id ) ";
 
         if (!empty($conditions)) {
             $sql .= ' AND ' . $nonecondition . ' ( ';
             $sql .= implode($separator, $conditions);
             $sql .= ' ) ';
-        }
+        }   
         $this->countsql = 'SELECT count(1)' . $sql;
         $this->loadsql = 'SELECT ' . implode(', ', $fields) . $sql . ' ORDER BY ' . implode(', ', $sorts);
     }
