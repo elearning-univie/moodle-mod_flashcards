@@ -373,6 +373,10 @@ class custom_view extends \core_question\local\bank\view {
         }
 
         $sql .= '   AND q.qtype IN (' . $qtypes . ')';
+        $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
+                                      JOIN {tag_instance} ti ON ti.itemid = qu.id
+                                      JOIN {tag} t ON t.id = ti.tagid
+                                     WHERE t.name = '2fc') ";
 
         if (!empty($conditions)) {
             $sql .= ' AND ' . $nonecondition . ' ( ';
