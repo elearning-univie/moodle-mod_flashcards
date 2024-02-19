@@ -92,11 +92,9 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-//         $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby',
-//             'timemodified', 'version', 'preview', 'edit', 'delete'];
         $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'v1createdby',
             'modifiedby', 'timemodified', 'version', 'preview', 'edit', 'delete'];
-        
+
         $this->define_columns($columns);
         $this->column_class('currentbox', 'flashcards_studentview_tc');
         $this->column_class('select', 'flashcards_teacherview_ec');
@@ -105,8 +103,7 @@ class studentviewtable extends table_sql {
         $this->column_class('sep', 'flashcards_sep');
         $this->column_class('downvotes', 'flashcards_down');
         $this->column_class('v1createdby', 'flashcards_studentview_tc');
-//         $this->column_class('v1createdby', 'flashcards_studentview_tc');
-         $this->column_class('modifiedby', 'flashcards_studentview_tc');
+        $this->column_class('modifiedby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('version', 'flashcards_studentview_dr');
         $this->column_class('edit', 'flashcards_teacherview_ec');
@@ -125,7 +122,6 @@ class studentviewtable extends table_sql {
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
             "/",
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
-            //get_string('author', 'mod_flashcards'),
             get_string('v1author', 'mod_flashcards'),
             get_string('modifiedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
@@ -267,7 +263,7 @@ class studentviewtable extends table_sql {
         } else {
             $author = $this->authors[$values->v1createdby];
         }
-        
+
         return $author;
     }
 
@@ -284,7 +280,7 @@ class studentviewtable extends table_sql {
         } else {
             $author = $this->authors[$values->modifiedby];
         }
-        
+
         return $author;
     }
 

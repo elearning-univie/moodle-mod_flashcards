@@ -55,7 +55,7 @@ class custom_view extends \core_question\local\bank\view {
      * @var string $component the component the api is used from.
      */
     public $component = 'mod_flashcards';
-    
+
     /**
      * Constructor
      * @param \question_edit_contexts $contexts
@@ -383,12 +383,11 @@ class custom_view extends \core_question\local\bank\view {
                                       JOIN {flashcards_q_status} fqs ON qv.questionbankentryid = fqs.qbankentryid
                                      WHERE fqs.fcid = $flashcards->id ) ";
 
-        
         if (!empty($conditions)) {
             $sql .= ' AND ' . $nonecondition . ' ( ';
             $sql .= implode($separator, $conditions);
             $sql .= ' ) ';
-        }   
+        }
         $this->countsql = 'SELECT count(1)' . $sql;
         $this->loadsql = 'SELECT ' . implode(', ', $fields) . $sql . ' ORDER BY ' . implode(', ', $sorts);
     }

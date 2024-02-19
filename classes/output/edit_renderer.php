@@ -75,7 +75,7 @@ class edit_renderer extends \plugin_renderer_base {
             return '';
         }
         $menu = new \action_menu();
-        //$menu->set_constraint('.mod-flashcards-edit-content');
+        // $menu->set_constraint('.mod-flashcards-edit-content');
         $menu->set_boundary('viewport');
         $trigger = html_writer::tag('span', get_string('add', 'quiz'), array('class' => 'add-menu'));
         $menu->set_menu_trigger($trigger);
