@@ -92,9 +92,11 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby',
-            'timemodified', 'version', 'preview', 'edit', 'delete'];
-
+//         $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'createdby',
+//             'timemodified', 'version', 'preview', 'edit', 'delete'];
+        $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'v1createdby',
+            'modifiedby', 'timemodified', 'version', 'preview', 'edit', 'delete'];
+        
         $this->define_columns($columns);
         $this->column_class('currentbox', 'flashcards_studentview_tc');
         $this->column_class('select', 'flashcards_teacherview_ec');
@@ -102,7 +104,9 @@ class studentviewtable extends table_sql {
         $this->column_class('upvotes', 'flashcards_up');
         $this->column_class('sep', 'flashcards_sep');
         $this->column_class('downvotes', 'flashcards_down');
-        $this->column_class('createdby', 'flashcards_studentview_tc');
+        $this->column_class('v1createdby', 'flashcards_studentview_tc');
+//         $this->column_class('v1createdby', 'flashcards_studentview_tc');
+         $this->column_class('modifiedby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('version', 'flashcards_studentview_dr');
         $this->column_class('edit', 'flashcards_teacherview_ec');
@@ -121,7 +125,9 @@ class studentviewtable extends table_sql {
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
             "/",
             get_string('peerreviewtableheaderdown', 'mod_flashcards', ['thumbsdown' => $thumbsdown]),
-            get_string('author', 'mod_flashcards'),
+            //get_string('author', 'mod_flashcards'),
+            get_string('v1author', 'mod_flashcards'),
+            get_string('modifiedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
@@ -137,6 +143,7 @@ class studentviewtable extends table_sql {
             null,
             null,
             new \help_icon('peerreview', 'mod_flashcards'),
+            null,
             null,
             null,
             null,
@@ -248,6 +255,40 @@ class studentviewtable extends table_sql {
     }
 
     /**
+     * Prepares column v1createdby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_v1createdby($values) {
+        if (!key_exists($values->v1createdby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->v1createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->v1createdby] = $author;
+        } else {
+            $author = $this->authors[$values->v1createdby];
+        }
+        
+        return $author;
+    }
+
+    /**
+     * Prepares column modifiedby for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_modifiedby($values) {
+        if (!key_exists($values->modifiedby, $this->authors)) {
+            $author = mod_flashcards_get_author_display_name($values->modifiedby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $this->authors[$values->modifiedby] = $author;
+        } else {
+            $author = $this->authors[$values->modifiedby];
+        }
+        
+        return $author;
+    }
+
+    /**
      * Prepares column timemodified for display
      *
      * @param object $values
@@ -266,7 +307,7 @@ class studentviewtable extends table_sql {
     public function col_edit($values) {
         global $OUTPUT;
 
-        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id)) {
+        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id, $values->v1createdby)) {
             return null;
         }
 
@@ -303,7 +344,7 @@ class studentviewtable extends table_sql {
     public function col_delete($values) {
         global $OUTPUT;
 
-        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id)) {
+        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id, $values->v1createdby)) {
             return null;
         }
 

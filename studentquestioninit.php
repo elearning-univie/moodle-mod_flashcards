@@ -124,8 +124,11 @@ $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs
              WHERE qv.questionbankentryid = v.questionbankentryid)";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url, $tab);
-$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck,
+$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.modifiedby, q.timemodified, teachercheck,
     fcs.id fqid, fcs.fcid flashcardsid,
+    (SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = fcs.qbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)) v1createdby,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q

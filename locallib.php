@@ -201,13 +201,14 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
  * @param stdClass $context context of the flashcards module
  * @param stdClass $flashcards flashcards object
  * @param stdClass $questionid id of the question
+ * @param stdClass $v1createdby id of original creater of question
  * @return boolean true if allowed to delete, false if not
  */
-function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
+function mod_flashcards_has_delete_rights($context, $flashcards, $questionid, $v1createdby = 0) {
     global $USER;
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
     $question = question_bank::load_question_data($questionid);
-    if ($question->createdby != $USER->id ||
+    if ($v1createdby != $USER->id ||   //$question->createdby != $USER->id ||
         $question->category != $flashcards->studentsubcat ||
         $question->qtype != 'flashcard') {
         $result = false;

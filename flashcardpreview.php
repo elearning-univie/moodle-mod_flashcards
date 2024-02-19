@@ -255,7 +255,12 @@ $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
     array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl, 'fcid' => $flashcardsid));
 $templatecontent['fceditlink'] = $eurl;
-if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
+
+$sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = $question->questionbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
+$v1createdby = $DB->get_field_sql($sql);
+if (mod_flashcards_has_delete_rights($context, $fcobj, $id, $v1createdby) ||
     has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
     $templatecontent['showfceditlink'] = true;
 }
