@@ -178,13 +178,20 @@ function mod_flashcards_get_preview_questiontext($context, $questionid, $questio
  */
 function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
     global $CFG, $DB;
+
+    $question = question_bank::load_question($questionid);
+    $sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = $question->questionbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
+    $v1createdby = $DB->get_field_sql($sql);
+
     require_capability('mod/flashcards:deleteownquestion', $context);
     require_sesskey();
     if (!$questionid) {
         throw new coding_exception('deleting a question requires an id of the question to delete');
     }
     require_once($CFG->dirroot . '/lib/questionlib.php');
-    if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid)) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid, $v1createdby)) {
         throw new \moodle_exception('deletion_not_allowed', 'flashcards');
         return;
     }
