@@ -379,9 +379,11 @@ class custom_view extends \core_question\local\bank\view {
                                      WHERE t.name = '2fc') ";
         $flashcards = $this->flashcards;
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
-                                      JOIN {flashcards_q_status} fqs ON fqs.questionid = qu.id
+                                      JOIN {question_versions} qv ON qv.questionid = q.id
+                                      JOIN {flashcards_q_status} fqs ON qv.questionbankentryid = fqs.qbankentryid
                                      WHERE fqs.fcid = $flashcards->id ) ";
 
+        
         if (!empty($conditions)) {
             $sql .= ' AND ' . $nonecondition . ' ( ';
             $sql .= implode($separator, $conditions);
