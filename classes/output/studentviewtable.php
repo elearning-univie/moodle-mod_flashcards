@@ -262,7 +262,7 @@ class studentviewtable extends table_sql {
      */
     public function col_v1createdby($values) {
         if (!key_exists($values->v1createdby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->v1createdby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $author = mod_flashcards_get_author_display_name($values->v1createdby, $this->courseid, null, true);
             $this->authors[$values->v1createdby] = $author;
         } else {
             $author = $this->authors[$values->v1createdby];
@@ -279,7 +279,7 @@ class studentviewtable extends table_sql {
      */
     public function col_modifiedby($values) {
         if (!key_exists($values->modifiedby, $this->authors)) {
-            $author = mod_flashcards_get_author_display_name($values->modifiedby, $this->courseid, FLASHCARDS_AUTHOR_NAME);
+            $author = mod_flashcards_get_author_display_name($values->modifiedby, $this->courseid, null, true);
             $this->authors[$values->modifiedby] = $author;
         } else {
             $author = $this->authors[$values->modifiedby];
