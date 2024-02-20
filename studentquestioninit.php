@@ -134,7 +134,7 @@ $table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.creat
     "{question} q
     JOIN {question_versions} qv ON qv.questionid = q.id
     JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid
-    LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.qbankentryid AND fsr.studentid = $USER->id",
+    LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.id AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
 
 $table->define_baseurl($PAGE->url);
