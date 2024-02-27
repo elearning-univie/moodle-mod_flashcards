@@ -83,13 +83,6 @@ class custom_view extends \core_question\local\bank\view {
         $this->init_columns($this->wanted_columns(), $this->heading_column());
         parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
         [$this->flashcards, ] = get_module_from_cmid($cm->id);
-        /*if (is_null($flashcards)) {
-            parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
-            [$this->flashcards, ] = get_module_from_cmid($cm->id);
-        } else {
-            parent::__construct($contexts, $pageurl, $course, $cm);
-            $this->flashcards = $flashcards;
-        }*/
     }
     /**
      *
