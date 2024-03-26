@@ -62,7 +62,7 @@ $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
 $templatestablecontext['icons'] = [
         'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
         'phone' => $OUTPUT->image_url('mobile', 'mod_flashcards'),
-        'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards')
+        'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards'),
 ];
 
 $templatestablecontext['stores'] = array();
@@ -74,14 +74,14 @@ if (!empty($applestoreurl)) {
     $templatestablecontext['stores'][] = [
             'badge' => $OUTPUT->image_url('storeapple', 'mod_flashcards'),
             'redirecturl' => $applestoreurl,
-            'badgealt' => get_string('appstoreapplealt', 'mod_flashcards')
+            'badgealt' => get_string('appstoreapplealt', 'mod_flashcards'),
     ];
 }
 if (!empty($googlestoreurl)) {
     $templatestablecontext['stores'][] = [
             'badge' => $OUTPUT->image_url('storegoogle', 'mod_flashcards'),
             'redirecturl' => $googlestoreurl,
-            'badgealt' => get_string('appstoregooglealt', 'mod_flashcards')
+            'badgealt' => get_string('appstoregooglealt', 'mod_flashcards'),
     ];
 }
 
@@ -98,7 +98,7 @@ if (!$templatestablecontext['appsavailable']) {
 $sql = "SELECT count(q.id)
           FROM {question} q,
                {flashcards_q_status} s
-         WHERE q.id = s.qbankentryid
+         WHERE q.id = s.questionid
            AND fcid = :fcid
            AND s.id NOT IN (SELECT fqid
                               FROM {flashcards_q_stud_rel}
@@ -106,11 +106,11 @@ $sql = "SELECT count(q.id)
                                AND currentbox IS NOT NULL)";
 $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id, 'userid' => $USER->id]);
 
-$sql = "SELECT count(q.id)
+$sql = "SELECT COUNT(q.id)
           FROM {question} q,
                {flashcards_q_status} s
          WHERE q.id = s.qbankentryid
-           AND fcid = :fcid";
+           AND s.fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 $usedquestioncount = $totalquestioncount - $boxzeroquestioncount;
@@ -128,7 +128,7 @@ $templatestablecontext['stats'] = [
         'usedquestioncount' => $usedquestioncount,
         'halfusedquestioncount' => ceil($usedquestioncount / 2),
         'selectedcardsavailable' => $usedquestioncount > 0,
-        'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : (1 - $boxzeroquestioncount / $totalquestioncount) * 100
+        'usedquestionspercentage' => $totalquestioncount <= 0 ? 1 : (1 - $boxzeroquestioncount / $totalquestioncount) * 100,
 ];
 
 $templatestablecontext['enablelearnnow'] = $usedquestioncount > 0;
@@ -179,7 +179,7 @@ function get_regular_box_count_records($userid, $flashcardsid) {
                     'userid' => $userid,
                     'flashcardsid' => $flashcardsid,
                     'useridsub' => $userid,
-                    'flashcardsidsub' => $flashcardsid
+                    'flashcardsidsub' => $flashcardsid,
             ]);
 }
 
@@ -203,7 +203,7 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
             2 => '#63666b',
             3 => '#5b6577',
             4 => '#45648d',
-            5 => '#1463a3'
+            5 => '#1463a3',
     ];
 
     $boxarray = array();

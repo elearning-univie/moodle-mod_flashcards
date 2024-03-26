@@ -84,9 +84,11 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
 
         $data = (object)$data;
         $data->fcid = $this->get_new_parentid('flashcards');
-        $questionmapping = $this->get_mapping('question', $data->questionid);
-        $data->questionid = $questionmapping ? $questionmapping->newitemid : $data->questionid;
-
+        $questionmappingid = $this->get_mappingid('question', $data->questionid);
+        $data->questionid = $questionmappingid ? $questionmappingid : $data->questionid;
+        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', array('questionid' => $data->questionid))) {
+            $data->qbankentryid = $entry;
+        }
         $data->timemodified = time();
 
         $DB->insert_record('flashcards_q_status', $data);

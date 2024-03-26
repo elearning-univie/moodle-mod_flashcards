@@ -31,7 +31,7 @@ namespace mod_flashcards\question\bank;
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_name_text_column extends \qbank_viewquestionname\viewquestionname_column_helper {
+class question_name_text_column extends question_name_column {
     /**
      * get_name
      * @return string
@@ -60,7 +60,6 @@ class question_name_text_column extends \qbank_viewquestionname\viewquestionname
         }
         echo '</div>';
     }
-
     /**
      * get_required_fields
      * @return string[]
@@ -69,6 +68,7 @@ class question_name_text_column extends \qbank_viewquestionname\viewquestionname
         $fields = parent::get_required_fields();
         $fields[] = 'q.questiontext';
         $fields[] = 'q.questiontextformat';
+        $fields[] = 'qbe.idnumber';
         return $fields;
     }
 

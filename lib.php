@@ -28,6 +28,13 @@
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
+use core\context;
+/**
+ * flashcards_supports
+ *
+ * @param string $feature
+ * @return boolean|string|NULL
+ */
 function flashcards_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:
@@ -267,27 +274,93 @@ function mod_flashcards_get_fontawesome_icon_map() {
  * @param array $args The fragment arguments.
  * @return string The rendered mform fragment.
  */
-function mod_flashcards_output_fragment_questionbank($args) {
-    global $CFG, $DB, $PAGE;
+function mod_flashcards_output_fragment_flashcards_question_bank($args): string {
+    global $PAGE;
 
-    require_once($CFG->dirroot . '/question/editlib.php');
-
-    $querystring = preg_replace('/^\?/', '', $args['querystring']);
+    // Retrieve params.
     $params = [];
+    $extraparams = [];
+    $querystring = parse_url($args['querystring'], PHP_URL_QUERY);
     parse_str($querystring, $params);
 
-    list($thispageurl, $contexts, $cmid, $cm, $flashcards, $pagevars) =
-            question_build_edit_resources('editq', '/mod/flashcards/teacherview.php', $params);
+    $viewclass = \mod_flashcards\question\bank\custom_view::class;
+    $extraparams['view'] = $viewclass;
 
-    $course = $DB->get_record('course', array('id' => $flashcards->course), '*', MUST_EXIST);
+    // Build required parameters.
+    [$contexts, $thispageurl, $cm, $flashcards, $pagevars, $extraparams] =
+    mod_flashcards_build_required_params_for_custom_view($params, $extraparams);
+
+    $course = get_course($cm->course);
     require_capability('mod/flashcards:editallquestions', $contexts->lowest());
 
-    $questionbank = new mod_flashcards\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $flashcards);
+    // Custom View.
+    $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $pagevars, $extraparams, $flashcards);
 
+    // Output.
     $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
     return $renderer->question_bank_contents($questionbank, $pagevars);
 }
+/**
+ * Build required parameters for question bank custom view
+ *
+ * @param array $params the page parameters
+ * @param array $extraparams additional parameters
+ * @return array
+ */
+function mod_flashcards_build_required_params_for_custom_view(array $params, array $extraparams): array {
+    // Retrieve questions per page.
+    $viewclass = $extraparams['view'] ?? null;
+    $defaultpagesize = $viewclass ? $viewclass::DEFAULT_PAGE_SIZE : DEFAULT_QUESTIONS_PER_PAGE;
+    // Build the required params.
+    [$thispageurl, $contexts, $cmid, $cm, $module, $pagevars] = question_build_edit_resources(
+        'editq',
+        '/mod/flashcards/teacherview.php',
+        array_merge($params, $extraparams),
+        $defaultpagesize);
 
+    // Add cmid so we can retrieve later in extra params.
+    $extraparams['cmid'] = $cmid;
+
+    return [$contexts, $thispageurl, $cm, $module, $pagevars, $extraparams];
+}
+
+/**
+ * Question data fragment to get the question html via ajax call.
+ *
+ * @param array $args
+ * @return string
+ */
+function mod_flashcards_output_fragment_question_data(array $args): string {
+    // Return if there is no args.
+    if (empty($args)) {
+        return '';
+    }
+
+    // Retrieve params from query string.
+    [$params, $extraparams] = \core_question\local\bank\filter_condition_manager::extract_parameters_from_fragment_args($args);
+
+    // Build required parameters.
+    $cmid = clean_param($args['cmid'], PARAM_INT);
+    $thispageurl = new \moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cmid]);
+    $thiscontext = \context_module::instance($cmid);
+    $contexts = new \core_question\local\bank\question_edit_contexts($thiscontext);
+    $defaultcategory = question_make_default_categories($contexts->all());
+    $params['cat'] = implode(',', [$defaultcategory->id, $defaultcategory->contextid]);
+
+    $course = get_course($params['courseid']);
+    [, $cm] = get_module_from_cmid($cmid);
+    $params['tabname'] = 'questions';
+
+    // Custom question bank View.
+    $viewclass = clean_param($args['view'], PARAM_NOTAGS);
+    $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $params, $extraparams);
+
+    // Question table.
+    $questionbank->add_standard_search_conditions();
+    ob_start();
+    $questionbank->display_question_list();
+    return ob_get_clean();
+}
 /**
  * Adds module specific settings to the settings block
  *

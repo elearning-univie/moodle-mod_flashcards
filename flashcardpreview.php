@@ -109,7 +109,7 @@ $params = array(
         'id' => $question->id,
         'cmid' => $cmid,
         'previewid' => $quba->get_id(),
-        'flashcardsid' => $flashcardsid
+        'flashcardsid' => $flashcardsid,
 );
 $params['courseid'] = $context->instanceid;
 
@@ -138,7 +138,7 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
                 $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
                 if ($nostatus) {
                     $fqid = $DB->insert_record('flashcards_q_status',
-                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck]);
+                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck, 'addedby' => $USER->id]);
                 } else if ($statusrec->teachercheck != $teachercheck) {
                     $statusrec->teachercheck = $teachercheck;
                     $DB->update_record('flashcards_q_status', $statusrec);
@@ -198,7 +198,7 @@ $PAGE->set_heading($title);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
         'description' => '',
-        'hidecompletion' => true
+        'hidecompletion' => true,
 ]);
 
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
@@ -255,7 +255,12 @@ $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
     array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl, 'fcid' => $flashcardsid));
 $templatecontent['fceditlink'] = $eurl;
-if (mod_flashcards_has_delete_rights($context, $fcobj, $id) ||
+
+$sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = $question->questionbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
+$v1createdby = $DB->get_field_sql($sql);
+if (mod_flashcards_has_delete_rights($context, $fcobj, $id, $v1createdby) ||
     has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
     $templatecontent['showfceditlink'] = true;
 }
@@ -280,7 +285,7 @@ $event->trigger();
 
 $PAGE->requires->js_module('core_question_engine');
 $PAGE->requires->strings_for_js(array(
-        'closepreview'
+        'closepreview',
 ), 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');

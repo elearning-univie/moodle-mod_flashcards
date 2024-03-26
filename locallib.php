@@ -178,13 +178,20 @@ function mod_flashcards_get_preview_questiontext($context, $questionid, $questio
  */
 function mod_flashcards_delete_student_question($questionid, $flashcards, $context) {
     global $CFG, $DB;
+
+    $question = question_bank::load_question($questionid);
+    $sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = $question->questionbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
+    $v1createdby = $DB->get_field_sql($sql);
+
     require_capability('mod/flashcards:deleteownquestion', $context);
     require_sesskey();
     if (!$questionid) {
         throw new coding_exception('deleting a question requires an id of the question to delete');
     }
     require_once($CFG->dirroot . '/lib/questionlib.php');
-    if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid)) {
+    if (!mod_flashcards_has_delete_rights($context, $flashcards, $questionid, $v1createdby)) {
         throw new \moodle_exception('deletion_not_allowed', 'flashcards');
         return;
     }
@@ -201,13 +208,14 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
  * @param stdClass $context context of the flashcards module
  * @param stdClass $flashcards flashcards object
  * @param stdClass $questionid id of the question
+ * @param stdClass $v1createdby id of original creater of question
  * @return boolean true if allowed to delete, false if not
  */
-function mod_flashcards_has_delete_rights($context, $flashcards, $questionid) {
+function mod_flashcards_has_delete_rights($context, $flashcards, $questionid, $v1createdby = 0) {
     global $USER;
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
     $question = question_bank::load_question_data($questionid);
-    if ($question->createdby != $USER->id ||
+    if ($v1createdby != $USER->id ||
         $question->category != $flashcards->studentsubcat ||
         $question->qtype != 'flashcard') {
         $result = false;
@@ -417,8 +425,8 @@ function mod_flashcards_question_tostring($question, $showicon = false, $showque
     // Question text.
     if ($showquestiontext) {
         $questiontext = question_utils::to_plain_text($question->questiontext,
-            $question->questiontextformat, array('noclean' => true, 'para' => false));
-        $questiontext = shorten_text($questiontext, 200);
+            $question->questiontextformat, ['noclean' => true, 'para' => false, 'filter' => false]);
+        $questiontext = shorten_text($questiontext, 50);
         if ($questiontext) {
             $result .= ' ' . html_writer::span(s($questiontext), 'questiontext');
         }
@@ -437,7 +445,7 @@ function mod_flashcards_question_tostring($question, $showicon = false, $showque
  * @throws dml_transaction_exception
  */
 function mod_flashcards_add_question($questionid, $flashcardsid) {
-    global $DB;
+    global $DB, $USER;
 
     if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
         return false;
@@ -465,7 +473,7 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
 
     $trans = $DB->start_delegated_transaction();
     $DB->insert_record('flashcards_q_status',
-        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0]);
+        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0, 'addedby' => $USER->id]);
     $trans->allow_commit();
 }
 
@@ -510,7 +518,7 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
 
     $eventparams = array (
         'context' => $context,
-        'objectid' => $flashcardsid
+        'objectid' => $flashcardsid,
     );
 
     $eventtriggered = false;

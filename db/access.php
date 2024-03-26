@@ -31,9 +31,9 @@ $capabilities = array(
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'manager' => CAP_ALLOW,
         ),
-        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ),
     'mod/flashcards:view' => array(
         'captype' => 'read',
@@ -43,15 +43,15 @@ $capabilities = array(
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
+            'manager' => CAP_ALLOW,
+        ),
     ),
     'mod/flashcards:studentview' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'student' => CAP_ALLOW,
-        )
+        ),
     ),
     'mod/flashcards:teacherview' => array(
         'captype' => 'read',
@@ -59,7 +59,7 @@ $capabilities = array(
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        )
+        ),
     ),
     'mod/flashcards:deleteownquestion' => array(
         'riskbitmask' => RISK_DATALOSS,
@@ -70,7 +70,7 @@ $capabilities = array(
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'manager' => CAP_ALLOW,
         ),
     ),
     'mod/flashcards:editownquestion' => array(
@@ -82,7 +82,7 @@ $capabilities = array(
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+            'manager' => CAP_ALLOW,
         ),
     ),
     'mod/flashcards:editallquestions' => array(
@@ -99,8 +99,8 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'user' => CAP_ALLOW
-        )
+            'user' => CAP_ALLOW,
+        ),
     ),
     'mod/flashcards:editreview' => array(
         'captype' => 'write',
@@ -109,15 +109,15 @@ $capabilities = array(
             'guest' => CAP_PROHIBIT,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
-        )
+            'manager' => CAP_ALLOW,
+        ),
     ),
     'mod/flashcards:editcardwithouttcreset' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW
-        )
+            'editingteacher' => CAP_ALLOW,
+        ),
     ),
 );

@@ -31,40 +31,62 @@ namespace mod_flashcards\question\bank;
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class add_action_column extends \core_question\local\bank\action_column_base {
+class add_action_column extends \core_question\local\bank\column_base {
+
     /** @var string caches a lang string used repeatedly. */
     protected $stradd;
-
     /**
-     * init function
-     * @throws \coding_exception
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\view_component::init()
      */
     public function init(): void {
         parent::init();
         $this->stradd = get_string('addtoquiz', 'quiz');
     }
-
     /**
-     * return action name
-     * @return string
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_extra_classes()
+     */
+    public function get_extra_classes(): array {
+        return ['iconcol'];
+    }
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_title()
+     */
+    public function get_title(): string {
+        return '&#160;';
+    }
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_name()
      */
     public function get_name() {
         return 'addtoflashcardsaction';
     }
-
     /**
-     * disploy column
-     * @param object $question
-     * @param string $rowclasses
-     * @throws \coding_exception
+     * display_content
+     *
+     * @param \stdClass $question
+     * @param \stdClass $rowclasses
+     * @return string
      */
     protected function display_content($question, $rowclasses) {
+        global $OUTPUT;
         if (!question_has_capability_on($question, 'use')) {
             return;
         }
-        if ($this->qbank->flashcards_contains($question->id)) {
-            return;
-        }
-        $this->print_icon('t/add', $this->stradd, $this->qbank->add_to_flashcards_url($question->id));
+        $link = new \action_link(
+            $this->qbank->add_to_flashcards_url($question->id),
+            '',
+            null,
+            ['title' => $this->stradd],
+            new \pix_icon('t/add', $this->stradd));
+        echo $OUTPUT->render($link);
     }
 }
+

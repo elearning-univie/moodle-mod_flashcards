@@ -24,8 +24,8 @@
 
 namespace mod_flashcards\output;
 
-use \mod_flashcards\structure;
-use \html_writer;
+use mod_flashcards\structure;
+use html_writer;
 
 /**
  * Renderer outputting the quiz editing UI.
@@ -49,8 +49,8 @@ class edit_renderer extends \plugin_renderer_base {
 
         // Include the contents of any other popups required.
         $thiscontext = $contexts->lowest();
-        $this->page->requires->js_call_amd('mod_flashcards/flashcardsquestionbank', 'init', [
-            $thiscontext->id
+        $this->page->requires->js_call_amd('mod_flashcards/modal_flashcards_question_bank', 'init', [
+            $thiscontext->id,
         ]);
         $addmenu = html_writer::tag('span', $this->add_menu_actions($pageurl, $contexts, $pagevars),
             ['class' => 'add-menu-outer mr-5']);
@@ -58,7 +58,6 @@ class edit_renderer extends \plugin_renderer_base {
         $output = html_writer::div($addmenu, 'add-menu-space');
 
         return $output;
-
     }
 
     /**
@@ -76,7 +75,8 @@ class edit_renderer extends \plugin_renderer_base {
             return '';
         }
         $menu = new \action_menu();
-        $menu->set_constraint('.mod-flashcards-edit-content');
+        // $menu->set_constraint('.mod-flashcards-edit-content');
+        $menu->set_boundary('viewport');
         $trigger = html_writer::tag('span', get_string('add', 'quiz'), array('class' => 'add-menu'));
         $menu->set_menu_trigger($trigger);
         // The menu appears within an absolutely positioned element causing width problems.
@@ -138,9 +138,9 @@ class edit_renderer extends \plugin_renderer_base {
      */
     public function question_bank_contents(\mod_flashcards\question\bank\custom_view $questionbank, array $pagevars) {
 
-        $qbank = $questionbank->render('editq', $pagevars['qpage'], $pagevars['qperpage'],
+        $qbank = $questionbank->render('editq', $pagevars['qpage']/*, $pagevars['qperpage'],
             $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'], $pagevars['qbshowtext'],
-            $pagevars['qtagids']);
+            $pagevars['qtagids']*/);
         return html_writer::div(html_writer::div($qbank, 'bd'), 'questionbankformforpopup');
     }
 }

@@ -47,7 +47,7 @@ class mod_flashcards_external extends external_api {
                         'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
                         'boxid' => new external_value(PARAM_INT, 'box id'),
                         'questionid' => new external_value(PARAM_INT, 'question id'),
-                        'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer')
+                        'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer'),
                 )
         );
     }
@@ -61,7 +61,7 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
             array(
                 'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'boxid' => new external_value(PARAM_INT, 'id of current box')
+                'boxid' => new external_value(PARAM_INT, 'id of current box'),
             )
         );
     }
@@ -75,7 +75,7 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
             array(
                 'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'boxid' => new external_value(PARAM_INT, 'id of current box')
+                'boxid' => new external_value(PARAM_INT, 'id of current box'),
             )
         );
     }
@@ -121,7 +121,7 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
             array(
                 'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'qcount' => new external_value(PARAM_INT, 'number of questions to learn')
+                'qcount' => new external_value(PARAM_INT, 'number of questions to learn'),
             )
         );
     }
@@ -135,7 +135,7 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
                 array(
                         'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
-                        'status' => new external_value(PARAM_INT, 'number of questions to learn')
+                        'status' => new external_value(PARAM_INT, 'number of questions to learn'),
                 )
         );
     }
@@ -149,7 +149,7 @@ class mod_flashcards_external extends external_api {
         return new external_function_parameters(
             array(
                 'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
-                'vote' => new external_value(PARAM_INT, 'peer review vote')
+                'vote' => new external_value(PARAM_INT, 'peer review vote'),
             )
         );
     }
@@ -162,7 +162,7 @@ class mod_flashcards_external extends external_api {
     public static function set_showappinfo_parameters() {
         return new external_function_parameters(
             array(
-                'prefval' => new external_value(PARAM_BOOL, 'value to set the pref')
+                'prefval' => new external_value(PARAM_BOOL, 'value to set the pref'),
             )
         );
     }
@@ -294,7 +294,7 @@ class mod_flashcards_external extends external_api {
             } else {
                 $questionentry =
                 array('flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id, 'active' => 1,
-                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0, 'fqid' => $question);
+                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
                 $questionarray[] = $questionentry;
             }
         }

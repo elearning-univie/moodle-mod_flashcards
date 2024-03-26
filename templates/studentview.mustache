@@ -90,7 +90,7 @@
                 {{>core/help_icon}}
             {{/helpicon}}
         </h2>
-        <br/>
+        <br>
     </div>
 {{/isteacher}}
 <div class="flex-container">
@@ -181,7 +181,7 @@
                                 <h2 class="box-title">
                                     {{boxheader}}
                                 </h2>
-                                <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}"/>
+                                <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}">
                             </div>
                             <div class="col">
                                 <div style="background-color: {{boxnumbercolor}};"
@@ -235,13 +235,12 @@
                     <div class="container mt-auto">
                         <div class="row">
                             <div class="col-auto m-0 p-0">
-                                <input size="6" class="mx-1 text-center h-100 rounded" id="mod-flashcards-range-slider-value" type="number" value="{{stats.halfusedquestioncount}}"
-                                       min="1" max="{{stats.usedquestioncount}}"/>
+                                <input type="number" class="mx-1 text-center h-100 rounded" id="mod-flashcards-range-slider-value" value="{{stats.halfusedquestioncount}}" min="1" max="{{stats.usedquestioncount}}">
                             </div>
                             <div class="col m-0 p-0">
                                 <div class="progress progress-bar rounded-0">
                                     <div id="mod-flashcards-range-progressbar" class="progress-bar progress-bar-striped rounded-0" role="progressbar"></div>
-                                    <input class="justify-content-center align-self-center d-flex position-absolute w-100" id="mod-flashcards-range-slider" type="range" min="1" step="1" max="{{stats.usedquestioncount}}" value="{{stats.halfusedquestioncount}}"/>
+                                    <input class="justify-content-center align-self-center d-flex position-absolute w-100" id="mod-flashcards-range-slider" type="range" min="1" step="1" max="{{stats.usedquestioncount}}" value="{{stats.halfusedquestioncount}}">
                                 </div>
                             </div>
                         </div>

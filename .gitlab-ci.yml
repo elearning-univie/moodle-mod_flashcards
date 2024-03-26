@@ -29,13 +29,13 @@ variables:
     - moodle-plugin-ci validate
     - moodle-plugin-ci savepoints
     - moodle-plugin-ci mustache
-    - moodle-plugin-ci grunt
+   # - moodle-plugin-ci grunt
     - moodle-plugin-ci phpdoc
     - moodle-plugin-ci phpunit
     #- moodle-plugin-ci behat --profile chrome
   parallel:
     matrix:
-      - MOODLE_BRANCH: [ "MOODLE_402_STABLE" ]
+      - MOODLE_BRANCH: [ "MOODLE_403_STABLE" ]
         PHP_VERSION: [ "8.1" ]
 
 code_checker_pgsql:

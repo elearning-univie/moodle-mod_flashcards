@@ -37,7 +37,7 @@ $coursecontext = context_course::instance($course->id);
 require_course_login($course);
 
 $event = \mod_flashcards\event\course_module_instance_list_viewed::create(array(
-    'context' => $coursecontext
+    'context' => $coursecontext,
 ));
 $event->trigger();
 

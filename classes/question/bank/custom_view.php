@@ -25,9 +25,16 @@
 namespace mod_flashcards\question\bank;
 
 use coding_exception;
+use core\output\datafilter;
+use core_question\local\bank\column_base;
+use core_question\local\bank\condition;
+use core_question\local\bank\question_version_status;
 use mod_flashcards;
+use mod_flashcards\question\bank\filter\custom_category_condition;
 use question_bank;
 
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 /**
  * Subclass to customise the view of the question bank for the quiz editing screen.
  *
@@ -36,12 +43,18 @@ use question_bank;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_view extends \core_question\local\bank\view {
+    /** @var int number of questions per page to show in the add from question bank modal. */
+    const DEFAULT_PAGE_SIZE = 20;
     /** @var \stdClass the quiz settings. */
     protected $flashcards = false;
     /** @var array the flashcards questionlist. */
     protected $questionlist;
     /** @var int The maximum displayed length of the category info. */
     const MAX_TEXT_LENGTH = 200;
+    /**
+     * @var string $component the component the api is used from.
+     */
+    public $component = 'mod_flashcards';
 
     /**
      * Constructor
@@ -49,74 +62,51 @@ class custom_view extends \core_question\local\bank\view {
      * @param \moodle_url $pageurl
      * @param \stdClass $course course settings
      * @param \stdClass $cm activity settings.
+     * @param array $params
+     * @param array $extraparams
      * @param \stdClass $flashcards flashcards settings.
      */
-    public function __construct($contexts, $pageurl, $course, $cm, $flashcards) {
-        global $DB;
-        $this->contexts = $contexts;
-        $this->baseurl = $pageurl;
-        $this->course = $course;
-        $this->cm = $cm;
-        $this->flashcards = $flashcards;
-        $this->questionlist = $DB->get_fieldset_select('flashcards_q_status', 'questionid', 'fcid = ' . $this->flashcards->id);
-
-        // Create the url of the new question page to forward to.
-        $returnurl = $pageurl->out_as_local_url(false);
-        $this->editquestionurl = new \moodle_url('/question/question.php',
-            array('returnurl' => $returnurl));
-        if ($cm !== null) {
-            $this->editquestionurl->param('cmid', $cm->id);
-        } else {
-            $this->editquestionurl->param('courseid', $this->course->id);
-        }
-
-        $this->lastchangedid = optional_param('lastchanged', 0, PARAM_INT);
-
-        $this->init_columns($this->wanted_columns(), $this->heading_column());
-        $this->init_sort();
-        $this->init_search_conditions();
-
-    }
-
-    /**
-     * wanted_columns
-     * @return array
-     */
-    protected function wanted_columns(): array {
-        global $CFG;
-
-        if (empty($CFG->quizquestionbankcolumns)) {
-            $quizquestionbankcolumns = array(
-                    'add_action_column',
-                    'checkbox_column',
-                    'question_type_column',
-                    'question_name_text_column',
-                    'preview_action_column',
-            );
-        } else {
-            $quizquestionbankcolumns = explode(',', $CFG->quizquestionbankcolumns);
-        }
-
-        foreach ($quizquestionbankcolumns as $fullname) {
-            if (!class_exists($fullname)) {
-                if (class_exists('mod_flashcards\\question\\bank\\' . $fullname)) {
-                    $fullname = 'mod_flashcards\\question\\bank\\' . $fullname;
-                } else if (class_exists('qbank_previewquestion\\' . $fullname)) {
-                    $fullname = 'qbank_previewquestion\\' . $fullname;
-                } else if (class_exists('qbank_viewquestiontype\\' . $fullname)) {
-                    $fullname = 'qbank_viewquestiontype\\' . $fullname;
-                } else if (class_exists('question_bank_' . $fullname)) {
-                    debugging('Legacy question bank column class question_bank_' .
-                            $fullname . ' should be renamed to mod_flashcards\\question\\bank\\' .
-                            $fullname, DEBUG_DEVELOPER);
-                    $fullname = 'question_bank_' . $fullname;
-                } else {
-                    throw new coding_exception('Invalid quiz question bank column', $fullname);
-                }
+    public function __construct($contexts, $pageurl, $course, $cm, $params, $extraparams, $flashcards = null) {
+        // Default filter condition.
+        if (!isset($params['filter'])) {
+            $params['filter']  = [];
+            [$categoryid, $contextid] = custom_category_condition::validate_category_param($params['cat']);
+            if (!is_null($categoryid)) {
+                $category = custom_category_condition::get_category_record($categoryid, $contextid);
+                $params['filter']['category'] = [
+                    'jointype' => custom_category_condition::JOINTYPE_DEFAULT,
+                    'values' => [$category->id],
+                    'filteroptions' => ['includesubcategories' => false],
+                ];
             }
-            $this->requiredcolumns[$fullname] = new $fullname($this);
         }
-        return $this->requiredcolumns;
+        $this->init_columns($this->wanted_columns(), $this->heading_column());
+        parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
+        [$this->flashcards, ] = get_module_from_cmid($cm->id);
+    }
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\view::get_question_bank_plugins()
+     */
+    protected function get_question_bank_plugins(): array {
+        $questionbankclasscolumns = [];
+        $customviewcolumns = [
+            'mod_flashcards\question\bank\add_action_column' . column_base::ID_SEPARATOR  . 'add_action_column',
+            'core_question\local\bank\checkbox_column' . column_base::ID_SEPARATOR . 'checkbox_column',
+            'qbank_viewquestiontype\question_type_column' . column_base::ID_SEPARATOR . 'question_type_column',
+            'mod_flashcards\question\bank\question_name_text_column' . column_base::ID_SEPARATOR . 'question_name_text_column',
+            'mod_flashcards\question\bank\preview_action_column'  . column_base::ID_SEPARATOR  . 'preview_action_column',
+        ];
+
+        foreach ($customviewcolumns as $columnid) {
+            [$columnclass, $columnname] = explode(column_base::ID_SEPARATOR, $columnid, 2);
+            if (class_exists($columnclass)) {
+                $questionbankclasscolumns[$columnid] = $columnclass::from_column_name($this, $columnname);
+            }
+        }
+
+        return $questionbankclasscolumns;
     }
 
     /**
@@ -161,133 +151,22 @@ class custom_view extends \core_question\local\bank\view {
         $params['addquestion'] = $questionid;
         $params['sesskey'] = sesskey();
         $params['addsingle'] = true;
+        $params['cmid'] = $this->cm->id;
         return new \moodle_url('/mod/flashcards/teacherview.php', $params);
     }
-
     /**
-     * Renders the html question bank (same as display, but returns the result).
+     * render
      *
-     * Note that you can only output this rendered result once per page, as
-     * it contains IDs which must be unique.
-     *
-     * @param string $tabname question bank edit tab name, for permission checking.
-     * @param int $page the page number to show.
-     * @param int $perpage the number of questions per page to show.
-     * @param string $cat 'categoryid,contextid'.
-     * @param int $recurse     Whether to include subcategories.
-     * @param bool $showhidden  whether deleted questions should be displayed.
-     * @param bool $showquestiontext whether the text of each question should be shown in the list. Deprecated.
-     * @param array $tagids current list of selected tags.
-     * @return false|string HTML code for the form
+     * @param array $pagevars
+     * @param string $tabname
+     * @return string
      */
-    public function render($tabname, $page, $perpage, $cat, $recurse, $showhidden,
-            $showquestiontext, $tagids = []) {
+    public function render($pagevars, $tabname): string {
         ob_start();
-        $pagevars = [];
-        $pagevars['qpage'] = $page;
-        $pagevars['qperpage'] = $perpage;
-        $pagevars['cat'] = $cat;
-        $pagevars['recurse'] = $recurse;
-        $pagevars['showhidden'] = $showhidden;
-        $pagevars['qbshowtext'] = $showquestiontext;
-        $pagevars['tagids'] = $tagids;
-        $this->display($pagevars, $tabname);
+        $this->display();
         $out = ob_get_contents();
         ob_end_clean();
         return $out;
-    }
-
-    /**
-     * Prints the table of questions in a category with interactions
-     *
-     * @param \moodle_url $pageurl     The URL to reload this page.
-     * @param string     $categoryandcontext 'categoryID,contextID'.
-     * @param int        $recurse     Whether to include subcategories.
-     * @param int        $page        The number of the page to be displayed
-     * @param int        $perpage     Number of questions to show per page
-     * @param array      $addcontexts contexts where the user is allowed to add new questions.
-     */
-    protected function display_question_list($pageurl, $categoryandcontext,
-           $recurse=1, $page=0, $perpage=100, $addcontexts = array()): void {
-        global $OUTPUT;
-
-        // This function can be moderately slow with large question counts and may time out.
-        // We probably do not want to raise it to unlimited, so randomly picking 5 minutes.
-        // Note: We do not call this in the loop because quiz ob_ captures this function (see raise() PHP doc).
-        \core_php_time_limit::raise(300);
-
-        $category = $this->get_current_category($categoryandcontext);
-
-        list($categoryid, $contextid) = explode(',', $categoryandcontext);
-        $catcontext = \context::instance_by_id($contextid);
-
-        $canadd = has_capability('moodle/question:add', $catcontext);
-
-        $this->create_new_question_form($category, $canadd);
-
-        $this->build_query();
-        $totalnumber = $this->get_question_count();
-        if ($totalnumber == 0) {
-            return;
-        }
-        $questionsrs = $this->load_page_questions($page, $perpage);
-        $questions = [];
-        foreach ($questionsrs as $question) {
-            $questions[$question->id] = $question;
-        }
-        $questionsrs->close();
-        foreach ($this->requiredcolumns as $name => $column) {
-            $column->load_additional_data($questions);
-        }
-
-        echo '<div class="categorypagingbarcontainer">';
-
-        $pageingurl = new \moodle_url('teacherview.php', $pageurl->params());
-        $pagingbar = new \paging_bar($totalnumber, $page, $perpage, $pageingurl);
-        $pagingbar->pagevar = 'qpage';
-        echo $OUTPUT->render($pagingbar);
-        echo '</div>';
-
-        echo '<form method="post" action="teacherview.php">';
-        echo '<fieldset class="invisiblefieldset" style="display: block;">';
-        echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
-
-        echo \html_writer::input_hidden_params($this->baseurl);
-
-        echo '<div class="categoryquestionscontainer" id="questionscontainer">';
-        $this->start_table();
-        $rowcount = 0;
-        foreach ($questions as $question) {
-            $this->print_table_row($question, $rowcount);
-            $rowcount += 1;
-        }
-        $this->end_table();
-        echo "</div>\n";
-
-        echo '<div class="categorypagingbarcontainer pagingbottom">';
-        echo $OUTPUT->render($pagingbar);
-        if ($totalnumber > DEFAULT_QUESTIONS_PER_PAGE) {
-            if ($perpage == DEFAULT_QUESTIONS_PER_PAGE) {
-                $url = new \moodle_url('edit.php', array_merge($pageurl->params(),
-                        array('qpage' => 0, 'qperpage' => MAXIMUM_QUESTIONS_PER_PAGE)));
-                if ($totalnumber > MAXIMUM_QUESTIONS_PER_PAGE) {
-                    $showall = '<a href="'.$url.'">'.get_string('showperpage', 'moodle', MAXIMUM_QUESTIONS_PER_PAGE).'</a>';
-                } else {
-                    $showall = '<a href="'.$url.'">'.get_string('showall', 'moodle', $totalnumber).'</a>';
-                }
-            } else {
-                $url = new \moodle_url('edit.php', array_merge($pageurl->params(),
-                        array('qperpage' => DEFAULT_QUESTIONS_PER_PAGE)));
-                $showall = '<a href="'.$url.'">'.get_string('showperpage', 'moodle', DEFAULT_QUESTIONS_PER_PAGE).'</a>';
-            }
-            echo "<div class='paging'>{$showall}</div>";
-        }
-        echo '</div>';
-
-        $this->display_bottom_controls($catcontext);
-
-        echo '</fieldset>';
-        echo "</form>\n";
     }
 
     /**
@@ -446,56 +325,62 @@ class custom_view extends \core_question\local\bank\view {
     protected function build_query(): void {
 
         // Get the required tables and fields.
-        $joins = array();
-        $fields = ['qv.status', 'qc.id as categoryid', 'qv.version', 'qv.id as versionid', 'qbe.id as questionbankentryid'];
-        foreach ($this->requiredcolumns as $column) {
-            $extrajoins = $column->get_extra_joins();
-            foreach ($extrajoins as $prefix => $join) {
-                if (isset($joins[$prefix]) && $joins[$prefix] != $join) {
-                    throw new \coding_exception('Join ' . $join . ' conflicts with previous join ' . $joins[$prefix]);
-                }
-                $joins[$prefix] = $join;
-            }
-            $fields = array_merge($fields, $column->get_required_fields());
-        }
-
-        $fields = array_unique($fields);
+        [$fields, $joins] = $this->get_component_requirements(array_merge($this->requiredcolumns, $this->questionactions));
 
         // Build the order by clause.
-        $sorts = array();
-        foreach ($this->sort as $sort => $order) {
-            list($colname, $subsort) = $this->parse_subsort($sort);
-            $sorts[] = $this->requiredcolumns[$colname]->sort_expression($order < 0, $subsort);
+        $sorts = [];
+        foreach ($this->sort as $sortname => $sortorder) {
+            [$colname, $subsort] = $this->parse_subsort($sortname);
+            $sorts[] = $this->requiredcolumns[$colname]->sort_expression($sortorder == SORT_DESC, $subsort);
         }
 
         // Build the where clause.
-        $tests = array('q.parent = 0');
-        $this->sqlparams = array();
-
+        $latestversion = 'qv.version = (SELECT MAX(v.version)
+                                          FROM {question_versions} v
+                                          JOIN {question_bank_entries} be
+                                            ON be.id = v.questionbankentryid
+                                         WHERE be.id = qbe.id)';
+        $onlyready = '((' . "qv.status = '" . question_version_status::QUESTION_STATUS_READY . "'" .'))';
+        $this->sqlparams = [];
+        $conditions = [];
         foreach ($this->searchconditions as $searchcondition) {
             if ($searchcondition->where()) {
-                $tests[] = '((' . $searchcondition->where() .'))';
+                $conditions[] = '((' . $searchcondition->where() .'))';
             }
             if ($searchcondition->params()) {
                 $this->sqlparams = array_merge($this->sqlparams, $searchcondition->params());
             }
         }
+        $majorconditions = ['q.parent = 0', $latestversion, $onlyready];
+        // Get higher level filter condition.
+        $jointype = isset($this->pagevars['jointype']) ? (int)$this->pagevars['jointype'] : condition::JOINTYPE_DEFAULT;
+        $nonecondition = ($jointype === datafilter::JOINTYPE_NONE) ? ' NOT ' : '';
+        $separator = ($jointype === datafilter::JOINTYPE_ALL) ? ' AND ' : ' OR ';
+        // Build the SQL.
+        $sql = ' FROM {question} q ' . implode(' ', $joins);
+        $sql .= ' WHERE ' . implode(' AND ', $majorconditions);
 
         $qtypes = '\'flashcard\', \'multichoice\', \'truefalse\', \'shortanswer\', \'multianswer\'';
         if (question_bank::qtype_exists('multichoiceset')) {
             $qtypes = $qtypes . ', \'multichoiceset\'';
         }
-        // Build the SQL.
-        $sql = ' FROM {question} q ' . implode(' ', $joins);
-        $sql .= ' WHERE ' . implode(' AND ', $tests);
-        $sql .= '   AND q.qtype IN (' . $qtypes . ') ';
-        $sql .= 'AND qv.version = (SELECT MAX(v.version)
-                                     FROM {question_versions} v
-                                    WHERE qv.questionbankentryid = v.questionbankentryid)';
+
+        $sql .= '   AND q.qtype IN (' . $qtypes . ')';
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
                                       JOIN {tag_instance} ti ON ti.itemid = qu.id
                                       JOIN {tag} t ON t.id = ti.tagid
                                      WHERE t.name = '2fc') ";
+        $flashcards = $this->flashcards;
+        $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
+                                      JOIN {question_versions} qv ON qv.questionid = q.id
+                                      JOIN {flashcards_q_status} fqs ON qv.questionbankentryid = fqs.qbankentryid
+                                     WHERE fqs.fcid = $flashcards->id ) ";
+
+        if (!empty($conditions)) {
+            $sql .= ' AND ' . $nonecondition . ' ( ';
+            $sql .= implode($separator, $conditions);
+            $sql .= ' ) ';
+        }
         $this->countsql = 'SELECT count(1)' . $sql;
         $this->loadsql = 'SELECT ' . implode(', ', $fields) . $sql . ' ORDER BY ' . implode(', ', $sorts);
     }
@@ -506,9 +391,32 @@ class custom_view extends \core_question\local\bank\view {
      * @return bool
      */
     public function flashcards_contains($questionid) {
-        if (in_array($questionid, $this->questionlist)) {
+        /*if (in_array($questionid, $this->questionlist)) {
             return true;
-        }
+        }*/
         return false;
     }
+    /**
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\view::add_standard_search_conditions()
+     */
+    public function add_standard_search_conditions(): void {
+        foreach ($this->plugins as $componentname => $plugin) {
+            if (\core\plugininfo\qbank::is_plugin_enabled($componentname)) {
+                $pluginentrypointobject = new $plugin();
+                if ($componentname === 'qbank_managecategories') {
+                    $pluginentrypointobject = new flashcards_managecategories_feature();
+                }
+                if ($componentname === 'qbank_viewquestiontext' || $componentname === 'qbank_deletequestion') {
+                    continue;
+                }
+                $pluginobjects = $pluginentrypointobject->get_question_filters($this);
+                foreach ($pluginobjects as $pluginobject) {
+                    $this->add_searchcondition($pluginobject, $pluginobject->get_condition_key());
+                }
+            }
+        }
+    }
+
 }

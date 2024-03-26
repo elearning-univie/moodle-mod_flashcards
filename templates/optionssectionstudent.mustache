@@ -28,7 +28,7 @@
 <br>
 <br>
 <h4>
-    <a class="icons-collapse-expand notextdecoration" data-toggle="collapse" href="#collapseOptions" aria-expanded="false" aria-controls="collapseOptions">
+    <a class="icons-collapse-expand notextdecoration collapsed" data-toggle="collapse" href="#collapseOptions" aria-expanded="false" aria-controls="collapseOptions">
         <span class="collapsed-icon icon-no-margin mr-1"
               title="{{#str}} expand, core {{/str}}">
                 <span class="dir-rtl-hide">{{#pix}} t/collapsedchevron, core {{/pix}}</span>
@@ -43,7 +43,7 @@
         {{# str }} options, question {{/ str }}
     </a>
 </h4>
-<div class="collapse show" id="collapseOptions">
+<div class="collapse" id="collapseOptions">
     <form method="get" action="{{{actionurl}}}" id="teacherviewform">
     {{#filter}}
         <input type="hidden" name="cmid" value="{{cmid}}">
@@ -61,26 +61,5 @@
             <option value="100" title="100" {{#selected100}}selected{{/selected100}}>100</option>
             <option value="5000" title="5000" {{#selected5000}}selected{{/selected5000}}>{{# str }} dropdownall, mod_flashcards {{/ str }}</option>
         </select>
-        <br>
-         {{#filter}}
-           <label for="fcfilter">{{# str }} filter, mod_flashcards {{/ str }}</label>
-            <select id="fcfilter" name="fcfilter" onchange="this.form.submit()">
-                <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
-                <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
-                <option value="5" title="{{# str }} filterteacheradded, mod_flashcards {{/ str }}" {{#selected25}}selected{{/selected25}}>{{# str }} filterteacheradded, mod_flashcards {{/ str }}</option>
-                <option value="3" title="{{# str }} filterstudcreated, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstudcreated, mod_flashcards {{/ str }}</option>
-                <option value="6" title="{{# str }} filterstudadded, mod_flashcards {{/ str }}" {{#selected26}}selected{{/selected26}}>{{# str }} filterstudadded, mod_flashcards {{/ str }}</option>
-                <option value="4" title="{{# str }} filternew, mod_flashcards {{/ str }}" {{#selected24}}selected{{/selected24}}>{{# str }} filternew, mod_flashcards {{/ str }}</option>
-            </select>
-        {{/filter}}
-	    {{^filter}}
-	      <label for="fcfilter">{{# str }} filter, mod_flashcards {{/ str }}</label>
-	       <select id="fcfilter" name="fcfilter" onchange="this.form.submit()">
-	           <option value="1" title="{{# str }} filterall, mod_flashcards {{/ str }}" {{#selected21}}selected{{/selected21}}>{{# str }} filterall, mod_flashcards {{/ str }}</option>
-	           <option value="2" title="{{# str }} filterteachercreated, mod_flashcards {{/ str }}" {{#selected22}}selected{{/selected22}}>{{# str }} filterteachercreated, mod_flashcards {{/ str }}</option>
-	           <option value="3" title="{{# str }} filterstudcreated, mod_flashcards {{/ str }}" {{#selected23}}selected{{/selected23}}>{{# str }} filterstudcreated, mod_flashcards {{/ str }}</option>
-	           <option value="4" title="{{# str }} filternew, mod_flashcards {{/ str }}" {{#selected24}}selected{{/selected24}}>{{# str }} filternew, mod_flashcards {{/ str }}</option>
-	       </select>
-	   {{/filter}}
     </form>
 </div>

@@ -126,19 +126,19 @@ if ($mform->is_cancelled()) {
 
     $params = array (
         'objectid' => $question->id,
-        'context' => context_module::instance( $cm->id )
+        'context' => context_module::instance( $cm->id ),
     );
     if ($action == 'create') {
         $params['other'] = array (
             'changeextent' => 0,
-            'fcid' => $fcid
+            'fcid' => $fcid,
         );
         $event = \mod_flashcards\event\simplequestion_created::create($params);
     } else {
         $params['other'] = array (
             'changeextent' => $fromform->changeextent,
             'fcid' => $fcid,
-            'userid' => $USER->id
+            'userid' => $USER->id,
         );
         $event = \mod_flashcards\event\simplequestion_updated::create($params);
     }
@@ -157,7 +157,7 @@ $PAGE->navbar->add($streditingquestion);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
-    'hidecompletion' => true
+    'hidecompletion' => true,
 ]);
 
 echo $OUTPUT->header();

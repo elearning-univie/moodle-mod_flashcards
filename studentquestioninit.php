@@ -32,7 +32,7 @@ $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $tab = optional_param('tab', 'notadded', PARAM_ALPHAEXT);
 
-if (!in_array($perpage, [10, 20, 50, 100], true)) {
+if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 
@@ -56,7 +56,7 @@ $PAGE->set_heading($course->fullname);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
         'description' => '',
-        'hidecompletion' => true
+        'hidecompletion' => true,
 ]);
 
 if (!has_capability('mod/flashcards:view', $context)) {
@@ -124,14 +124,17 @@ $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs
              WHERE qv.questionbankentryid = v.questionbankentryid)";
 
 $table = new mod_flashcards\output\studentviewtable('uniqueid', $cm->id, $flashcards, $PAGE->url, $tab);
-$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck,
+$table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.createdby, q.modifiedby, q.timemodified, teachercheck,
     fcs.id fqid, fcs.fcid flashcardsid,
+    (SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = fcs.qbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)) v1createdby,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q
     JOIN {question_versions} qv ON qv.questionid = q.id
     JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid
-    LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.qbankentryid AND fsr.studentid = $USER->id",
+    LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.id AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
 
 $table->define_baseurl($PAGE->url);
@@ -182,7 +185,7 @@ $templateinfo = ['createbtnlink' => $createurl->out(false),
     'headertext' => $headertext,
     'cbvis' => $cbvis ?? 0,
     'flashcardcount' => $flashcardcount,
-    'helpicon' => $helpicon->export_for_template($renderer)
+    'helpicon' => $helpicon->export_for_template($renderer),
 ];
 
 $optionsinfo = [
@@ -190,11 +193,11 @@ $optionsinfo = [
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
     'tab' => $tab,
-    'selected' . $perpage => true
+    'selected' . $perpage => true,
 ];
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
 $table->out($perpage, false);
-echo $renderer->render_from_template('mod_flashcards/optionssection', $optionsinfo);
+echo $renderer->render_from_template('mod_flashcards/optionssectionstudent', $optionsinfo);
 echo $OUTPUT->footer();

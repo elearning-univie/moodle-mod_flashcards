@@ -32,12 +32,12 @@ $fqid = optional_param('fcid', null, PARAM_INT);
 $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
-$filter = optional_param('filter', 1, PARAM_INT);
+$filter = optional_param('fcfilter', 1, PARAM_INT);
 
 $params = array();
 $params['cmid'] = $cmid;
 
-if (!in_array($perpage, [10, 20, 50, 100], true)) {
+if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 $params['perpage'] = $perpage;
@@ -61,7 +61,7 @@ $PAGE->set_heading($course->fullname);
 $activityheader = $PAGE->activityheader;
 $activityheader->set_attrs([
     'description' => '',
-    'hidecompletion' => true
+    'hidecompletion' => true,
 ]);
 
 if (!has_capability('mod/flashcards:teacherview', $context)) {
@@ -112,42 +112,74 @@ if (!$DB->record_exists("question_categories", array('id' => $flashcards->catego
     redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
+$teacherarchs = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
+$archs = implode(",", $teacherarchs);
+$archstr = "IN (" . $archs . ")";
+
 $sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'
 AND qv.version = (SELECT MAX(v.version)
     FROM {question_versions} v
     WHERE qv.questionbankentryid = v.questionbankentryid) ";
 
+$sqlv1createdby = "(SELECT q.createdby
+                      FROM {question} q
+                      JOIN {question_versions} v ON v.questionid = q.id
+                     WHERE v.questionbankentryid  = fcs.qbankentryid
+                       AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid))";
+
 if ($filter) {
     switch ($filter) {
         case 1:
             break;
-        case 2:
-            $sqlwhere .= " AND q.id NOT IN (SELECT q2.id
-              FROM {flashcards} fc,
-                   {question_categories} qc,
-                   {question_bank_entries} qbe,
-                   {flashcards_q_status} fqs,
-                   {question} q2
-             WHERE fc.id = fcs.fcid
-               AND qc.parent = fc.categoryid
-               AND qc.name = '" . get_string('createdbystudents', 'mod_flashcards') . "'
-               AND qc.id = qbe.questioncategoryid
-               AND qbe.id = fqs.qbankentryid
-               AND q2.id = fqs.questionid)";
+        case 2: // created by teacher.
+            $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid " . $archstr . ")";
             break;
-        case 3:
-            $sqlwhere .= " AND q.id IN (SELECT q2.id
-              FROM {flashcards} fc,
-                   {question_categories} qc,
-                   {question_bank_entries} qbe,
-                   {flashcards_q_status} fqs,
-                   {question} q2
-             WHERE fc.id = fcs.fcid
-               AND qc.parent = fc.categoryid
-               AND qc.name = '" . get_string('createdbystudents', 'mod_flashcards') . "'
-               AND qc.id = qbe.questioncategoryid
-               AND qbe.id = fqs.qbankentryid
-               AND q2.id = fqs.questionid)";
+        case 3: // created by student.
+            $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid NOT " . $archstr . ")" . "
+                            AND $sqlv1createdby NOT IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid " . $archstr . ")";
+            break;
+        case 5: // added by teacher.
+            $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid " . $archstr . ")";
+            break;
+        case 6: // added by student.
+            $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid NOT " . $archstr . ")" . "
+                            AND fcs.addedby NOT IN (SELECT u.id
+                                      FROM {user} u
+                                      JOIN {role_assignments} ra ON ra.userid = u.id
+                                      JOIN {context} mc ON mc.id = ra.contextid
+                                      JOIN {course} mc2 ON mc2.id = mc.instanceid
+                                     WHERE mc2.id = $course->id
+                                       AND ra.roleid " . $archstr . ")";
             break;
         case 4:
             $sqlwhere .= " AND teachercheck = 0";
@@ -157,11 +189,14 @@ if ($filter) {
 
 $table = new mod_flashcards\output\teacherviewtable('uniqueid', $cm->id, $flashcards->course, $PAGE->url);
 
-$table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.timemodified, teachercheck, fcs.id fqid,
-    fcs.fcid flashcardsid,
+$table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.modifiedby, q.timemodified, teachercheck, fcs.id fqid,
+    fcs.fcid flashcardsid, fcs.addedby,
+    (SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = fcs.qbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)) v1createdby,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 1) upvotes,
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
-        "{question} q
+    "{question} q
         JOIN {question_versions} qv ON qv.questionid = q.id
         JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid", $sqlwhere);
 
@@ -170,6 +205,12 @@ $table->define_baseurl($PAGE->url);
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
+$selswitch = 1;
+$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_status} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
+if ($addedbyisnull > 0) {
+    $selswitch = 0;
+}
+
 $renderer = $PAGE->get_renderer('core');
 
 $templateinfo = [
@@ -177,8 +218,8 @@ $templateinfo = [
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
     'selected2' . $filter => true,
-    'filter' => 1,
-    'selected' . $perpage => true
+    'filter' => $selswitch,
+    'selected' . $perpage => true,
 ];
 
 $pagevars = ['createlinkparams' => $params];
@@ -205,15 +246,13 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
 $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_q_status} s
-             WHERE q.id = s.qbankentryid
+             WHERE q.id = s.questionid
                AND fcid = :fcid";
 $templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
-
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');
-
 echo $output->edit_flashcards($pageurl, $contexts, $pagevars);
 $table->out($perpage, false);
 echo $renderer->render_from_template('mod_flashcards/optionssection', $templateinfo);
