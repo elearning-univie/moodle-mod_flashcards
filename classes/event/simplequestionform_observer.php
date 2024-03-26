@@ -74,8 +74,17 @@ class simplequestionform_observer {
 
         if ($qbe = get_question_bank_entry($event->objectid)) {
             if (!($record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
-                $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
-                    'questionid' => $event->objectid, 'addedby' => $USER->id]);
+                $fcqstatusid = $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
+                    'questionid' => $event->objectid, 'addedby' => $USER->id], true);
+                list ($course, $cm) = get_course_and_cm_from_instance($data['fcid'], 'flashcards');
+                $context = $event->get_context();
+                $questionreferences = new \StdClass();
+                $questionreferences->usingcontextid = $context->id;
+                $questionreferences->component = 'mod_flashcards';
+                $questionreferences->questionarea = 'slot';
+                $questionreferences->itemid = $fcqstatusid;
+                $questionreferences->questionbankentryid = get_question_bank_entry($event->objectid)->id;
+                $DB->insert_record('question_references', $questionreferences);
             } else {
                 $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
             }

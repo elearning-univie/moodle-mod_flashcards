@@ -129,7 +129,22 @@ function flashcards_delete_instance(int $id) {
     if (!$DB->record_exists('flashcards', ['id' => $id])) {
         return false;
     }
+    $sql = "SELECT fqs.id 
+              FROM {flashcards_q_status} fqs
+             WHERE fqs.fcid =:fcid";
+    $fqdids = $DB->get_records_sql($sql, ['fcid' => $id]);
+    $inorequal = [];
+    foreach ($fqdids as $fqid) {
+        $inorequal[] = $fqid->id;
+    }
 
+    list($sqlfqdids, $paramsfqdids) = $DB->get_in_or_equal($inorequal);
+
+    $sql = "DELETE FROM {question_references}
+                  WHERE component LIKE 'mod_flashcards'
+                    AND questionarea LIKE 'slot'
+                    AND itemid " . $sqlfqdids;
+    $DB->execute($sql, $paramsfqdids);
     $DB->delete_records('flashcards', ['id' => $id]);
     $DB->delete_records('flashcards_q_status', ['fcid' => $id]);
     $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $id]);

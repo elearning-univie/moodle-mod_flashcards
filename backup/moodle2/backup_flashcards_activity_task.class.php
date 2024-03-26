@@ -48,6 +48,8 @@ class backup_flashcards_activity_task extends backup_activity_task {
      */
     protected function define_my_steps() {
         $this->add_step(new backup_flashcards_activity_structure_step('flashcards_structure', 'flashcards.xml'));
+        $this->add_step(new backup_calculate_question_categories('activity_question_categories'));
+        $this->add_step(new backup_delete_temp_questions('clean_temp_questions'));
     }
 
     /**
