@@ -242,7 +242,10 @@ function flashcards_question_pluginfile($course, $context, $component,
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/$component/$filearea/$relativepath";
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || $file->is_directory()) {
+    $sha = sha1($fullpath);
+    $file = $fs->get_file_by_hash($sha);
+
+    if (!$file || $file->is_directory()) {
         send_file_not_found();
     }
 
