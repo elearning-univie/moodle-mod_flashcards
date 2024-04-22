@@ -195,11 +195,19 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
         throw new \moodle_exception('deletion_not_allowed', 'flashcards');
         return;
     }
+    $sql = "SELECT id FROM {flashcards_q_status}
+      WHERE questionid  = $questionid
+        AND fcid = $flashcards->id ";
+    $fqsid = $DB->get_field_sql($sql);
+    $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' =>$fqsid]);
+
     if (questions_in_use(array($questionid))) {
         $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
     } else {
         question_delete_question($questionid);
     }
+    $DB->delete_records('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcards->id]);
+
     return;
 }
 
@@ -447,6 +455,9 @@ function mod_flashcards_question_tostring($question, $showicon = false, $showque
 function mod_flashcards_add_question($questionid, $flashcardsid) {
     global $DB, $USER;
 
+    list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
+    $context = context_module::instance($cm->id);
+
     if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
         return false;
     }
@@ -472,8 +483,17 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     $qbe = get_question_bank_entry($questionid);
 
     $trans = $DB->start_delegated_transaction();
-    $DB->insert_record('flashcards_q_status',
-        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0, 'addedby' => $USER->id]);
+    $fcqstatusid = $DB->insert_record('flashcards_q_status',
+        ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0, 'addedby' => $USER->id], true);
+
+    $questionreferences = new \StdClass();
+    $questionreferences->usingcontextid = $context->id;
+    $questionreferences->component = 'mod_flashcards';
+    $questionreferences->questionarea = 'slot';
+    $questionreferences->itemid = $fcqstatusid;
+    $questionreferences->questionbankentryid = get_question_bank_entry($questionid)->id;
+    $DB->insert_record('question_references', $questionreferences);
+
     $trans->allow_commit();
 }
 
