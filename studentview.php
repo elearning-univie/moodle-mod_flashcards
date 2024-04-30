@@ -109,7 +109,7 @@ $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id,
 $sql = "SELECT COUNT(q.id)
           FROM {question} q,
                {flashcards_q_status} s
-         WHERE q.id = s.qbankentryid
+         WHERE q.id = s.questionid
            AND s.fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
