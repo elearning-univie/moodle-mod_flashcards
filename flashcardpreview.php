@@ -86,7 +86,7 @@ if ($previewid) {
 
 } else {
     $quba = question_engine::make_questions_usage_by_activity(
-            'mod_flashcards', $context);
+        'mod_flashcards', context_user::instance($USER->id));
     $quba->set_preferred_behaviour($options->behaviour);
     $slot = $quba->add_question($question, $options->maxmark);
 
@@ -102,6 +102,7 @@ if ($previewid) {
     question_engine::save_questions_usage_by_activity($quba);
     $transaction->allow_commit();
 }
+
 $options->behaviour = $quba->get_preferred_behaviour();
 $options->maxmark = $quba->get_question_max_mark($slot);
 
@@ -111,7 +112,7 @@ $params = array(
         'previewid' => $quba->get_id(),
         'flashcardsid' => $flashcardsid,
 );
-$params['courseid'] = $context->instanceid;
+//$params['courseid'] = $context->instanceid;
 
 $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $nostatus = false;
@@ -269,6 +270,9 @@ foreach ($question->answers as $answer) {
     $ans = $answer;
 }
 
+// $text = $qa->rewrite_pluginfile_urls($question->questiontext, 'question', 'questiontext', $question->id);
+
+// $templatecontent['questiontext'] = format_text($text);
 $templatecontent['questiontext'] = $question->format_questiontext($qa);
 
 $templatecontent['answer'] = $question->format_text(

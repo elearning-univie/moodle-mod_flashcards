@@ -87,6 +87,7 @@ if ($deleteselected) {
         $questionid = $deleteselected;
         question_require_capability_on($questionid, 'edit');
 
+        $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' =>$fqid]);
         $DB->delete_records('flashcards_q_stud_rel', ['fqid' => $fqid]);
         $DB->delete_records('flashcards_q_status', ['id' => $fqid]);
         redirect($PAGE->url);

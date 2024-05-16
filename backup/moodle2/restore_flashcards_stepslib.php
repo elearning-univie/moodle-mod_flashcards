@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
  * @copyright 2020 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_flashcards_activity_structure_step extends restore_activity_structure_step {
+class restore_flashcards_activity_structure_step extends restore_questions_activity_structure_step {
 
     /**
      * Defines structure of path elements to be processed during the restore
@@ -44,6 +44,12 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
         $paths = array();
         $paths[] = new restore_path_element('flashcards', '/activity/flashcards');
         $paths[] = new restore_path_element('flashcards_q_status', '/activity/flashcards/flashcards_q_status');
+        $quizquestioninstance = new restore_path_element('flashcards_question_instance',
+            '/activity/flashcards/question_instances/question_instance');
+        $paths[] = $quizquestioninstance;
+            $this->add_question_references($quizquestioninstance, $paths);
+            $this->add_question_set_references($quizquestioninstance, $paths);
+
         return $this->prepare_activity_structure($paths);
     }
 
@@ -91,9 +97,33 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
         }
         $data->timemodified = time();
 
-        $DB->insert_record('flashcards_q_status', $data);
+        $fqsid = $DB->insert_record('flashcards_q_status', $data);
+
+        $data = (object) $data;
+        $data->usingcontextid = $this->task->get_contextid();
+        $data->itemid = $fqsid;
+        $data->component = 'mod_flashcards';
+        $data->questionarea = 'slot';
+        // Fill in the selected version form question_version.
+        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', array('questionid' => $data->questionid))) {
+            $data->questionbankentryid = $entry;
+        }
+        $DB->insert_record('question_references', $data);
     }
 
+    /**
+     * Process quiz slots.
+     *
+     * @param stdClass|array $data
+     */
+    protected function process_flashcards_question_instance($data) {
+        global $CFG, $DB;
+        
+        $data = (object)$data;
+        
+        print_object($data);
+
+    }
 
     /**
      * Post-execution actions
@@ -101,4 +131,7 @@ class restore_flashcards_activity_structure_step extends restore_activity_struct
     protected function after_execute() {
         $this->add_related_files('mod_flashcards', 'intro', null);
     }
+    protected function inform_new_usage_id($newusageid)
+    {}
+
 }

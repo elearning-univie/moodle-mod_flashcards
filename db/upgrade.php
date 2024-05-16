@@ -211,5 +211,40 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023042403, 'flashcards');
     }
 
+    if ($oldversion < 2023042404) {
+
+        $sql = "SELECT fqs.id itemid, c.id usingcontextid, 'mod_flashcards' component, 'slot' questionarea,  qv.questionbankentryid questionbankentryid, qv.version \"version\"
+              FROM {flashcards_q_status} fqs
+              JOIN {modules} m ON m.name ='flashcards'
+              JOIN {course_modules} cm ON cm.module = m.id AND cm.instance = fqs.fcid
+              JOIN {context} c ON c.instanceid = cm.id AND c.contextlevel = '70'
+              JOIN {question_versions} qv ON qv.questionid = fqs.questionid
+              WHERE NOT EXISTS (
+                   SELECT 1
+                     FROM {question_references} mqr
+                    WHERE component = 'mod_flashcards'
+                      AND questionarea = 'slot'
+                      AND itemid = fqs.id
+                      )";
+        $sql2 = "INSERT INTO {question_references} (itemid, usingcontextid, component, questionarea, questionbankentryid, version) ($sql LIMIT 10000)";
+        $thiscount = $DB->count_records('question_references');
+        $lastcount = -1;
+        try {
+            while ($thiscount > $lastcount) {
+                $DB->execute($sql2);
+                $lastcount = $thiscount;
+                $thiscount = $DB->count_records('question_references');
+            }
+        } catch (Exception $e) {
+            // Database doesn't support this type of insert, we have to get them out of the databse and insert them manually.
+            while ($records = $DB->get_records_sql($sql, [], 0, 10000)) {
+                $DB->insert_records('question_references', $records);
+            }
+        }
+
+        // Flashcards savepoint reached.
+        upgrade_mod_savepoint(true, 2023042404, 'flashcards');
+    }
+
     return true;
 }

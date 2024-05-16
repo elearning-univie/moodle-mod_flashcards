@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/restore_flashcards_stepslib.php');
-
+//require_once($CFG->dirroot . '/mod/flashcards/backup/moodle2/backup_flashcards_stepslib.php');
 /**
  * Restore task for the flashcards activity module
  *
