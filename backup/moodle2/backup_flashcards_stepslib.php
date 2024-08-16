@@ -7,8 +7,6 @@
 // (at your option) any later version.
 //
 // Moodle is distributed in the hope that it will be useful,
-
-
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -44,21 +42,22 @@ class backup_flashcards_activity_structure_step extends backup_questions_activit
         $flashcards = new backup_nested_element('flashcards', ['id'],
                 ['course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat']);
 
-        $flashcards->set_source_table('flashcards', array('id' => backup::VAR_ACTIVITYID));
+        $flashcards->set_source_table('flashcards', ['id' => backup::VAR_ACTIVITYID]);
         $flashcards->annotate_files('mod_flashcards', 'intro', null);
 
-        $qinstance = new backup_nested_element('question_instance', array('id'), array(
-            'questionid'));
+        $qinstance = new backup_nested_element('question_instance', ['id'], [
+            'questionid',
+        ]);
 
         $this->add_question_references($qinstance, 'mod_flashcards', 'slot');
 
-        $flashcardsqstatus = new backup_nested_element('flashcards_q_status', array('id'),
-        array('questionid', 'qbankentryid', 'fcid', 'teachercheck'));
+        $flashcardsqstatus = new backup_nested_element('flashcards_question', ['id'],
+        ['questionid', 'qbankentryid', 'fcid', 'teachercheck']);
         $flashcardsqstatus->add_child($qinstance);
 
         $flashcards->add_child($flashcardsqstatus);
 
-        $flashcardsqstatus->set_source_table('flashcards_q_status', array('fcid' => backup::VAR_PARENTID));
+        $flashcardsqstatus->set_source_table('flashcards_question', ['fcid' => backup::VAR_PARENTID]);
         $flashcardsqstatus->annotate_ids('question', 'questionid');
 
         return $this->prepare_activity_structure($flashcards);

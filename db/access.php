@@ -24,100 +24,100 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'mod/flashcards:addinstance' => array(
+$capabilities = [
+    'mod/flashcards:addinstance' => [
         'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
-        ),
+        ],
         'clonepermissionsfrom' => 'moodle/course:manageactivities',
-    ),
-    'mod/flashcards:view' => array(
+    ],
+    'mod/flashcards:view' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_PROHIBIT,
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:studentview' => array(
+        ],
+    ],
+    'mod/flashcards:studentview' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'student' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:teacherview' => array(
+        ],
+    ],
+    'mod/flashcards:teacherview' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:deleteownquestion' => array(
+        ],
+    ],
+    'mod/flashcards:deleteownquestion' => [
         'riskbitmask' => RISK_DATALOSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_PROHIBIT,
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:editownquestion' => array(
+        ],
+    ],
+    'mod/flashcards:editownquestion' => [
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_PROHIBIT,
             'student' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:editallquestions' => array(
+        ],
+    ],
+    'mod/flashcards:editallquestions' => [
         'riskbitmask' => RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_PROHIBIT,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:webservice' => array(
+        ],
+    ],
+    'mod/flashcards:webservice' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'user' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:editreview' => array(
+        ],
+    ],
+    'mod/flashcards:editreview' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'guest' => CAP_PROHIBIT,
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW,
-        ),
-    ),
-    'mod/flashcards:editcardwithouttcreset' => array(
+        ],
+    ],
+    'mod/flashcards:editcardwithouttcreset' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
+        'archetypes' => [
             'teacher' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-        ),
-    ),
-);
+        ],
+    ],
+];

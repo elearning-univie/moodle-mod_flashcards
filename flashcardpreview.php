@@ -44,7 +44,6 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
 $question = question_bank::load_question($id);
-// $PAGE->set_pagelayout('popup');
 
 // Get and validate display options.
 $maxvariant = 1;
@@ -52,9 +51,11 @@ $options = new question_preview_options($question);
 $options->load_user_defaults();
 $options->set_from_request();
 
-$params = array('id' => $question->id);
-$params['cmid'] = $context->instanceid;
-$params['flashcardsid'] = $flashcardsid;
+$params = [
+    'id' => $question->id,
+    'cmid' => $context->instanceid,
+    'flashcardsid' => $flashcardsid,
+];
 
 $prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $PAGE->set_url($prevurl);
@@ -106,18 +107,17 @@ if ($previewid) {
 $options->behaviour = $quba->get_preferred_behaviour();
 $options->maxmark = $quba->get_question_max_mark($slot);
 
-$params = array(
+$params = [
         'id' => $question->id,
         'cmid' => $cmid,
         'previewid' => $quba->get_id(),
         'flashcardsid' => $flashcardsid,
-);
-//$params['courseid'] = $context->instanceid;
+];
 
 $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
 $nostatus = false;
 
-$statusrec = $DB->get_record('flashcards_q_status', ['questionid' => $question->id, 'fcid' => $flashcardsid]);
+$statusrec = $DB->get_record('flashcards_question', ['questionid' => $question->id, 'fcid' => $flashcardsid]);
 if ($statusrec === false) {
     $nostatus = true;
     $statusval = 0;
@@ -138,11 +138,11 @@ if (!has_capability('mod/flashcards:editreview', $context)) {
             if (optional_param('finish', null, PARAM_BOOL)) {
                 $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
                 if ($nostatus) {
-                    $fqid = $DB->insert_record('flashcards_q_status',
+                    $fqid = $DB->insert_record('flashcards_question',
                         ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck, 'addedby' => $USER->id]);
                 } else if ($statusrec->teachercheck != $teachercheck) {
                     $statusrec->teachercheck = $teachercheck;
-                    $DB->update_record('flashcards_q_status', $statusrec);
+                    $DB->update_record('flashcards_question', $statusrec);
                 }
 
                 $quba->process_all_actions();
@@ -254,7 +254,7 @@ if ($canedit) {
 // Edit button.
 $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
 $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-    array('action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl, 'fcid' => $flashcardsid));
+    ['action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl->out(false), 'fcid' => $flashcardsid]);
 $templatecontent['fceditlink'] = $eurl;
 
 $sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
@@ -270,9 +270,6 @@ foreach ($question->answers as $answer) {
     $ans = $answer;
 }
 
-// $text = $qa->rewrite_pluginfile_urls($question->questiontext, 'question', 'questiontext', $question->id);
-
-// $templatecontent['questiontext'] = format_text($text);
 $templatecontent['questiontext'] = $question->format_questiontext($qa);
 
 $templatecontent['answer'] = $question->format_text(
@@ -288,9 +285,9 @@ $event = \core\event\question_viewed::create_from_question_instance($question, $
 $event->trigger();
 
 $PAGE->requires->js_module('core_question_engine');
-$PAGE->requires->strings_for_js(array(
+$PAGE->requires->strings_for_js([
         'closepreview',
-), 'question');
+], 'question');
 $PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');
 

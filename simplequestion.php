@@ -71,7 +71,7 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
 $qtype = 'flashcard';
 
 if ($id) {
-    if (!$question = $DB->get_record('question', array('id' => $id))) {
+    if (!$question = $DB->get_record('question', ['id' => $id])) {
         throw new \moodle_exception('questiondoesnotexist', 'question', $origin);
     }
     // We can use $COURSE here because it's been initialised as part of the
@@ -94,7 +94,7 @@ $qtypeobj = question_bank::get_qtype($question->qtype);
 if (isset($question->categoryobject)) {
     $category = $question->categoryobject;
 } else {
-    if (!$category = $DB->get_record('question_categories', array('id' => $question->category))) {
+    if (!$category = $DB->get_record('question_categories', ['id' => $question->category])) {
         throw new \moodle_exception('categorydoesnotexist', 'question', $origin);
     }
 }
@@ -124,27 +124,31 @@ if ($mform->is_cancelled()) {
 
     $question = $qtypeobj->save_question($question, $questioncopy);
 
-    $params = array (
+    $params = [
         'objectid' => $question->id,
         'context' => context_module::instance( $cm->id ),
-    );
+    ];
     if ($action == 'create') {
-        $params['other'] = array (
+        $params['other'] = [
             'changeextent' => 0,
             'fcid' => $fcid,
-        );
+        ];
         $event = \mod_flashcards\event\simplequestion_created::create($params);
     } else {
-        $params['other'] = array (
+        $params['other'] = [
             'changeextent' => $fromform->changeextent,
             'fcid' => $fcid,
             'userid' => $USER->id,
-        );
+        ];
         $event = \mod_flashcards\event\simplequestion_updated::create($params);
     }
     $event->trigger();
     question_bank::notify_question_edited($question->id);
 
+    if (strpos($origin, '?id=')) {
+        $origin = new moodle_url('/mod/flashcards/flashcardpreview.php',
+            ['id' => $question->id, 'cmid' => $context->instanceid, 'flashcardsid' => $fcid]);
+    }
     if ($qtypeobj->finished_edit_wizard($fromform)) {
         redirect($origin);
     }

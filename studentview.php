@@ -57,7 +57,7 @@ if (!has_capability('mod/flashcards:view', $context)) {
 
 $PAGE->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
 $PAGE->requires->js_call_amd('mod_flashcards/studentrangeslider', 'init');
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 
 $templatestablecontext['icons'] = [
         'deck' => $OUTPUT->image_url('collection', 'mod_flashcards'),
@@ -65,7 +65,7 @@ $templatestablecontext['icons'] = [
         'start' => $OUTPUT->image_url('shuffle', 'mod_flashcards'),
 ];
 
-$templatestablecontext['stores'] = array();
+$templatestablecontext['stores'] = [];
 
 $applestoreurl = get_config('flashcards', 'applestoreapp');
 $googlestoreurl = get_config('flashcards', 'googlestoreapp');
@@ -97,7 +97,7 @@ if (!$templatestablecontext['appsavailable']) {
 
 $sql = "SELECT count(q.id)
           FROM {question} q,
-               {flashcards_q_status} s
+               {flashcards_question} s
          WHERE q.id = s.questionid
            AND fcid = :fcid
            AND s.id NOT IN (SELECT fqid
@@ -108,7 +108,7 @@ $boxzeroquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id,
 
 $sql = "SELECT COUNT(q.id)
           FROM {question} q,
-               {flashcards_q_status} s
+               {flashcards_question} s
          WHERE q.id = s.questionid
            AND s.fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
@@ -166,7 +166,7 @@ function get_regular_box_count_records($userid, $flashcardsid) {
     $sql = "SELECT currentbox AS boxid,
                    count(r.id) AS questioncount
             FROM {flashcards_q_stud_rel} r,
-                 {flashcards_q_status} s
+                 {flashcards_question} s
             WHERE r.fqid = s.id
               AND studentid = :userid
               AND s.fcid = :flashcardsid
@@ -206,7 +206,7 @@ function create_regular_boxvalue_array($records, $courseid, $usedtotalquestionco
             5 => '#1463a3',
     ];
 
-    $boxarray = array();
+    $boxarray = [];
 
     foreach ($records as $record) {
 

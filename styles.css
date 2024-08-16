@@ -301,9 +301,3 @@ img.mod-flashcards-appstore-badge {
 #page-mod-flashcards-teacherview .question-bank-table .questionnametext {
     padding: 0 0.2em;
 }
-
-@media all {
-    #page-mod-flashcards-teacherview #questionscontainer .justify-content-start {
-        display: none !important;
-    }
-}

@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/restore_flashcards_stepslib.php');
-//require_once($CFG->dirroot . '/mod/flashcards/backup/moodle2/backup_flashcards_stepslib.php');
+
 /**
  * Restore task for the flashcards activity module
  *
@@ -58,9 +58,9 @@ class restore_flashcards_activity_task extends restore_activity_task {
      * processed by the link decoder
      */
     public static function define_decode_contents() {
-        $contents = array();
+        $contents = [];
 
-        $contents[] = new restore_decode_content('flashcards', array('intro'), 'flashcards');
+        $contents[] = new restore_decode_content('flashcards', ['intro'], 'flashcards');
 
         return $contents;
     }
@@ -70,7 +70,7 @@ class restore_flashcards_activity_task extends restore_activity_task {
      * to the activity to be executed by the link decoder
      */
     public static function define_decode_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_decode_rule('FLASHCARDSVIEWBYID', '/mod/flashcards/view.php?id=$1', 'course_module');
         $rules[] = new restore_decode_rule('FLASHCARDSINDEX', '/mod/flashcards/index.php?id=$1', 'course');
@@ -86,7 +86,7 @@ class restore_flashcards_activity_task extends restore_activity_task {
      * of {@see restore_log_rule} objects
      */
     public static function define_restore_log_rules() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('flashcards', 'add', 'view.php?id={course_module}', '{flashcards}');
         $rules[] = new restore_log_rule('flashcards', 'update', 'view.php?id={course_module}', '{flashcards}');
@@ -106,7 +106,7 @@ class restore_flashcards_activity_task extends restore_activity_task {
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
     public static function define_restore_log_rules_for_course() {
-        $rules = array();
+        $rules = [];
 
         $rules[] = new restore_log_rule('flashcards', 'view all', 'index.php?id={course}', null);
 
