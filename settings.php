@@ -34,7 +34,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('flashcards', '', get_string('configintro', 'flashcards')));
 
     // Authordisplay.
-    $options = array();
+    $options = [];
     $options[0] = get_string("authordisplay_disabled", "flashcards");
     $options[1] = get_string("authordisplay_group", "flashcards");
     $options[2] = get_string("authordisplay_name", "flashcards");

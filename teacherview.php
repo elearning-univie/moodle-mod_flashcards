@@ -34,8 +34,9 @@ $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $filter = optional_param('fcfilter', 1, PARAM_INT);
 
-$params = array();
-$params['cmid'] = $cmid;
+$params = [
+    'cmid' => $cmid,
+];
 
 if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
@@ -66,7 +67,7 @@ $activityheader->set_attrs([
 
 if (!has_capability('mod/flashcards:teacherview', $context)) {
     if (has_capability('mod/flashcards:view', $context) ) {
-        redirect(new moodle_url('/mod/flashcards/studentview.php', array('id' => $cmid)));
+        redirect(new moodle_url('/mod/flashcards/studentview.php', ['id' => $cmid]));
     }
 
     echo $OUTPUT->header();
@@ -87,9 +88,9 @@ if ($deleteselected) {
         $questionid = $deleteselected;
         question_require_capability_on($questionid, 'edit');
 
-        $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' =>$fqid]);
+        $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' => $fqid]);
         $DB->delete_records('flashcards_q_stud_rel', ['fqid' => $fqid]);
-        $DB->delete_records('flashcards_q_status', ['id' => $fqid]);
+        $DB->delete_records('flashcards_question', ['id' => $fqid]);
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/flashcards/teacherview.php',
@@ -106,10 +107,10 @@ if ($deleteselected) {
     }
 }
 
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 
-if (!$DB->record_exists("question_categories", array('id' => $flashcards->categoryid))) {
-    $editpage = new moodle_url('/course/modedit.php', array('update' => $cm->id, 'return' => 0, 'sr' => 0, 'missingcategory' => 1));
+if (!$DB->record_exists("question_categories", ['id' => $flashcards->categoryid])) {
+    $editpage = new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 0, 'sr' => 0, 'missingcategory' => 1]);
     redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
@@ -132,7 +133,7 @@ if ($filter) {
     switch ($filter) {
         case 1:
             break;
-        case 2: // created by teacher.
+        case 2: // Created by teacher.
             $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
@@ -141,7 +142,7 @@ if ($filter) {
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 3: // created by student.
+        case 3: // Created by student.
             $sqlwhere .= " AND $sqlv1createdby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
@@ -157,7 +158,7 @@ if ($filter) {
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 5: // added by teacher.
+        case 5: // Added by teacher.
             $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
@@ -166,7 +167,7 @@ if ($filter) {
                                      WHERE mc2.id = $course->id
                                        AND ra.roleid " . $archstr . ")";
             break;
-        case 6: // added by student.
+        case 6: // Added by student.
             $sqlwhere .= " AND fcs.addedby IN (SELECT u.id
                                       FROM {user} u
                                       JOIN {role_assignments} ra ON ra.userid = u.id
@@ -199,7 +200,7 @@ $table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.modified
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q
         JOIN {question_versions} qv ON qv.questionid = q.id
-        JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid", $sqlwhere);
+        JOIN {flashcards_question} fcs on qv.questionbankentryid = fcs.qbankentryid", $sqlwhere);
 
 $table->define_baseurl($PAGE->url);
 
@@ -207,7 +208,7 @@ $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, '
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
 $selswitch = 1;
-$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_status} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
+$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_question} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
 if ($addedbyisnull > 0) {
     $selswitch = 0;
 }
@@ -246,7 +247,7 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
 
 $sql = "SELECT count(q.id)
               FROM {question} q,
-                   {flashcards_q_status} s
+                   {flashcards_question} s
              WHERE q.id = s.questionid
                AND fcid = :fcid";
 $templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);

@@ -31,14 +31,14 @@ $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
 if (has_capability('mod/flashcards:teacherview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/overview.php', array('cmid' => $cm->id));
+    $redirecturl = new moodle_url('/mod/flashcards/overview.php', ['cmid' => $cm->id]);
     redirect($redirecturl);
 } else if (has_capability('mod/flashcards:studentview', $context) ) {
-    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', array('id' => $id));
+    $redirecturl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
     redirect($redirecturl);
 } else {
     global $PAGE, $OUTPUT, $DB;
-    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 
     $PAGE->set_url(new moodle_url("/mod/flashcards/view.php", ['id' => $id]));
     $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);

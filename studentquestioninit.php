@@ -36,10 +36,11 @@ if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
 
-$params = array();
-$params['id'] = $id;
-$params['tab'] = $tab;
-$params['perpage'] = $perpage;
+$params = [
+    'id' => $id,
+    'tab' => $tab,
+    'perpage' => $perpage,
+];
 
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
@@ -65,7 +66,7 @@ if (!has_capability('mod/flashcards:view', $context)) {
     die();
 }
 
-$flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 
 if ($deleteselected) {
     if (!$DB->record_exists('question', ['id' => $deleteselected])) {
@@ -78,7 +79,7 @@ if ($deleteselected) {
         redirect($PAGE->url);
     } else {
         $deleteurl = new moodle_url('/mod/flashcards/studentquestioninit.php',
-            array('id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)));
+            ['id' => $id, 'deleteselected' => $deleteselected, 'sesskey' => sesskey(), 'confirm' => md5($deleteselected)]);
 
         $continue = new \single_button($deleteurl, get_string('delete'), 'post');
         $questionname = $DB->get_field('question', 'name', ['id' => $deleteselected]);
@@ -102,7 +103,7 @@ $equalparam = ($tab == 'added') ? true : false;
 
 $sql = "SELECT q.id
           FROM {question} q,
-               {flashcards_q_status} fcs,
+               {flashcards_question} fcs,
                {flashcards_q_stud_rel} fsr
          WHERE q.id = fcs.questionid
            AND fcs.id = fsr.fqid
@@ -133,7 +134,7 @@ $table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.creat
     (SELECT COUNT(sd.id) FROM {flashcards_q_stud_rel} sd WHERE sd.fqid = fcs.id AND sd.peerreview = 2) downvotes",
     "{question} q
     JOIN {question_versions} qv ON qv.questionid = q.id
-    JOIN {flashcards_q_status} fcs on qv.questionbankentryid = fcs.qbankentryid
+    JOIN {flashcards_question} fcs on qv.questionbankentryid = fcs.qbankentryid
     LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.id AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
 
@@ -143,7 +144,7 @@ list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PAR
 $sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs";
 $sql = "SELECT COUNT(q.id)
           FROM {question} q
-          JOIN {flashcards_q_status} fcs ON q.id = fcs.questionid
+          JOIN {flashcards_question} fcs ON q.id = fcs.questionid
          WHERE $sqlwhere";
 $notadded = $DB->count_records_sql($sql, ['fcid' => $flashcards->id] + $importedfcids);
 

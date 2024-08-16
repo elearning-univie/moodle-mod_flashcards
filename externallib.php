@@ -42,14 +42,12 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function update_progress_parameters() {
-        return new external_function_parameters(
-                array(
-                        'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                        'boxid' => new external_value(PARAM_INT, 'box id'),
-                        'questionid' => new external_value(PARAM_INT, 'question id'),
-                        'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer'),
-                )
-        );
+        return new external_function_parameters([
+            'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'boxid' => new external_value(PARAM_INT, 'box id'),
+            'questionid' => new external_value(PARAM_INT, 'question id'),
+            'qanswervalue' => new external_value(PARAM_INT, 'int value of the answer'),
+        ]);
     }
 
     /**
@@ -58,12 +56,10 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function load_learn_progress_parameters() {
-        return new external_function_parameters(
-            array(
-                'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'boxid' => new external_value(PARAM_INT, 'id of current box'),
-            )
-        );
+        return new external_function_parameters([
+            'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'boxid' => new external_value(PARAM_INT, 'id of current box'),
+        ]);
     }
 
     /**
@@ -72,12 +68,10 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function load_next_question_parameters() {
-        return new external_function_parameters(
-            array(
-                'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'boxid' => new external_value(PARAM_INT, 'id of current box'),
-            )
-        );
+        return new external_function_parameters([
+            'fid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'boxid' => new external_value(PARAM_INT, 'id of current box'),
+        ]);
     }
 
     /**
@@ -86,14 +80,12 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function init_questions_parameters() {
-        return new external_function_parameters(
-                array(
-                        'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                        'qids' => new external_multiple_structure(
-                                new external_value(PARAM_INT, 'id array of questions')
-                        ),
-                )
-        );
+        return new external_function_parameters([
+            'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'qids' => new external_multiple_structure(
+                    new external_value(PARAM_INT, 'id array of questions')
+            ),
+        ]);
     }
 
     /**
@@ -102,14 +94,12 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function remove_questions_parameters() {
-        return new external_function_parameters(
-            array(
-                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'qids' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'id array of questions')
-                    ),
-            )
-            );
+        return new external_function_parameters([
+            'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'qids' => new external_multiple_structure(
+                new external_value(PARAM_INT, 'id array of questions')
+            ),
+        ]);
     }
 
     /**
@@ -118,12 +108,10 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function start_learn_now_parameters() {
-        return new external_function_parameters(
-            array(
-                'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
-                'qcount' => new external_value(PARAM_INT, 'number of questions to learn'),
-            )
-        );
+        return new external_function_parameters([
+            'flashcardsid' => new external_value(PARAM_INT, 'flashcard activity id'),
+            'qcount' => new external_value(PARAM_INT, 'number of questions to learn'),
+        ]);
     }
 
     /**
@@ -132,12 +120,10 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function set_preview_status_parameters() {
-        return new external_function_parameters(
-                array(
-                        'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
-                        'status' => new external_value(PARAM_INT, 'number of questions to learn'),
-                )
-        );
+        return new external_function_parameters([
+            'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
+            'status' => new external_value(PARAM_INT, 'number of questions to learn'),
+        ]);
     }
 
     /**
@@ -146,12 +132,10 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function set_peer_review_vote_parameters() {
-        return new external_function_parameters(
-            array(
-                'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
-                'vote' => new external_value(PARAM_INT, 'peer review vote'),
-            )
-        );
+        return new external_function_parameters([
+            'fqid' => new external_value(PARAM_INT, 'flashcard question id'),
+            'vote' => new external_value(PARAM_INT, 'peer review vote'),
+        ]);
     }
 
     /**
@@ -160,11 +144,9 @@ class mod_flashcards_external extends external_api {
      * @return external_function_parameters
      */
     public static function set_showappinfo_parameters() {
-        return new external_function_parameters(
-            array(
-                'prefval' => new external_value(PARAM_BOOL, 'value to set the pref'),
-            )
-        );
+        return new external_function_parameters([
+            'prefval' => new external_value(PARAM_BOOL, 'value to set the pref'),
+        ]);
     }
 
     /**
@@ -180,15 +162,14 @@ class mod_flashcards_external extends external_api {
     public static function update_progress($fid, $boxid, $questionid, $qanswervalue) {
         global $DB, $USER, $_SESSION;
 
-        $params = self::validate_parameters(self::update_progress_parameters(),
-            array(
+        $params = self::validate_parameters(self::update_progress_parameters(), [
             'fid' => $fid,
             'boxid' => $boxid,
             'questionid' => $questionid,
-            'qanswervalue' => $qanswervalue)
-        );
+            'qanswervalue' => $qanswervalue,
+        ]);
 
-        $fqrec = $DB->get_record('flashcards_q_status', ['questionid' => $params['questionid'], 'fcid' => $params['fid']]);
+        $fqrec = $DB->get_record('flashcards_question', ['questionid' => $params['questionid'], 'fcid' => $params['fid']]);
 
         $record = $DB->get_record('flashcards_q_stud_rel',
                 ['studentid' => $USER->id, 'fqid' => $fqrec->id], '*',
@@ -235,7 +216,7 @@ class mod_flashcards_external extends external_api {
         list ($course, $cm) = get_course_and_cm_from_instance($fid, 'flashcards');
         require_login($course, false, $cm);
 
-        $params = self::validate_parameters(self::load_learn_progress_parameters(), array('fid' => $fid, 'boxid' => $boxid));
+        $params = self::validate_parameters(self::load_learn_progress_parameters(), ['fid' => $fid, 'boxid' => $boxid]);
 
         if ($params['boxid'] >= 0) {
             return null;
@@ -261,7 +242,7 @@ class mod_flashcards_external extends external_api {
         list ($course, $cm) = get_course_and_cm_from_instance($fid, 'flashcards');
         require_login($course, false, $cm);
 
-        $params = self::validate_parameters(self::load_next_question_parameters(), array('fid' => $fid, 'boxid' => $boxid));
+        $params = self::validate_parameters(self::load_next_question_parameters(), ['fid' => $fid, 'boxid' => $boxid]);
 
         $qid = mod_flashcards_get_next_question($params['fid'], $params['boxid']);
         $questionrenderer = $PAGE->get_renderer('mod_flashcards');
@@ -278,27 +259,10 @@ class mod_flashcards_external extends external_api {
      * @throws dml_exception
      */
     public static function init_questions($flashcardsid, $qids) {
-        global $DB, $USER;
-
         $params = self::validate_parameters(self::init_questions_parameters(),
-            array('flashcardsid' => $flashcardsid, 'qids' => $qids));
+            ['flashcardsid' => $flashcardsid, 'qids' => $qids]);
 
-        $questionids = mod_flashcards_get_selected_qids($flashcardsid, $params['qids']);
-        $questionarray = [];
-
-        foreach ($questionids as $question) {
-            $recid = $DB->get_record('flashcards_q_stud_rel',
-                ['flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id]);
-            if ($recid) {
-                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => 1]);
-            } else {
-                $questionentry =
-                array('flashcardsid' => $flashcardsid, 'fqid' => $question, 'studentid' => $USER->id, 'active' => 1,
-                      'currentbox' => 1, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
-                $questionarray[] = $questionentry;
-            }
-        }
-        $DB->insert_records('flashcards_q_stud_rel', $questionarray);
+        mod_flashcards_move_question($params['flashcardsid'], $params['qids'], 1);
     }
 
     /**
@@ -311,27 +275,10 @@ class mod_flashcards_external extends external_api {
      * @throws dml_exception
      */
     public static function remove_questions($flashcardsid, $qids) {
-        global $DB, $USER;
-
         $params = self::validate_parameters(self::remove_questions_parameters(),
-            array('flashcardsid' => $flashcardsid, 'qids' => $qids));
+            ['flashcardsid' => $flashcardsid, 'qids' => $qids]);
 
-        $questionids = mod_flashcards_get_selected_qids($flashcardsid, $params['qids']);
-        $questionarray = [];
-
-        foreach ($questionids as $questionid) {
-            $recid = $DB->get_record('flashcards_q_stud_rel',
-                ['flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id]);
-            if ($recid) {
-                $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => null]);
-            } else {
-                $questionentry =
-                array('flashcardsid' => $flashcardsid, 'fqid' => $questionid, 'studentid' => $USER->id, 'active' => 1,
-                    'currentbox' => null, 'lastanswered' => 0, 'tries' => 0, 'wronganswercount' => 0);
-                $questionarray[] = $questionentry;
-            }
-        }
-        $DB->insert_records('flashcards_q_stud_rel', $questionarray);
+        mod_flashcards_move_question($params['flashcardsid'], $params['qids'], null);
     }
 
     /**
@@ -347,13 +294,13 @@ class mod_flashcards_external extends external_api {
         global $DB, $USER, $_SESSION;
 
         $params = self::validate_parameters(self::start_learn_now_parameters(),
-            array('flashcardsid' => $flashcardsid, 'qcount' => $qcount));
+            ['flashcardsid' => $flashcardsid, 'qcount' => $qcount]);
 
         list($context, $course, $cm) = mod_flashcards_check_student_rights($params['flashcardsid']);
 
         $sql = "SELECT fq.questionid
                   FROM {flashcards_q_stud_rel} fsr
-                  JOIN {flashcards_q_status} fq ON fsr.fqid = fq.id
+                  JOIN {flashcards_question} fq ON fsr.fqid = fq.id
                  WHERE studentid = :userid
                    AND flashcardsid = :fid
                    AND currentbox <> 0
@@ -383,7 +330,7 @@ class mod_flashcards_external extends external_api {
         global $DB;
 
         $params = self::validate_parameters(self::set_preview_status_parameters(),
-                array('fqid' => $fqid, 'status' => $status));
+                ['fqid' => $fqid, 'status' => $status]);
 
         if ($params['status'] != FLASHCARDS_CHECK_NONE
             && $params['status'] != FLASHCARDS_CHECK_POS
@@ -391,7 +338,7 @@ class mod_flashcards_external extends external_api {
             return;
         }
 
-        $statusrec = $DB->get_record('flashcards_q_status', ['id' => $params['fqid']]);
+        $statusrec = $DB->get_record('flashcards_question', ['id' => $params['fqid']]);
 
         if ($statusrec === false) {
             return;
@@ -405,7 +352,7 @@ class mod_flashcards_external extends external_api {
         }
 
         $statusrec->teachercheck = $params['status'];
-        $DB->update_record('flashcards_q_status', $statusrec);
+        $DB->update_record('flashcards_question', $statusrec);
     }
 
     /**
@@ -420,7 +367,7 @@ class mod_flashcards_external extends external_api {
         global $DB, $USER;
 
         $params = self::validate_parameters(self::set_peer_review_vote_parameters(),
-            array('fqid' => $fqid, 'vote' => $vote));
+            ['fqid' => $fqid, 'vote' => $vote]);
 
         if ($params['vote'] != FLASHCARDS_PEER_REVIEW_NONE
             && $params['vote'] != FLASHCARDS_PEER_REVIEW_UP
@@ -451,7 +398,7 @@ class mod_flashcards_external extends external_api {
     public static function set_showappinfo($prefval) {
 
         $params = self::validate_parameters(self::set_showappinfo_parameters(),
-            array('prefval' => $prefval));
+            ['prefval' => $prefval]);
 
         set_user_preference('flashcards_showapp', $params['prefval']);
     }

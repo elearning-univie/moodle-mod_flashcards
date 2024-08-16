@@ -22,8 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Structure step to restore one flashcards activity
  *
@@ -41,9 +39,9 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
      */
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
         $paths[] = new restore_path_element('flashcards', '/activity/flashcards');
-        $paths[] = new restore_path_element('flashcards_q_status', '/activity/flashcards/flashcards_q_status');
+        $paths[] = new restore_path_element('flashcards_question', '/activity/flashcards/flashcards_question');
         $quizquestioninstance = new restore_path_element('flashcards_question_instance',
             '/activity/flashcards/question_instances/question_instance');
         $paths[] = $quizquestioninstance;
@@ -81,23 +79,23 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
     }
 
     /**
-     * Process_flashcards_q_status
+     * Process_flashcards_question
      *
      * @param array $data parsed element data
      */
-    protected function process_flashcards_q_status($data) {
+    protected function process_flashcards_question($data) {
         global $DB;
 
         $data = (object)$data;
         $data->fcid = $this->get_new_parentid('flashcards');
         $questionmappingid = $this->get_mappingid('question', $data->questionid);
         $data->questionid = $questionmappingid ? $questionmappingid : $data->questionid;
-        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', array('questionid' => $data->questionid))) {
+        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', ['questionid' => $data->questionid])) {
             $data->qbankentryid = $entry;
         }
         $data->timemodified = time();
 
-        $fqsid = $DB->insert_record('flashcards_q_status', $data);
+        $fqsid = $DB->insert_record('flashcards_question', $data);
 
         $data = (object) $data;
         $data->usingcontextid = $this->task->get_contextid();
@@ -105,24 +103,10 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
         $data->component = 'mod_flashcards';
         $data->questionarea = 'slot';
         // Fill in the selected version form question_version.
-        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', array('questionid' => $data->questionid))) {
+        if ($entry = $DB->get_field('question_versions', 'questionbankentryid', ['questionid' => $data->questionid])) {
             $data->questionbankentryid = $entry;
         }
         $DB->insert_record('question_references', $data);
-    }
-
-    /**
-     * Process quiz slots.
-     *
-     * @param stdClass|array $data
-     */
-    protected function process_flashcards_question_instance($data) {
-        global $CFG, $DB;
-        
-        $data = (object)$data;
-        
-        print_object($data);
-
     }
 
     /**
@@ -131,7 +115,6 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
     protected function after_execute() {
         $this->add_related_files('mod_flashcards', 'intro', null);
     }
-    protected function inform_new_usage_id($newusageid)
-    {}
-
+    protected function inform_new_usage_id($newusageid) {
+    }
 }

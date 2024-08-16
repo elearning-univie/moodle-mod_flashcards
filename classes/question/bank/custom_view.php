@@ -27,6 +27,7 @@ namespace mod_flashcards\question\bank;
 use coding_exception;
 use core\output\datafilter;
 use core_question\local\bank\column_base;
+use core_question\local\bank\column_manager_base;
 use core_question\local\bank\condition;
 use core_question\local\bank\question_version_status;
 use mod_flashcards;
@@ -84,6 +85,27 @@ class custom_view extends \core_question\local\bank\view {
         parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
         [$this->flashcards, ] = get_module_from_cmid($cm->id);
     }
+
+    /**
+     * Just use the base column manager in this view.
+     *
+     * @return void
+     */
+    protected function init_column_manager(): void {
+        $this->columnmanager = new column_manager_base();
+    }
+
+    /**
+     * Don't display plugin controls.
+     *
+     * @param \core\context $context
+     * @param int $categoryid
+     * @return string
+     */
+    protected function get_plugin_controls(\core\context $context, int $categoryid): string {
+        return '';
+    }
+
     /**
      *
      * {@inheritDoc}
@@ -123,19 +145,10 @@ class custom_view extends \core_question\local\bank\view {
      * @return int[]
      */
     protected function default_sort(): array {
-        return array(
+        return [
                 'qbank_viewquestiontype\\question_type_column' => 1,
                 'mod_flashcards\\question\\bank\\question_name_text_column' => 1,
-        );
-    }
-
-    /**
-     * preview_question_url
-     * @param \stdClass $question
-     * @return \moodle_url
-     */
-    public function preview_question_url($question) {
-        return quiz_question_preview_url($this->quiz, $question);
+        ];
     }
 
     /**
@@ -183,92 +196,19 @@ class custom_view extends \core_question\local\bank\view {
         if ($canuseall) {
 
             // Add selected questions to the quiz.
-            $params = array(
-                    'type' => 'submit',
-                    'name' => 'add',
-                    'class' => 'btn btn-primary',
-                    'value' => get_string('addselectedquestionstoquiz', 'flashcards'),
-                    'data-action' => 'toggle',
-                    'data-togglegroup' => 'qbank',
-                    'data-toggle' => 'action',
-                    'disabled' => true,
-            );
+            $params = [
+                'type' => 'submit',
+                'name' => 'add',
+                'class' => 'btn btn-primary',
+                'value' => get_string('addselectedquestionstoquiz', 'flashcards'),
+                'data-action' => 'toggle',
+                'data-togglegroup' => 'qbank',
+                'data-toggle' => 'action',
+                'disabled' => true,
+            ];
             echo \html_writer::empty_tag('input', $params);
         }
         echo "</div>\n";
-    }
-
-    /**
-     * Prints a form to choose categories.
-     * @deprecated since Moodle 2.6 MDL-40313.
-     * @see \core_question\bank\search\category_condition
-     * @todo MDL-41978 This will be deleted in Moodle 2.8
-     */
-    protected function print_choose_category_message(): void {
-        global $OUTPUT;
-        debugging('print_choose_category_message() is deprecated, ' .
-                'please use \core_question\bank\search\category_condition instead.', DEBUG_DEVELOPER);
-        echo $OUTPUT->box_start('generalbox questionbank');
-        $this->display_category_form($this->contexts->having_one_edit_tab_cap('edit'),
-                $this->baseurl, $categoryandcontext);
-        echo "<p style=\"text-align:center;\"><b>";
-        print_string('selectcategoryabove', 'question');
-        echo "</b></p>";
-        echo $OUTPUT->box_end();
-    }
-
-    /**
-     * display_options_form
-     * @param bool $showquestiontext
-     * @param string $scriptpath
-     * @param false $showtextoption
-     */
-    protected function display_options_form($showquestiontext, $scriptpath = '/mod/flashcards/teacherview.php',
-        $showtextoption = false): void {
-        // Overridden just to change the default values of the arguments.
-        parent::display_options_form($showquestiontext, $scriptpath, $showtextoption);
-    }
-
-    /**
-     * print_category_info
-     * @param \stdClass $category
-     * @throws coding_exception
-     */
-    protected function print_category_info($category) {
-        $formatoptions = new \stdClass();
-        $formatoptions->noclean = true;
-        $strcategory = get_string('category', 'quiz');
-        echo '<div class="categoryinfo"><div class="categorynamefieldcontainer">' .
-                $strcategory;
-        echo ': <span class="categorynamefield">';
-        echo shorten_text(strip_tags(format_string($category->name)), 60);
-        echo '</span></div><div class="categoryinfofieldcontainer">' .
-                '<span class="categoryinfofield">';
-        echo shorten_text(strip_tags(format_text($category->info, $category->infoformat,
-                $formatoptions, $this->course->id)), 200);
-        echo '</span></div></div>';
-    }
-
-    /**
-     * display_options
-     * @param bool $recurse
-     * @param bool $showhidden
-     * @param bool $showquestiontext
-     * @throws coding_exception
-     */
-    protected function display_options($recurse, $showhidden, $showquestiontext) {
-        debugging('display_options() is deprecated, see display_options_form() instead.', DEBUG_DEVELOPER);
-        echo '<form method="get" action="teacherview.php" id="displayoptions">';
-        echo "<fieldset class='invisiblefieldset'>";
-        echo \html_writer::input_hidden_params($this->baseurl,
-                array('recurse', 'showhidden', 'qbshowtext'));
-        $this->display_category_form_checkbox('recurse', $recurse,
-                get_string('includesubcategories', 'question'));
-        $this->display_category_form_checkbox('showhidden', $showhidden,
-                get_string('showhidden', 'question'));
-        echo '<noscript><div class="centerpara"><input type="submit" value="' .
-                get_string('go') . '" />';
-        echo '</div></noscript></fieldset></form>';
     }
 
     /**
@@ -373,7 +313,7 @@ class custom_view extends \core_question\local\bank\view {
         $flashcards = $this->flashcards;
         $sql .= "   AND q.id NOT IN (SELECT qu.id FROM {question} qu
                                       JOIN {question_versions} qv ON qv.questionid = q.id
-                                      JOIN {flashcards_q_status} fqs ON qv.questionbankentryid = fqs.qbankentryid
+                                      JOIN {flashcards_question} fqs ON qv.questionbankentryid = fqs.qbankentryid
                                      WHERE fqs.fcid = $flashcards->id ) ";
 
         if (!empty($conditions)) {
@@ -418,5 +358,4 @@ class custom_view extends \core_question\local\bank\view {
             }
         }
     }
-
 }

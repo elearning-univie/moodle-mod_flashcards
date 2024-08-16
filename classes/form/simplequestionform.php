@@ -45,6 +45,8 @@ class simplequestionform extends \moodleform {
     protected $category;
     /** @var string question category context */
     protected $categorycontext;
+    /** @var string action string */
+    protected $action;
 
     /** @var object current context */
     public $context;
@@ -74,17 +76,20 @@ class simplequestionform extends \moodleform {
 
         if ($action == 'edit') {
             $record = $DB->get_record('question_categories',
-                    array('id' => $question->questioncategoryid), 'contextid');
+                    ['id' => $question->questioncategoryid], 'contextid');
         }
         if ($action == 'create') {
             $record = $DB->get_record('question_categories',
-                array('id' => $question->category), 'contextid');
+                ['id' => $question->category], 'contextid');
         }
         $this->context = \context::instance_by_id($record->contextid);
 
-        $this->editoroptions = array('subdirs' => 1, 'maxfiles' => EDITOR_UNLIMITED_FILES,
-                'context' => $this->context);
-        $this->fileoptions = array('subdirs' => 1, 'maxfiles' => -1, 'maxbytes' => -1);
+        $this->editoroptions = [
+            'subdirs' => 1,
+            'maxfiles' => EDITOR_UNLIMITED_FILES,
+            'context' => $this->context,
+        ];
+        $this->fileoptions = ['subdirs' => 1, 'maxfiles' => -1, 'maxbytes' => -1];
 
         $this->category = $category;
         $this->categorycontext = \context::instance_by_id($category->contextid);
@@ -106,10 +111,10 @@ class simplequestionform extends \moodleform {
 
         if (!$this->question->formoptions->canaddwithcat) {
             $mform->addElement('hidden', 'category', get_string('category', 'question'),
-                    array('size' => 512));
+                    ['size' => 512]);
         } else {
             $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
-                    array('size' => 512, 'contexts' => array($this->categorycontext)));
+                    ['size' => 512, 'contexts' => [$this->categorycontext]]);
         }
 
         $mform->setType('category', PARAM_RAW);
@@ -129,12 +134,12 @@ class simplequestionform extends \moodleform {
         }
 
         $mform->addElement('text', 'name', get_string('questionname', 'question'),
-                array('size' => 50, 'maxlength' => 255));
+                ['size' => 50, 'maxlength' => 255]);
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', null, 'required', null, 'client');
 
         $mform->addElement('editor', 'questiontext', get_string('questiontext', 'question'),
-                array('rows' => 15), $this->editoroptions);
+                ['rows' => 15], $this->editoroptions);
         $mform->setType('questiontext', PARAM_RAW);
         $mform->addRule('questiontext', null, 'required', null, 'client');
 
@@ -142,7 +147,7 @@ class simplequestionform extends \moodleform {
         $mform->setExpanded('answerhdr', 1);
 
         $mform->addElement('editor', 'answer',
-                get_string('correctanswer', 'qtype_flashcard'), array('rows' => 15), $this->editoroptions);
+                get_string('correctanswer', 'qtype_flashcard'), ['rows' => 15], $this->editoroptions);
         $mform->setType('answer', PARAM_RAW);
         $mform->addRule('answer', null, 'required', null, 'client');
 
@@ -150,10 +155,10 @@ class simplequestionform extends \moodleform {
             $mform->addElement('header', 'radioedithdr',
                 get_string('changeextenttitle', 'mod_flashcards'), '');
             $mform->setExpanded('radioedithdr', 1);
-            $radioarray = array();
+            $radioarray = [];
             $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('minorchange', 'mod_flashcards'), 0);
             $radioarray[] = $mform->createElement('radio', 'changeextent', '', get_string('majorchange', 'mod_flashcards'), 1);
-            $mform->addGroup($radioarray, 'radioar', '', array(' '), false);
+            $mform->addGroup($radioarray, 'radioar', '', [' '], false);
             $mform->addRule('radioar', null, 'required', null, 'client');
             $mform->setDefault('changeextent', 0);
         }
@@ -237,7 +242,7 @@ class simplequestionform extends \moodleform {
                 'question', 'questiontext', empty($question->id) ? null : (int) $question->id,
                 $this->fileoptions, $questiontext);
 
-        $question->questiontext = array();
+        $question->questiontext = [];
         $question->questiontext['text'] = $questiontext;
         $question->questiontext['format'] = empty($question->questiontextformat) ?
                 editors_get_preferred_format() : $question->questiontextformat;

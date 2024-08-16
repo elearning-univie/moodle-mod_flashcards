@@ -27,8 +27,9 @@ global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;
 
 $cmid = required_param('cmid', PARAM_INT);
 
-$params = array();
-$params['cmid'] = $cmid;
+$params = [
+    'cmid' => $cmid,
+];
 
 list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);
@@ -63,14 +64,14 @@ $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
 
 $sql = "SELECT count(q.id)
               FROM {question} q,
-                   {flashcards_q_status} s
+                   {flashcards_question} s
              WHERE q.id = s.questionid
                AND fcid = :fcid";
 $totalquestioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
 
 $sql = "SELECT count(q.id)
               FROM {question} q,
-                   {flashcards_q_status} s
+                   {flashcards_question} s
              WHERE q.id = s.questionid
                AND fcid = :fcid
                AND teachercheck = 0";
@@ -95,7 +96,7 @@ $sqlv1createdby = "(SELECT q.createdby
 $sql = "SELECT COUNT(q.id)
              FROM {question} q
              JOIN {question_versions} qv ON qv.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON qv.questionbankentryid = fcs.qbankentryid
+             JOIN {flashcards_question} fcs ON qv.questionbankentryid = fcs.qbankentryid
             WHERE fcs.fcid = :fcid
               AND q.qtype = 'flashcard'
               AND qv.version = (SELECT MAX(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)
@@ -119,7 +120,7 @@ $studentquestioncount = $DB->count_records_sql($sql, $stparams);
 $sql = "SELECT COUNT(q.id)
              FROM {question} q
              JOIN {question_versions} qv ON qv.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON qv.questionbankentryid = fcs.qbankentryid
+             JOIN {flashcards_question} fcs ON qv.questionbankentryid = fcs.qbankentryid
             WHERE qv.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
               AND qv.version = (SELECT MAX(v.version) FROM {question_versions} v WHERE qv.questionbankentryid = v.questionbankentryid)
@@ -140,7 +141,7 @@ $filterlink5 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm-
 $filterlink6 = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cm->id, 'fcfilter' => 6]);
 
 // if flashcardsversion is older than 2023042401, dont show added by counts and filters, since field values are NULL
-$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_q_status} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
+$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_question} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
 
 if ($addedbyisnull > 0) {
     $tabledata = [
@@ -157,7 +158,7 @@ if ($addedbyisnull > 0) {
     $sql = "SELECT COUNT(q.id)
              FROM {question} q
              JOIN {question_versions} v ON v.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+             JOIN {flashcards_question} fcs ON v.questionbankentryid = fcs.qbankentryid
             WHERE v.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
               AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)
@@ -172,7 +173,7 @@ if ($addedbyisnull > 0) {
     $sql = "SELECT COUNT(q.id)
              FROM {question} q
              JOIN {question_versions} v ON v.questionid = q.id
-             JOIN {flashcards_q_status} fcs ON v.questionbankentryid = fcs.qbankentryid
+             JOIN {flashcards_question} fcs ON v.questionbankentryid = fcs.qbankentryid
             WHERE v.questionbankentryid  = fcs.qbankentryid
               AND fcs.fcid = :fcid
               AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = v.questionbankentryid)

@@ -76,7 +76,7 @@ class edit_renderer extends \plugin_renderer_base {
         }
         $menu = new \action_menu();
         $menu->set_boundary('viewport');
-        $trigger = html_writer::tag('span', get_string('add', 'quiz'), array('class' => 'add-menu'));
+        $trigger = html_writer::tag('span', get_string('add', 'quiz'), ['class' => 'add-menu']);
         $menu->set_menu_trigger($trigger);
         // The menu appears within an absolutely positioned element causing width problems.
         // Make sure no-wrap is set so that we don't get a squashed menu.
@@ -105,23 +105,23 @@ class edit_renderer extends \plugin_renderer_base {
     public function edit_menu_actions(\moodle_url $pageurl, array $pagevars) {
         static $str;
         if (!isset($str)) {
-            $str = get_strings(array('addasection', 'addaquestion', 'addarandomquestion',
-                'addarandomselectedquestion', 'questionbank'), 'quiz');
+            $str = get_strings(['addasection', 'addaquestion', 'addarandomquestion',
+                'addarandomselectedquestion', 'questionbank'], 'quiz');
         }
 
         // Get section, page, slotnumber and maxmark.
-        $actions = array();
+        $actions = [];
 
         // Call question bank.
-        $icon = new \pix_icon('t/add', $str->questionbank, 'moodle', array('class' => 'iconsmall', 'title' => ''));
+        $icon = new \pix_icon('t/add', $str->questionbank, 'moodle', ['class' => 'iconsmall', 'title' => '']);
         $title = get_string('addquestionfrombankatend', 'quiz');
-        $attributes = array('class' => 'cm-edit-action questionbank',
-            'data-header' => $title, 'data-action' => 'questionbank', 'onClick' => '');
+        $attributes = ['class' => 'cm-edit-action questionbank',
+            'data-header' => $title, 'data-action' => 'questionbank', 'onClick' => ''];
         $actions['questionbank'] = new \action_menu_link_secondary($pageurl, $icon, $str->questionbank, $attributes);
 
         $title = get_string('createflashcardbutton', 'mod_flashcards');
-        $attributes = array('class' => 'cm-edit-action questionbank',
-            'data-header' => $title, 'onClick' => '');
+        $attributes = ['class' => 'cm-edit-action questionbank',
+            'data-header' => $title, 'onClick' => ''];
         $link = new \moodle_url('/mod/flashcards/simplequestion.php', $pagevars['createlinkparams']);
         $actions['creatquestion'] = new \action_menu_link_secondary($link, $icon, $title, $attributes);
 

@@ -41,6 +41,14 @@ class question_name_text_column extends question_name_column {
     }
 
     /**
+     * get_default_width
+     * @return int
+     */
+    public function get_default_width(): int {
+        return 800;
+    }
+
+    /**
      * display_content
      * @param object $question
      * @param string $rowclasses

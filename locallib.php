@@ -60,7 +60,7 @@ function mod_flashcards_check_student_rights($flashcardsid) {
     }
 
     require_login($course, false, $cm);
-    return array($context, $course, $cm);
+    return [$context, $course, $cm];
 }
 
 /**
@@ -82,7 +82,7 @@ function mod_flashcards_get_next_question($flashcardsid, $boxid) {
 
         $sql = "SELECT min(fq.questionid) AS questionid
                  FROM {flashcards_q_stud_rel} fsr
-                 JOIN {flashcards_q_status} fq ON fsr.fqid = fq.id
+                 JOIN {flashcards_question} fq ON fsr.fqid = fq.id
                 WHERE fsr.studentid = :userid
                   AND fsr.currentbox = :box
                   AND fsr.flashcardsid = :flashcardsid
@@ -91,7 +91,6 @@ function mod_flashcards_get_next_question($flashcardsid, $boxid) {
                         FROM {flashcards_q_stud_rel} subq
                        WHERE subq.studentid = fsr.studentid
                          AND subq.currentbox = fsr.currentbox
-                         AND subq.active = fsr.active
                          AND subq.flashcardsid = fsr.flashcardsid)";
 
         $questionid = $DB->get_field_sql($sql,
@@ -195,18 +194,18 @@ function mod_flashcards_delete_student_question($questionid, $flashcards, $conte
         throw new \moodle_exception('deletion_not_allowed', 'flashcards');
         return;
     }
-    $sql = "SELECT id FROM {flashcards_q_status}
+    $sql = "SELECT id FROM {flashcards_question}
       WHERE questionid  = $questionid
         AND fcid = $flashcards->id ";
     $fqsid = $DB->get_field_sql($sql);
-    $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' =>$fqsid]);
+    $DB->delete_records('question_references', ['component' => 'mod_flashcards', 'questionarea' => 'slot', 'itemid' => $fqsid]);
 
-    if (questions_in_use(array($questionid))) {
-        $DB->set_field('question', 'hidden', 1, array('id' => $questionid));
+    if (questions_in_use([$questionid])) {
+        $DB->set_field('question', 'hidden', 1, ['id' => $questionid]);
     } else {
         question_delete_question($questionid);
     }
-    $DB->delete_records('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcards->id]);
+    $DB->delete_records('flashcards_question', ['questionid' => $questionid, 'fcid' => $flashcards->id]);
 
     return;
 }
@@ -313,7 +312,7 @@ function mod_flashcards_get_author_display_name($userid, $courseid, $authordispl
  */
 function mod_flashcard_get_teacher_check_info($teachercheckresult) {
 
-    $checkinfo = array();
+    $checkinfo = [];
     if ($teachercheckresult == FLASHCARDS_CHECK_POS) {
         $checkicon = new \pix_icon('t/check', get_string('statusval1', 'flashcards'));
         $checkinfo['color'] = 'color-approved';
@@ -458,7 +457,7 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
 
-    if ($DB->record_exists('flashcards_q_status', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
+    if ($DB->record_exists('flashcards_question', ['questionid' => $questionid, 'fcid' => $flashcardsid])) {
         return false;
     }
     $question = question_bank::load_question($questionid);
@@ -483,7 +482,7 @@ function mod_flashcards_add_question($questionid, $flashcardsid) {
     $qbe = get_question_bank_entry($questionid);
 
     $trans = $DB->start_delegated_transaction();
-    $fcqstatusid = $DB->insert_record('flashcards_q_status',
+    $fcqstatusid = $DB->insert_record('flashcards_question',
         ['questionid' => $questionid, 'qbankentryid' => $qbe->id, 'fcid' => $flashcardsid, 'teachercheck' => 0, 'addedby' => $USER->id], true);
 
     $questionreferences = new \StdClass();
@@ -510,7 +509,7 @@ function mod_flashcards_get_selected_qids($flashcardsid, $qids) {
     list($inids, $questionids) = $DB->get_in_or_equal($qids, SQL_PARAMS_NAMED);
 
     $sql = "SELECT fqs.id
-              FROM {flashcards_q_status} fqs
+              FROM {flashcards_question} fqs
               JOIN {question_versions} qv ON fqs.qbankentryid = qv.questionbankentryid
               JOIN {question} q ON qv.questionid = q.id
              WHERE fqs.fcid = :fcid
@@ -536,10 +535,10 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
 
-    $eventparams = array (
+    $eventparams = [
         'context' => $context,
         'objectid' => $flashcardsid,
-    );
+    ];
 
     $eventtriggered = false;
 
@@ -568,7 +567,7 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
                 ['studentid' => $USER->id, 'flashcardsid' => $flashcardsid, 'currentbox' => 5]);
 
             if ($countmaxbox) {
-                $questioncount = $DB->count_records('flashcards_q_status', ['fcid' => $flashcardsid]);
+                $questioncount = $DB->count_records('flashcards_question', ['fcid' => $flashcardsid]);
 
                 if ((($countmaxbox / $questioncount) >= 0.25) && !$eventsrec->firstcheckpoint) {
                     $event = \mod_flashcards\event\levelup_firstcheckpoint::create($eventparams);
@@ -726,10 +725,10 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
     $rawquestiontext = $question->questiontext;
     $rawanswertext = $question->questiontext;
 
-    $matches = array();
+    $matches = [];
     preg_match_all('/\{#[0-9]+\}/', $rawquestiontext, $matches, PREG_OFFSET_CAPTURE);
     $matches = $matches[0];
-    $placeholders = array();
+    $placeholders = [];
     foreach ($matches as $match) {
         array_push($placeholders, $match[0]);
     }
@@ -738,7 +737,7 @@ function mod_flashcards_multianswer_to_flashcard($question, $flashcardsid) {
         $answers = $subquestion->answers;
         $answeroptions = '';
         $correctanswer = '';
-        $mcsubtext = array();
+        $mcsubtext = [];
         if (get_class($subquestion->qtype) == 'qtype_multichoice') {
             preg_match('/M[A-Z]+_?[A-Z]?/', $subquestion->questiontext, $mcsubtext);
             if (in_array($mcsubtext[0], $dropdown)) {
@@ -813,7 +812,7 @@ function mod_flashcards_mc_html_answer_list(array $options, string $type) {
     $answeroptions .= '</ul>';
     $correctanswer .= '</ul>';
 
-    return array($answeroptions, $correctanswer);
+    return [$answeroptions, $correctanswer];
 }
 /**
  * add 2fc tag to origin question
@@ -993,17 +992,55 @@ function mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, 
     $questioncopy->category = "{$flashcard->categoryid},{$context->id}";
     $questioncopy->cmid = $cm->id;
     $questioncopy->name = $question->name;
-    $questioncopy->questiontext = array();
+    $questioncopy->questiontext = [];
     $questioncopy->questiontext['text'] = $fcquestionext;
     $questioncopy->questiontext['format'] = FORMAT_HTML;
     $questioncopy->generalfeedback['text'] = $question->generalfeedback;
     $questioncopy->generalfeedbackformat = $question->generalfeedbackformat;
 
-    $questioncopy->answer = array();
+    $questioncopy->answer = [];
     $questioncopy->answer['text'] = $fcanswerext;
     $questioncopy->answer['format'] = FORMAT_HTML;
     $question2fc = $qtypeobj->save_question($question2fc, $questioncopy);
     $question2fc = question_bank::load_question($question2fc->id);
 
     return $question2fc;
+}
+
+/**
+ * moves questions into and out of the flashcard collection
+ *
+ * @param int $flashcardsid
+ * @param array $qids
+ * @param int $currentbox
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function mod_flashcards_move_question($flashcardsid, $qids, $currentbox=null) {
+    global $DB, $USER;
+
+    $questionids = mod_flashcards_get_selected_qids($flashcardsid, $qids);
+    $questionarray = [];
+
+    foreach ($questionids as $question) {
+        $recid = $DB->get_record('flashcards_q_stud_rel',
+            ['fqid' => $question, 'studentid' => $USER->id]);
+        if ($recid) {
+            $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => $currentbox]);
+        } else {
+            $questionentry = [
+                'flashcardsid' => $flashcardsid,
+                'fqid' => $question,
+                'studentid' => $USER->id,
+                'active' => 1,
+                'currentbox' => $currentbox,
+                'lastanswered' => 0,
+                'tries' => 0,
+                'wronganswercount' => 0,
+            ];
+            $questionarray[] = $questionentry;
+        }
+    }
+    $DB->insert_records('flashcards_q_stud_rel', $questionarray);
 }

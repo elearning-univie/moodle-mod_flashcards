@@ -128,8 +128,8 @@ function flashcards_delete_instance(int $id) {
     if (!$DB->record_exists('flashcards', ['id' => $id])) {
         return false;
     }
-    $sql = "SELECT fqs.id 
-              FROM {flashcards_q_status} fqs
+    $sql = "SELECT fqs.id
+              FROM {flashcards_question} fqs
              WHERE fqs.fcid =:fcid";
     $fqdids = $DB->get_records_sql($sql, ['fcid' => $id]);
     $inorequal = [];
@@ -145,7 +145,7 @@ function flashcards_delete_instance(int $id) {
                     AND itemid " . $sqlfqdids;
     $DB->execute($sql, $paramsfqdids);
     $DB->delete_records('flashcards', ['id' => $id]);
-    $DB->delete_records('flashcards_q_status', ['fcid' => $id]);
+    $DB->delete_records('flashcards_question', ['fcid' => $id]);
     $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $id]);
 
     return true;
@@ -233,7 +233,7 @@ function flashcards_get_database_object($flashcards) {
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function flashcards_question_pluginfile($course, $context, $component,
-        $filearea, $qubaid, $slot, $args, $forcedownload, array $options=array()) {
+        $filearea, $qubaid, $slot, $args, $forcedownload, array $options=[]) {
 
     list($context, $course, $cm) = get_context_info_array($context->id);
     require_login($course, false, $cm);
@@ -393,4 +393,3 @@ function flashcards_extend_settings_navigation(settings_navigation $settingsnav,
         $wordcloudnode->add(get_string('qbank', 'mod_flashcards'), $url, navigation_node::TYPE_SETTING, null, 'mod_flashcards_qbank')->set_force_into_more_menu(true);
     }
 }
-

@@ -57,7 +57,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
 
         if (optional_param('update', 0, PARAM_INT)) {
             $mform->setDefault('newcategory', 0);
-            $flashcards = $DB->get_record('flashcards', array('id' => $this->_instance));
+            $flashcards = $DB->get_record('flashcards', ['id' => $this->_instance]);
             $catdefault = "$flashcards->categoryid,$context->id";
             $contexts[] = $context;
 
@@ -75,7 +75,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
         }
 
         $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'),
-            array(1 => get_string('yes'), 0 => get_string('no')));
+            [1 => get_string('yes'), 0 => get_string('no')]);
         $mform->addHelpButton('addfcstudent', 'addfcstudent', 'flashcards');
         $mform->setDefault('addfcstudent', 1);
 

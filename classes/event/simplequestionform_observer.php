@@ -41,7 +41,7 @@ class simplequestionform_observer {
         if ($data['changeextent']) {
             $sql = "SELECT fcqstatus.id AS id,
                            cm.id AS coursemodule
-                      FROM {flashcards_q_status} fcqstatus
+                      FROM {flashcards_question} fcqstatus
                       JOIN {modules} m ON m.name = 'flashcards'
                       JOIN {course_modules} cm ON cm.instance = fcqstatus.fcid AND m.id = cm.module
                      WHERE fcqstatus.qbankentryid = :qbankentryid";
@@ -51,7 +51,7 @@ class simplequestionform_observer {
                 // Reset teachercheck only when the editor doesn't have the right to (normally students).
                 $context = \context_module::instance($record->coursemodule);
                 if (!has_capability('mod/flashcards:editcardwithouttcreset', $context, $data['userid'])) {
-                    $DB->set_field('flashcards_q_status', 'teachercheck', 0, ['id' => $record->id]);
+                    $DB->set_field('flashcards_question', 'teachercheck', 0, ['id' => $record->id]);
                 }
                 if ($DB->record_exists('flashcards_q_stud_rel', ['fqid' => $record->id])) {
                     $DB->delete_records('flashcards_q_stud_rel', ['fqid' => $record->id]);
@@ -59,7 +59,7 @@ class simplequestionform_observer {
             }
         }
 
-        $DB->set_field('flashcards_q_status', 'questionid', $event->objectid, ['qbankentryid' => $qbe->id]);
+        $DB->set_field('flashcards_question', 'questionid', $event->objectid, ['qbankentryid' => $qbe->id]);
     }
     /**
      * Triggered via question_created event. Resets teachercheck and PeerReview after creation of question.
@@ -73,8 +73,8 @@ class simplequestionform_observer {
         $tc = has_capability('mod/flashcards:editallquestions', $event->get_context()) ? 1 : 0;
 
         if ($qbe = get_question_bank_entry($event->objectid)) {
-            if (!($record = $DB->get_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
-                $fcqstatusid = $DB->insert_record('flashcards_q_status', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
+            if (!($record = $DB->get_record('flashcards_question', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
+                $fcqstatusid = $DB->insert_record('flashcards_question', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
                     'questionid' => $event->objectid, 'addedby' => $USER->id], true);
                 list ($course, $cm) = get_course_and_cm_from_instance($data['fcid'], 'flashcards');
                 $context = $event->get_context();
@@ -86,7 +86,7 @@ class simplequestionform_observer {
                 $questionreferences->questionbankentryid = get_question_bank_entry($event->objectid)->id;
                 $DB->insert_record('question_references', $questionreferences);
             } else {
-                $DB->set_field('flashcards_q_status', 'teachercheck', $tc, ['id' => $record->id]);
+                $DB->set_field('flashcards_question', 'teachercheck', $tc, ['id' => $record->id]);
             }
         }
     }

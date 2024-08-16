@@ -69,6 +69,9 @@ class studentviewtable extends table_sql {
     /** @var object course module context */
     private $context;
 
+    /** @var string tab string */
+    private $tab;
+
     /**
      * studentviewtable constructor.
      * @param int $uniqueid
@@ -84,7 +87,7 @@ class studentviewtable extends table_sql {
         $this->courseid = $fcobj->course;
         $this->fcobj = $fcobj;
         $this->returnurl = $callbackurl;
-        $this->authors = array();
+        $this->authors = [];
         $this->tab = $tab;
 
         $this->editicontext = get_string('edit', 'moodle');
@@ -114,7 +117,7 @@ class studentviewtable extends table_sql {
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
 
         // Define the titles of columns to show in header.
-        $headers = array(
+        $headers = [
             '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
@@ -128,10 +131,11 @@ class studentviewtable extends table_sql {
             get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
-            get_string('delete'));
+            get_string('delete'),
+        ];
 
         // Define help for columns teachercheck and peer review.
-        $helpforheaders = array(
+        $helpforheaders = [
             null,
             null,
             new \help_icon('teachercheck', 'mod_flashcards'),
@@ -145,7 +149,8 @@ class studentviewtable extends table_sql {
             null,
             null,
             null,
-            new \help_icon('deleteflashcardinfo', 'mod_flashcards'));
+            new \help_icon('deleteflashcardinfo', 'mod_flashcards'),
+        ];
 
         $sortcolumn = 'timemodified';
         $ascdesc = SORT_DESC;
@@ -325,7 +330,7 @@ class studentviewtable extends table_sql {
         global $OUTPUT;
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
-                array('id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid));
+                ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
 
         return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
                 ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
@@ -345,7 +350,7 @@ class studentviewtable extends table_sql {
         }
 
         $durl = new moodle_url('/mod/flashcards/studentquestioninit.php',
-                array('id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()));
+                ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]);
 
         return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext),
             ['class' => 'mod_flashcards_studentview_delete']);

@@ -32,8 +32,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_flashcards';
-$plugin->version = 2023042404;
-$plugin->release = 'v4.2.1';
+$plugin->version = 2024010100.02;
+$plugin->release = 'v4.4.0';
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('qtype_flashcard' => 2020111300);
+$plugin->dependencies = ['qtype_flashcard' => 2020111300];

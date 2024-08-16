@@ -48,7 +48,7 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:view', $context)) {
-    $flashcards = $DB->get_record('flashcards', array('id' => $cm->instance));
+    $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
     echo $OUTPUT->heading($flashcards->name);
 
     $qid = mod_flashcards_get_next_question($flashcards->id, $box);
