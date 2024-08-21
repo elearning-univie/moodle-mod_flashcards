@@ -80,21 +80,21 @@ function mod_flashcards_get_next_question($flashcardsid, $boxid) {
             return false;
         }
 
-        $sql = "SELECT min(fq.questionid) AS questionid
-                 FROM {flashcards_q_stud_rel} fsr
-                 JOIN {flashcards_question} fq ON fsr.fqid = fq.id
-                WHERE fsr.studentid = :userid
-                  AND fsr.currentbox = :box
-                  AND fsr.flashcardsid = :flashcardsid
-                  AND fsr.lastanswered =
-                      (SELECT min(lastanswered)
-                        FROM {flashcards_q_stud_rel} subq
-                       WHERE subq.studentid = fsr.studentid
-                         AND subq.currentbox = fsr.currentbox
-                         AND subq.flashcardsid = fsr.flashcardsid)";
+        $sql = "SELECT questionid
+                    FROM (
+                        SELECT fq.questionid,
+                               ROW_NUMBER() OVER (ORDER BY fqr.lastanswered ASC, fq.questionid ASC) AS rn
+                        FROM {flashcards_question} fq
+                        JOIN {flashcards_q_stud_rel} fqr ON fq.id = fqr.fqid
+                        WHERE fq.fcid = :fcid
+                          AND fqr.studentid = :userid
+                          AND fqr.currentbox = :box
+                    ) subquery
+                    WHERE rn = 1;
+                    ";
 
         $questionid = $DB->get_field_sql($sql,
-            ['userid' => $USER->id, 'box' => $boxid, 'flashcardsid' => $flashcardsid]);
+            ['userid' => $USER->id, 'box' => $boxid, 'fcid' => $flashcardsid]);
 
         return $questionid;
     } else {
