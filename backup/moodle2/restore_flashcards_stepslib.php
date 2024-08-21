@@ -117,4 +117,12 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
     }
     protected function inform_new_usage_id($newusageid) {
     }
+
+    /**
+     * Process quiz slots.
+     *
+     * @param stdClass|array $data
+     */
+    protected function process_flashcards_question_instance($data) {
+    }
 }

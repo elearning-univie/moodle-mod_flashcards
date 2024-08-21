@@ -147,8 +147,8 @@ class provider implements
                  FROM {context} c
            INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
            INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-           INNER JOIN {flashcards} f ON f.id = cm.instance
-            LEFT JOIN {flashcards_q_stud_rel} d ON d.flashcardsid = f.id
+           INNER JOIN {flashcards_question} fq ON fq.fcid = cm.instance
+            LEFT JOIN {flashcards_q_stud_rel} d ON d.fqid = fq.id
                 WHERE (
                 d.studentid = :studentid
                 )

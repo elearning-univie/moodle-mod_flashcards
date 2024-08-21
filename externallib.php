@@ -302,7 +302,7 @@ class mod_flashcards_external extends external_api {
                   FROM {flashcards_q_stud_rel} fsr
                   JOIN {flashcards_question} fq ON fsr.fqid = fq.id
                  WHERE studentid = :userid
-                   AND flashcardsid = :fid
+                   AND fcid = :fid
                    AND currentbox <> 0
               ORDER BY currentbox, lastanswered";
 
@@ -380,7 +380,6 @@ class mod_flashcards_external extends external_api {
         if ($statusrec === false) {
             $DB->insert_record('flashcards_q_stud_rel', ['fqid' => $params['fqid'],
                 'flashcardsid' => 0, // TOREMOVE!
-                'questionid' => 0, // TOREMOVE!
                 'studentid' => $USER->id,
                 'active' => 0,
                 'peerreview' => $params['vote']]);
