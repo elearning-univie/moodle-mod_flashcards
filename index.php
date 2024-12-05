@@ -21,9 +21,7 @@
  * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once(__DIR__ . '/../../config.php');
-
-defined(MOODLE_INTERNAL) || die();
+require_once('../../config.php');
 
 global $DB, $PAGE, $OUTPUT;
 
@@ -65,20 +63,20 @@ if ($course->format == 'weeks') {
     $table->align = ['left', 'left', 'left'];
 }
 
-foreach ($flashcards as $flashcards) {
-    if (!$flashcards->visible) {
+foreach ($flashcards as $flashcard) {
+    if (!$flashcard->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/flashcards/view.php', ['id' => $flashcards->coursemodule]),
-            format_string($flashcards->name, true),
+            new moodle_url('/mod/flashcards/view.php', ['id' => $flashcard->coursemodule]),
+            format_string($flashcard->name, true),
             ['class' => 'dimmed']);
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/flashcards/view.php', ['id' => $flashcards->coursemodule]),
-            format_string($flashcards->name, true));
+            new moodle_url('/mod/flashcards/view.php', ['id' => $flashcard->coursemodule]),
+            format_string($flashcard->name, true));
     }
 
     if ($course->format == 'weeks' || $course->format == 'topics') {
-        $table->data[] = [$flashcards->section, $link];
+        $table->data[] = [$flashcard->section, $link];
     } else {
         $table->data[] = [$link];
     }
