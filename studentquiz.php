@@ -55,6 +55,13 @@ if (has_capability('mod/flashcards:view', $context)) {
           <a href="' . $returnto .'" class="btn btn-secondary" role="button">' . get_string('backtooverviewbutton', 'mod_flashcards') . '</a>
           </div>';
 
+    $boxheader = get_string('boxheader_' . $box, 'mod_flashcards');
+    $boxdecorationurl = $OUTPUT->image_url('box' . $box . 'deco', 'mod_flashcards');
+    echo '<div class="col-10 py-2">
+             <h2 class="box-title">' . $boxheader . '</h2>
+              <img class="box-smiley" src="' . $boxdecorationurl . '" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}">
+           </div>';
+
     $qid = mod_flashcards_get_next_question($flashcards->id, $box);
     $questionrenderer = $PAGE->get_renderer('mod_flashcards');
 
