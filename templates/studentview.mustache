@@ -109,7 +109,7 @@
                 <p class="card-text mt-1 px-1">{{# str }} proposecardsexplained, mod_flashcards {{/ str }}</p>
                 <div class="p-2 d-flex flex-row-reverse">
                     {{#appsavailable}}
-                        <div id="mod-flashcards-show-app" class="btn btn-secondary btn-sm" onclick="$.mod_flashcards_show_app()" {{#displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
+                        <div id="mod-flashcards-show-app" class="btn btn-secondary btn-sm" onclick="window.modFlashcardsShowApp()" {{#displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
                             {{# str }} showapp, mod_flashcards {{/ str }}{{# pix }} i/breadcrumbdivider, moodle {{/ pix }}
                         </div>
                     {{/appsavailable}}
@@ -143,7 +143,7 @@
         </div>
         <div id="mod-flashcards-mobile-app-info" class="pb-2 col-sm-4 col-xs-6 text-center" {{^displaymobileapps}}style="display: none;"{{/displaymobileapps}}>
             <div class="card px-1 h-100 rounded border">
-                <div class="left-corner-position" onclick="$.mod_flashcards_minimize_app();">
+                <div class="left-corner-position" onclick="window.modFlashcardsMinimizeApp();">
                     {{#pix}} e/delete, moodle, {{# str }} minimize, mod_flashcards {{/ str }}{{/ pix }}
                 </div>
                 <h2 class="card-title">
@@ -265,7 +265,7 @@
                     </a>
                 {{/stats.selectedcardsavailable}}
                 {{#stats.selectedcardsavailable}}
-                    <button onclick="$.mod_flashcards_start_learn_now({{flashcardsid}})" type="button" class="mod-flashcards-button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
+                    <button onclick="window.modFlashcardsStartLearnNow({{flashcardsid}})" type="button" class="mod-flashcards-button-action-bottom mt-1 btn btn-primary btn-block rounded-bottom">
                         <span class="btn-label"><i class="fa fa-play"></i></span>
                         {{# str }} playnowbutton, mod_flashcards {{/ str }}
                     </button>

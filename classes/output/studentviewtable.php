@@ -118,7 +118,7 @@ class studentviewtable extends table_sql {
 
         // Define the titles of columns to show in header.
         $headers = [
-            '<input type="checkbox" name="selectall" onClick="$.mod_flashcards_select_all(this)"/>',
+            '<input type="checkbox" name="selectall" onClick="window.modFlashcardsSelectAll(this)"/>',
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('box', 'mod_flashcards'),
@@ -198,7 +198,7 @@ class studentviewtable extends table_sql {
     public function col_select($values) {
         return html_writer::tag('input', null,
             ['class' => 'mod-flashcards-checkbox', 'data-value' => $values->id, 'name' => 'selectbox',
-            'type' => 'checkbox', 'autocomplete' => 'off', 'onChange' => '$.mod_flashcards_selected()']);
+            'type' => 'checkbox', 'autocomplete' => 'off', 'onChange' => 'window.modFlashcardsSelected()']);
     }
 
     /**

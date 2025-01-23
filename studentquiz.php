@@ -49,7 +49,11 @@ echo $OUTPUT->header();
 
 if (has_capability('mod/flashcards:view', $context)) {
     $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
-    echo $OUTPUT->heading($flashcards->name);
+    $returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
+    $returnto = $returnurl->out(true);
+    echo '<div class="btn-div">
+          <a href="' . $returnto .'" class="btn btn-secondary" role="button">' . get_string('backtooverviewbutton', 'mod_flashcards') . '</a>
+          </div>';
 
     $qid = mod_flashcards_get_next_question($flashcards->id, $box);
     $questionrenderer = $PAGE->get_renderer('mod_flashcards');

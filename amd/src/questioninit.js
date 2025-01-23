@@ -3,8 +3,8 @@ import ajax from "core/ajax";
 import notification from "core/notification";
 
 export const init = () => {
-    $.mod_flashcards_init_questions = function (aid) {
-        var data = document.querySelectorAll(".mod-flashcards-checkbox");
+    const modFlashcardsInitQuestions = function (aid) {
+        const data = document.querySelectorAll(".mod-flashcards-checkbox");
         var qids = [];
         for (var i = 0; i < data.length; i++) {
             if (data[i].checked == true) {
@@ -24,8 +24,9 @@ export const init = () => {
             }]);
         }
     };
-    $.mod_flashcards_remove_questions = function (aid) {
-        var data = document.querySelectorAll(".mod-flashcards-checkbox");
+    window.modFlashcardsInitQuestions = modFlashcardsInitQuestions;
+    const modFlashcardsRemoveQuestions = function (aid) {
+        const data = document.querySelectorAll(".mod-flashcards-checkbox");
         var qids = [];
         for (var i = 0; i < data.length; i++) {
             if (data[i].checked == true) {
@@ -43,8 +44,9 @@ export const init = () => {
             }]);
         }
     };
-    $.mod_flashcards_selected = function () {
-        var checkboxes = document.getElementsByName('selectbox');
+    window.modFlashcardsRemoveQuestions = modFlashcardsRemoveQuestions;
+    const modFlashcardsSelected = () => {
+        const checkboxes = document.getElementsByName('selectbox');
         var checkboxesChecked = [];
         for (var i=0; i<checkboxes.length; i++) {
             if (checkboxes[i].checked) {
@@ -57,8 +59,13 @@ export const init = () => {
             document.getElementById("maintanancebtn").disabled = true;
         }
     };
-    $.mod_flashcards_select_all = function (selected) {
+
+    // Expose the function for external use (if necessary)
+    window.modFlashcardsSelected = modFlashcardsSelected;
+
+    const modFlashcardsSelectAll = function (selected) {
         $('input:checkbox').not(selected).prop('checked', selected.checked);
-        this.mod_flashcards_selected();
+        window.modFlashcardsSelected();
     };
+    window.modFlashcardsSelectAll = modFlashcardsSelectAll;
 };

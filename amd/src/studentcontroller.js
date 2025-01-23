@@ -8,10 +8,10 @@ export const init = () => {
     var mobilebox = document.getElementById('mod-flashcards-mobile-app-info');
     var showbtn = document.getElementById('mod-flashcards-show-app');
     var collectionbox = document.getElementById('mod-flashcards-collection-box');
-    $.mod_flashcards_call_update = function ($fid, $questionid, $qaid, $cmid) {
-        var qanswervalue = document.getElementById('qflashcard-question-answer-'.concat($qaid)).value;
-        var urlParams = new URLSearchParams(window.location.search);
-        var boxid = urlParams.get('box');
+    const modFlashcardsCallUpdate = function ($fid, $questionid, $qaid, $cmid) {
+        const qanswervalue = document.getElementById('qflashcard-question-answer-'.concat($qaid)).value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const boxid = urlParams.get('box');
         ajax.call([{
             methodname: 'mod_flashcards_update_progress',
             args: {fid: $fid, boxid: boxid, questionid: $questionid, qanswervalue: qanswervalue},
@@ -43,7 +43,8 @@ export const init = () => {
             fail: notification.exception
         }]);
     };
-    $.mod_flashcards_minimize_app = function () {
+    window.modFlashcardsCallUpdate = modFlashcardsCallUpdate;
+    const modFlashcardsMinimizeApp = function () {
         mobilebox.style.display = "none";
         showbtn.style.display = "inline";
 
@@ -56,7 +57,8 @@ export const init = () => {
             fail: notification.exception
         }]);
     };
-    $.mod_flashcards_show_app = function () {
+    window.modFlashcardsMinimizeApp = modFlashcardsMinimizeApp;
+    const modFlashcardsShowApp = function () {
         mobilebox.style.display = "block";
         showbtn.style.display = "none";
 
@@ -69,4 +71,5 @@ export const init = () => {
             fail: notification.exception
         }]);
     };
+    window.modFlashcardsShowApp = modFlashcardsShowApp;
 };
