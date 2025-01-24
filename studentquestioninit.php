@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(__DIR__ . '/../../config.php');
+// require_once(__DIR__ . '/core/output/requirements');
 require_once('locallib.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG, $USER;
@@ -153,7 +154,7 @@ $createurl = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 $returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
 
 if ($equalparam) {
-    $collectionchangefunc = '$.mod_flashcards_remove_questions(' . $flashcards->id . ')';
+    $collectionchangefunc = 'modFlashcardsRemoveQuestions(' . $flashcards->id . ')';
     $collectionchangetext = get_string('removeflashcardbutton', 'mod_flashcards');
     $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'notadded']);
     $tabbtntext = get_string('tabflashcardsnotaddedtip', 'mod_flashcards');
@@ -161,7 +162,7 @@ if ($equalparam) {
     $helpicon = new help_icon('tabflashcardsaddedtip', 'mod_flashcards');
     $flashcardcount = $added;
 } else {
-    $collectionchangefunc = '$.mod_flashcards_init_questions(' . $flashcards->id . ')';
+    $collectionchangefunc = 'modFlashcardsInitQuestions(' . $flashcards->id . ')';
     $collectionchangetext = get_string('addflashcardbutton', 'mod_flashcards');
     $tabbtnlink = new moodle_url('/mod/flashcards/studentquestioninit.php', ['id' => $id, 'tab' => 'added']);
     $tabbtntext = get_string('tabflashcardsaddedtip', 'mod_flashcards');

@@ -120,7 +120,7 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $qaid = $quba->get_question_attempt(1)->get_database_id();
 
         $result = '<form id="mod-flashcards-responseform" method="post"' .
-                   'action="javascript:;" onsubmit="$.mod_flashcards_call_update(' .
+                   'action="javascript:;" onsubmit="window.modFlashcardsCallUpdate(' .
                    $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
                    ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";

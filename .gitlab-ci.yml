@@ -42,8 +42,8 @@ variables:
     - failed report
   parallel:
     matrix:
-      - MOODLE_BRANCH: [ "MOODLE_404_STABLE" ]
-        PHP_VERSION: [ "8.2" ]
+      - MOODLE_BRANCH: [ "MOODLE_405_STABLE" ]
+        PHP_VERSION: [ "8.2", "8.3" ]
 
 code_checker_pgsql:
   <<: *job_configuration

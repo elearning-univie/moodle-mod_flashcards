@@ -40,7 +40,7 @@ export const init = () => {
             output.value = slider.value;
             updatebar();
         };
-        $.mod_flashcards_start_learn_now = function(flashcardsid) {
+        const modFlashcardsStartLearnNow = function(flashcardsid) {
             ajax.call([{
                 methodname: 'mod_flashcards_start_learn_now',
                 args: {flashcardsid: flashcardsid, qcount: slider.value},
@@ -50,5 +50,6 @@ export const init = () => {
                 fail: notification.exception
             }]);
         };
+    window.modFlashcardsStartLearnNow = modFlashcardsStartLearnNow;
     }
 };

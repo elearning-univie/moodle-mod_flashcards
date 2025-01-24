@@ -3,7 +3,7 @@ import ajax from "core/ajax";
 import notification from "core/notification";
 
 export const init = () => {
-    $.mod_flashcards_teacher_check = function (fqid, oldval, valueselected) {
+    const modFlashcardsTeacherCheck = function (fqid, oldval, valueselected) {
         ajax.call([{
             methodname: 'mod_flashcards_set_preview_status',
             args: {fqid: fqid, status: valueselected},
@@ -16,7 +16,8 @@ export const init = () => {
             fail: notification.exception
         }]);
     };
-    $.mod_flashcards_peer_review = function (fqid, vote) {
+    window.modFlashcardsTeacherCheck = modFlashcardsTeacherCheck;
+    const modFlashcardsPeerReview = function (fqid, vote) {
         var downvotebtncl = document.getElementById('downvotebtn').classList;
         var upvotebtncl = document.getElementById('upvotebtn').classList;
         var upvoteval = parseInt(document.getElementById('upvotescount').innerHTML);
@@ -46,7 +47,8 @@ export const init = () => {
             fail: notification.exception
         }]);
     };
-    $.mod_flashcards_hide_show_answer = function (qaid, htxt, stxt) {
+    window.modFlashcardsPeerReview = modFlashcardsPeerReview;
+    const modFlashcardsHideShowAnswer = function (qaid, htxt, stxt) {
         var x = document.getElementById('mod-flashcards-showhidecontainer-answer-'.concat(qaid));
         var btn = document.getElementById('mod-flashcards-showhidebutton-'.concat(qaid));
         if (x.style.display === 'none') {
@@ -57,4 +59,5 @@ export const init = () => {
             x.style.display = 'none';
         }
     };
+    window.modFlashcardsHideShowAnswer = modFlashcardsHideShowAnswer;
 };
