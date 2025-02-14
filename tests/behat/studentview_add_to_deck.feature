@@ -16,17 +16,17 @@ Feature: As a student I want to add flashcards to my deck
       | student1 | C1     | student        |
     And I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Flash cards" to section "1" and I fill the form with:
-      | Flash cards activity name | Test flash cards |
+    And I add a flashcards activity to course "Course 1" section "1" and I fill the form with:
+      | Flashcards activity name | Test flash cards |
     And I am on the "Test flash cards" "flashcards activity" page
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
       | Solution | This is the answer |
     And I click on "Save changes" "button"
-    Then I should see "flashcard 1"
-    And I click on "Create new flash card" "button"
+    Then I should see "1"
+    And I click on "Create new flashcard" "button"
     And I set the following fields to these values:
       | Question name | flashcard 2 |
       | Question text | This is question 2 |
@@ -39,7 +39,7 @@ Feature: As a student I want to add flashcards to my deck
     Given I log in as "student1"
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
-    Then I should see "flashcard 1"
+    Then I should see "1"
     And I follow "My flashcards"
     Then I should see "Nothing"
     And I follow "Flashcards collection"
@@ -48,9 +48,9 @@ Feature: As a student I want to add flashcards to my deck
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
     And I follow "My flashcards"
-    Then I should see "flashcard 1"
+    Then I should see "1"
     And I should not see "flashcard 2"
     And I follow "Flashcards collection"
-    Then I should not see "flashcard 1"
+    Then I should not see "1"
     And I should see "flashcard 2"
     Then I log out

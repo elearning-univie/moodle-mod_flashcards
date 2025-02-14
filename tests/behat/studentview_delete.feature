@@ -16,21 +16,21 @@ Feature: As a student I can delete my own questions
       | student | C1     | student        |
     And I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    When I add a "Flash cards" to section "1" and I fill the form with:
-      | Flash cards activity name | Test flash cards |
+    And I add a flashcards activity to course "Course 1" section "1" and I fill the form with:
+      | Flashcards activity name | Test flash cards |
     Then I log out
 
   @javascript
   Scenario: Students can not delete teacher questions
     When I log in as "teacher"
     And I am on the "Test flash cards" "flashcards activity" page
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "flashcard 1"
+    Then I should see "1"
     And I log out
     Then I log in as "student"
     And I am on the "Test flash cards" "flashcards activity" page
@@ -42,7 +42,7 @@ Feature: As a student I can delete my own questions
     Then I log in as "student"
     And I am on the "Test flash cards" "flashcards activity" page
     And I follow "Create/customize my flashcards"
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |

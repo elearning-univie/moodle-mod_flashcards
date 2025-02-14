@@ -29,6 +29,7 @@
  * @return mixed true if the feature is supported, null if unknown
  */
 use core\context;
+use core_question\category_manager;
 /**
  * flashcards_supports
  *
@@ -110,6 +111,9 @@ function flashcards_check_category($flashcards, $courseid) {
             $qcontext->having_one_edit_tab_cap('categories'), 0, $defaultcategoryobj->id, 0,
             $qcontext->having_cap('moodle/question:add'));
         $categoryid = $qcobject->add_category($newparent, $newcategoryname, '', true);
+        // $categorymanager = new category_manager();
+        // $categoryid = $categorymanager->add_category($newparent, $newcategoryname, '');
+
         return $categoryid;
     } else {
         return $catid;
@@ -128,25 +132,35 @@ function flashcards_delete_instance(int $id) {
     if (!$DB->record_exists('flashcards', ['id' => $id])) {
         return false;
     }
-    $sql = "SELECT fqs.id
-              FROM {flashcards_question} fqs
-             WHERE fqs.fcid =:fcid";
-    $fqdids = $DB->get_records_sql($sql, ['fcid' => $id]);
-    $inorequal = [];
-    foreach ($fqdids as $fqid) {
-        $inorequal[] = $fqid->id;
+
+    $transaction = $DB->start_delegated_transaction();
+
+    $questions = $DB->get_records('flashcards_question', ['fcid' => $id], '', 'id');
+    $questionids = array_keys($questions);
+
+    // If there are any questions, delete the corresponding question_references.
+    if (!empty($questionids)) {
+        list($insql, $params) = $DB->get_in_or_equal($questionids);
+        $sql = "DELETE FROM {question_references}
+                WHERE component = 'mod_flashcards'
+                  AND questionarea = 'slot'
+                  AND itemid $insql";
+        $DB->execute($sql, $params);
     }
 
-    list($sqlfqdids, $paramsfqdids) = $DB->get_in_or_equal($inorequal);
-
-    $sql = "DELETE FROM {question_references}
-                  WHERE component LIKE 'mod_flashcards'
-                    AND questionarea LIKE 'slot'
-                    AND itemid " . $sqlfqdids;
-    $DB->execute($sql, $paramsfqdids);
     $DB->delete_records('flashcards', ['id' => $id]);
     $DB->delete_records('flashcards_question', ['fcid' => $id]);
-    $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $id]);
+
+    // Delete any orphaned flashcards_q_stud_rel records.
+    $sql = "DELETE FROM {flashcards_q_stud_rel} qsr
+            WHERE NOT EXISTS (
+                SELECT 1
+                  FROM {flashcards_question} fq
+                 WHERE fq.id = qsr.fqid
+            )";
+
+    $DB->execute($sql);
+    $transaction->allow_commit();
 
     return true;
 }

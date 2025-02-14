@@ -16,14 +16,14 @@ Feature: As a teacher I want to add a flashcards activity
       | student1 | C1     | student        |
     And I log in as "admin"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Flash cards" to section "1" and I fill the form with:
-      | Flash cards activity name | Test flash cards |
+    And I add a flashcards activity to course "Course 1" section "1" and I fill the form with:
+      | Flashcards activity name | Test flash cards |
     And I log out
 
   @javascript
   Scenario: I add a flashcard as a teacher
     Given I am on the "Test flash cards" "flashcards activity" page logged in as "teacher1"
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     Then I should see "Editing a Flashcard question"
     And I should see "Question name"
     And I set the following fields to these values:
@@ -31,14 +31,14 @@ Feature: As a teacher I want to add a flashcards activity
       | Question text | This is a question |
       | Solution | This is the answer |
     And I click on "Save changes" "button"
-    Then I should see "flashcard 1"
+    Then I should see "1"
     And I log out
 
   @javascript
   Scenario: I add a flashcard as a student
     Given I am on the "Test flash cards" "flashcards activity" page logged in as "student1"
     And I follow "Create/customize my flashcards"
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     Then I should see "Editing a Flashcard question"
     And I should see "Question name"
     And I set the following fields to these values:

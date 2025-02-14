@@ -30,7 +30,18 @@ use core_question\local\bank\question_version_status;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class custom_category_condition_helper extends \qbank_managecategories\helper {
-
+    /**
+     *
+     * question_category_options
+     *
+     * @param array $contexts
+     * @param bool $top
+     * @param int $currentcat
+     * @param bool $popupform
+     * @param int $nochildrenof
+     * @param bool $escapecontextnames
+     * @return array
+     */
     public static function question_category_options(array $contexts, bool $top = false, int $currentcat = 0,
         bool $popupform = false, int $nochildrenof = -1,
         bool $escapecontextnames = true): array {
@@ -97,7 +108,16 @@ class custom_category_condition_helper extends \qbank_managecategories\helper {
             return $categoriesarray;
         }
     }
-
+    /**
+     *
+     * get_categories_for_contexts
+     *
+     * @param unknown $contexts
+     * @param string $sortorder
+     * @param bool $top
+     * @param int $showallversions
+     * @return array
+     */
     public static function get_categories_for_contexts($contexts, string $sortorder = 'parent, sortorder, name ASC',
         bool $top = false, int $showallversions = 0): array {
             global $DB;

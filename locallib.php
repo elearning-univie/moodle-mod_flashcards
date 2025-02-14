@@ -543,9 +543,16 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
     $eventtriggered = false;
 
     $eventsrec = $DB->get_record('flashcards_stud_xp_events', ['fcid' => $flashcardsid, 'studentid' => $USER->id]);
-    $countfirstcard = $DB->count_records_select('flashcards_q_stud_rel',
-        'currentbox is not null AND studentid = :studid AND flashcardsid = :fcid',
-        ['studid' => $USER->id, 'fcid' => $flashcardsid]);
+
+    $sql = "SELECT COUNT(*) FROM {flashcards_q_stud_rel} qsr
+            JOIN {flashcards_question} fq ON qsr.fqid = fq.id
+            WHERE qsr.currentbox IS NOT NULL
+              AND qsr.studentid = :studid
+              AND fq.fcid = :fcid";
+    $countfirstcard = $DB->count_records_sql($sql, [
+        'studid' => $USER->id,
+        'fcid'   => $flashcardsid,
+    ]);
 
     if (!$eventsrec) {
         $newentry = new stdClass();
@@ -563,8 +570,15 @@ function mod_flashcards_load_xp_events($flashcardsid, $isshuffle = false) {
             $eventsrec->firstquestion = 1;
             $eventtriggered = true;
         } else {
-            $countmaxbox = $DB->count_records('flashcards_q_stud_rel',
-                ['studentid' => $USER->id, 'flashcardsid' => $flashcardsid, 'currentbox' => 5]);
+            $sql = "SELECT COUNT(*) FROM {flashcards_q_stud_rel} qsr
+                    JOIN {flashcards_question} fq ON qsr.fqid = fq.id
+                    WHERE qsr.studentid = :studid
+                      AND qsr.currentbox = 5
+                      AND fq.fcid = :fcid";
+            $countmaxbox = $DB->count_records_sql($sql, [
+                'studid' => $USER->id,
+                'fcid'   => $flashcardsid,
+            ]);
 
             if ($countmaxbox) {
                 $questioncount = $DB->count_records('flashcards_question', ['fcid' => $flashcardsid]);
@@ -617,15 +631,15 @@ function mod_flashcards_multichoice_to_flashcard($question, $flashcardsid) {
     list ($course, $cm) = get_course_and_cm_from_instance($flashcardsid, 'flashcards');
     $context = context_module::instance($cm->id);
     $flashcard = $DB->get_record('flashcards', ['id' => $flashcardsid]);
-
     list($answeroptions, $correctanswer) = mod_flashcards_mc_html_answer_list($question->answers, 'circle');
+
     $fcquestionext = $question->questiontext . $answeroptions;
     $fcanswerext = $question->questiontext . $correctanswer;
 
     $question2fc = mod_flashcards_create_flashcard($question, $flashcard, $fcquestionext, $fcanswerext);
     $answerid = array_key_first($question2fc->answers);
 
-    mod_flashcards_save_image_files_for_flashcards($question, $question2fc->id, $answerid);
+    mod_flashcards_save_mc_image_files_for_flashcards($question, $question2fc->id, $answerid);
 
     // Set 2fc tag to mc question.
     mod_flashcards_add_2fc_tag($question->id, $context->id);
@@ -792,20 +806,20 @@ function mod_flashcards_mc_html_answer_list(array $options, string $type) {
     $answeroptions = '<ul style="margin-left: 20px;list-style-type:' . $type . ';">';
     $correctanswer = $answeroptions;
     foreach ($options as $option) {
-        $answeroptions .= '<li>' . $checkboxopen . strip_tags($option->answer) . '</li>';
+        $answeroptions .= '<li>' . $checkboxopen . $option->answer . '</li>';
         if ( $option->fraction == 1) {
             $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
-            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . strip_tags($option->answer) . ' ('
+            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . $option->answer . ' ('
                 . intval(preg_replace('/[^\d.]/', '', ($option->fraction * 100)))
             .'% ' . get_string('correct', 'flashcards') . ')</li>';
         } else if ($option->fraction > 0 && $option->fraction != 1) {
             $correctanswer .= '<li aria-label="' . get_string('answeriscorrect', 'flashcards') .
-            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . strip_tags($option->answer) . ' ('
+            '" style="list-style-type:' . $correct . '; font-weight: bold;">' . $checkboxclosed . $option->answer . ' ('
                 . intval(preg_replace('/[^\d.]/', '', ($option->fraction * 100)))
                 .'% ' . get_string('correct', 'flashcards') . ')</li>';
         } else {
             $correctanswer .= '<li aria-label="' . get_string('answeriswrong', 'flashcards') . '">' . $checkboxopen
-                            . strip_tags($option->answer) . ' ('
+                            . $option->answer . ' ('
                             . get_string('statusval2', 'flashcards') .')</li>';
         }
     }
@@ -908,37 +922,95 @@ function mod_flashcards_add_2fc_tag(int $questionid, int $contextid) {
  * @param int $answerid
  * @param int $tfanswerid
  */
-function mod_flashcards_save_image_files_for_flashcards($question, $question2fcid, $answerid, $tfanswerid = 0) {
+function mod_flashcards_save_mc_image_files_for_flashcards($question, $question2fcid, $answerid, $tfanswerid = 0) {
     global $DB;
 
-    $fs = new \file_storage();
-    list($inids, $questionids) = $DB->get_in_or_equal([$question->id, $tfanswerid], SQL_PARAMS_NAMED);
-    $sql = "SELECT * FROM {files} WHERE itemid $inids AND component = 'question'";
-    $files = $DB->get_records_sql($sql, $questionids);
+    $files = [];
+    if (str_contains($question->questiontext, '@@PLUGINFILE@@')) {
+        $filename = '';
+        $exploded = explode('" alt', $question->questiontext);
+        $tokens = [];
+        foreach ($exploded as $explo) {
+            if (str_contains($explo, '@@PLUGINFILE@@')) {
+                $tokens = explode('/', $explo);
+            }
+        }
+        $filename = trim(end($tokens));
+        $sql = "SELECT * FROM {files}
+             WHERE itemid = $question->id
+               AND contextid = $question->contextid
+               AND component = 'question'
+               AND filearea = 'questiontext'
+               AND filename = '$filename'";
+        $files[] = $DB->get_record_sql($sql);
+    }
+
+    $answers = $question->answers;
+    foreach ($answers as $answer) {
+        if (str_contains($answer->answer, '@@PLUGINFILE@@')) {
+            $filename = '';
+            $exploded = explode('" alt', $answer->answer);
+            $tokens = [];
+            foreach ($exploded as $explo) {
+                if (str_contains($explo, '@@PLUGINFILE@@')) {
+                    $tokens = explode('/', $explo);
+                }
+            }
+            $filename = trim(end($tokens));
+            $sql = "SELECT * FROM {files}
+                 WHERE itemid = $answer->id
+                   AND contextid = $question->contextid
+                   AND component = 'question'
+                   AND filearea = 'answer'
+                   AND filename = '$filename'";
+            $files[] = $DB->get_record_sql($sql);
+        }
+    }
 
     foreach ($files as $file) {
         unset($file->id);
         unset($file->pathnamehash);
+        mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+        mod_flashcards_save_file($file, $answerid, 'answer');
+    }
+}
+/**
+ * save picture files from type shortanswer and true/false for flashcard
+ *
+ * @param stdClass $question
+ * @param int $question2fcid
+ * @param int $answerid
+ * @param int $tfanswerid
+ */
+function mod_flashcards_save_image_files_for_flashcards($question, $question2fcid, $answerid, $tfanswerid = 0) {
+    global $DB;
 
-        if ($question->get_type_name() == 'multichoice' || $question->get_type_name() == 'multichoiceset'
-            || $question->get_type_name() == 'multianswer') {
-            if ($file->filearea == 'questiontext' || $file->filearea == 'answer') {
-                mod_flashcards_save_file($file, $question2fcid, 'questiontext');
-                mod_flashcards_save_file($file, $answerid, 'answer');
+    $files = [];
+    if (str_contains($question->questiontext, '@@PLUGINFILE@@')) {
+        $filename = '';
+        $exploded = explode('" alt', $question->questiontext);
+        $tokens = [];
+        foreach ($exploded as $explo) {
+            if (str_contains($explo, '@@PLUGINFILE@@')) {
+                $tokens = explode('/', $explo);
             }
         }
-        if ($question->get_type_name() == 'truefalse') {
-            if ($file->filearea == 'answer') {
-                mod_flashcards_save_file($file, $answerid, 'answer');
-            } else if ($file->filearea == 'questiontext') {
-                mod_flashcards_save_file($file, $question2fcid, 'questiontext');
-            }
-        }
-        if ($question->get_type_name() == 'shortanswer') {
-            mod_flashcards_save_file($file, $question2fcid, $file->filearea);
-        }
+        $filename = trim(end($tokens));
+        $sql = "SELECT * FROM {files}
+             WHERE itemid = $question->id
+               AND contextid = $question->contextid
+               AND component = 'question'
+               AND filearea = 'questiontext'
+               AND filename = '$filename'";
+        $files[] = $DB->get_record_sql($sql);
     }
 
+    foreach ($files as $file) {
+        unset($file->id);
+        unset($file->pathnamehash);
+        mod_flashcards_save_file($file, $question2fcid, 'questiontext');
+        mod_flashcards_save_file($file, $answerid, 'answer');
+    }
 }
 /**
  * copy multichoice to flashcard
@@ -954,8 +1026,12 @@ function mod_flashcards_save_file($file, $itemid, $filearea) {
     $file->itemid = $itemid;
     $file->filearea = $filearea;
     $file->timecreated = time();
-    $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $filearea, $itemid, '/', $file->filename);
-    $DB->insert_record('files', $file);
+    $filename = $file->filename;
+
+    $file->pathnamehash = $fs->get_pathname_hash($file->contextid, 'question', $filearea, $itemid, '/', $filename);
+    if ($file->filesize > 0) {
+        $DB->insert_record('files', $file);
+    }
 }
 /**
  * create flashcard
@@ -1030,7 +1106,6 @@ function mod_flashcards_move_question($flashcardsid, $qids, $currentbox=null) {
             $DB->update_record('flashcards_q_stud_rel', ['id' => $recid->id, 'currentbox' => $currentbox]);
         } else {
             $questionentry = [
-                'flashcardsid' => $flashcardsid,
                 'fqid' => $question,
                 'studentid' => $USER->id,
                 'active' => 1,

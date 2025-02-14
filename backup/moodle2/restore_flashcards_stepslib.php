@@ -115,6 +115,11 @@ class restore_flashcards_activity_structure_step extends restore_questions_activ
     protected function after_execute() {
         $this->add_related_files('mod_flashcards', 'intro', null);
     }
+    /**
+     * inform_new_usage_id
+     *
+     * @param unknown $newusageid
+     */
     protected function inform_new_usage_id($newusageid) {
     }
 

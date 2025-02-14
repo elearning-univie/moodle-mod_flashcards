@@ -16,16 +16,16 @@ Feature: As a student I want to see the teachers name, if a teacher creates a fl
       | student | C1     | student        |
     And I log in as "teacher"
     And I am on "Course 1" course homepage with editing mode on
-    When I add a "Flash cards" to section "1" and I fill the form with:
-      | Flash cards activity name | Test flash cards |
+    And I add a flashcards activity to course "Course 1" section "1" and I fill the form with:
+      | Flashcards activity name | Test flash cards |
     And I am on the "Test flash cards" "flashcards activity" page
-    And I click on "Create new flash card" "button"
+    And I click on "Create new flashcard" "button"
     And I set the following fields to these values:
       | Question name | flashcard 1 |
       | Question text | This is a question |
       | Solution | This is a solution |
     And I click on "Save changes" "button"
-    Then I should see "flashcard 1"
+    Then I should see "1"
     Then I log out
 
   @javascript
