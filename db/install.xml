@@ -36,10 +36,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fc_qsr_unique" TYPE="unique" FIELDS="fqid, studentid"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="uniqueidindex" UNIQUE="true" FIELDS="fqid, studentid"/>
-      </INDEXES>
     </TABLE>
     <TABLE NAME="flashcards_question" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
