@@ -21,6 +21,7 @@
  * @copyright  2023 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require('../../config.php');
 
 global $PAGE, $OUTPUT, $DB, $CFG, $COURSE;

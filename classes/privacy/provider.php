@@ -83,8 +83,6 @@ class provider implements
         $collection->add_database_table(
             'flashcards_q_stud_rel',
             [
-                'flashcardsid' => 'privacy:metadata:flashcards_q_stud_rel:flashcardsid',
-                'questionid' => 'privacy:metadata:flashcards_q_stud_rel:questionid',
                 'studentid' => 'privacy:metadata:flashcards_q_stud_rel:studentid',
                 'active' => 'privacy:metadata:flashcards:active',
                 'currentbox' => 'privacy:metadata:flashcards_q_stud_rel:currentbox',
@@ -92,6 +90,7 @@ class provider implements
                 'tries' => 'privacy:metadata:flashcards_q_stud_rel:tries',
                 'wronganswercount' => 'privacy:metadata:flashcards_q_stud_rel:wronganswercount',
                 'peerreview' => 'privacy:metadata:flashcards_q_stud_rel:peerreview',
+                'fqid' => 'privacy:metadata:flashcards_q_stud_rel:questionid',
             ],
             'privacy:metadata:flashcards_q_stud_rel'
             );
@@ -178,15 +177,14 @@ class provider implements
         }
 
         $user = $contextlist->get_user();
-        $sql = "SELECT c.id contextid, cm.instance flashcards
+        $sql = "SELECT c.id contextid, qsr.id qsrid
                 FROM {context} c
                 JOIN {course_modules} cm ON cm.id = c.instanceid  AND contextlevel = 70
                 JOIN {modules} m ON m.id = cm.module AND m.name = 'flashcards'
-                AND EXISTS (
-                        SELECT 1
-                        FROM {flashcards_q_stud_rel} l
-                        WHERE studentid = :userid AND flashcardsid = cm.instance)";
-        $params = [ 'userid' => $user->id];
+                JOIN {flashcards_question} q ON q.cid = cm.instance
+                JOIN {flashcards_q_stud_rel} qsr ON qsr.fqid = q.id
+                WHERE studentid = :userid";
+        $params = ['userid' => $user->id];
 
         $flashcards = $DB->get_records_sql($sql, $params);
 
@@ -196,8 +194,8 @@ class provider implements
             $context = \context::instance_by_id($flashcardsinstance->contextid);
             $sql = "SELECT sr.*
                       FROM {flashcards_q_stud_rel} sr
-                     WHERE sr.flashcardsid =:fcid AND sr.studentid =:userid";
-            $studrellist = $DB->get_records_sql($sql, ["userid" => $user->id, "fcid" => $flashcardsinstance->flashcards]);
+                     WHERE sr.id =:qsrid AND sr.studentid =:userid";
+            $studrellist = $DB->get_records_sql($sql, ["userid" => $user->id, "qsrid" => $flashcardsinstance->qsrid]);
             if ($studrellist) {
                 $exportobject->studrellist = $studrellist;
             }
@@ -229,8 +227,9 @@ class provider implements
         $sql = "SELECT qa.userid
                   FROM {course_modules} cm
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modname
-                  JOIN {flashcards} q ON q.id = cm.instance
-                  JOIN {flashcards_q_stud_rel} qa ON qa.flashcardsid = q.id
+                  JOIN {flashcards} f ON f.id = cm.instance
+                  JOIN {flashcards_question} q ON q.fcid = f.id
+                  JOIN {flashcards_q_stud_rel} sr ON sr.fqid = q.id
                  WHERE cm.id = :cmid AND qa.preview = 0";
         $userlist->add_from_sql('userid', $sql, $params);
     }
@@ -292,20 +291,40 @@ class provider implements
      */
     private function do_delete($flashcardsid, $userid) {
         global $DB;
-        $DB->delete_records('flashcards_q_stud_rel', ['flashcardsid' => $flashcardsid, 'studentid' => $userid]);
+
+        $questions = $DB->get_records('flashcards_question', ['fcid' => $flashcardsid], '', 'id');
+
+        if (!empty($questions)) {
+            $questionids = array_keys($questions);
+            list($insql, $params) = $DB->get_in_or_equal($questionids, SQL_PARAMS_NAMED);
+            $params['studentid'] = $userid;
+            $DB->delete_records_select('flashcards_q_stud_rel',
+                "fqid $insql AND studentid = :studentid", $params);
+        }
+
         $DB->delete_records('flashcards_stud_xp_events', ['flashcardsid' => $flashcardsid, 'studentid' => $userid]);
 
         list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
         $contextparams['createdby'] = $contextlist->get_user()->id;
-        $DB->set_field_select('question', 'createdby', 0, "
-                category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-            AND createdby = :createdby  AND qtype = 'flashcard'", $contextparams);
+        $DB->set_field_select(
+            'question',
+            'createdby',
+            0,
+            "category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
+         AND createdby = :createdby AND qtype = 'flashcard'",
+            $contextparams
+        );
 
         list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
         $contextparams['modifiedby'] = $contextlist->get_user()->id;
-        $DB->set_field_select('question', 'modifiedby', 0, "
-                category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-            AND modifiedby = :modifiedby AND qtype = 'flashcard'", $contextparams);
+        $DB->set_field_select(
+            'question',
+            'modifiedby',
+            0,
+            "category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
+         AND modifiedby = :modifiedby AND qtype = 'flashcard'",
+            $contextparams
+        );
     }
 }
 

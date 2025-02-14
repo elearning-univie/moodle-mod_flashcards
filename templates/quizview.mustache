@@ -1,0 +1,42 @@
+{{!
+  This file is part of Moodle - http://moodle.org/
+
+  Moodle is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Moodle is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_flashcards/quizview
+
+    Example context (json):
+    {
+    }
+}}
+<div class="btn-div">
+    <a href="{{returnurl}}" class="btn btn-secondary" role="button">{{# str }} backtooverviewbutton, mod_flashcards {{/ str }}</a>
+</div>
+<div class="col-10 py-2">
+    <h2 class="box-title">{{boxheader}}</h2>
+    {{#boxdecorationurl}}
+    <img class="box-smiley" src="{{{boxdecorationurl}}}" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}">
+    {{/boxdecorationurl}}
+</div>
+<div>
+    {{#learnprogress}}
+    <div id="mod-flashcards-learning-progress" class="progress mb-2">
+        {{{learnprogress}}}
+    </div>
+    {{/learnprogress}}
+    <div id="mod-flashcards-question">
+        {{{renderedquestion}}}
+    </div>
+</div>

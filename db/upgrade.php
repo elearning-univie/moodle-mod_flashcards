@@ -154,5 +154,21 @@ function xmldb_flashcards_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024010100.02, 'flashcards');
     }
 
+    if ($oldversion < 2024042202.01) {
+        $table = new xmldb_table('flashcards_q_stud_rel');
+        $field = new xmldb_field('flashcardsid');
+
+        if ($dbman->field_exists($table, $field)) {
+            $key = new xmldb_key('flashcards_q_stud_rel', XMLDB_KEY_UNIQUE, ['flashcardsid', 'fqid', 'studentid']);
+            $dbman->drop_key($table, $key);
+
+            $key = new xmldb_key('flashcards_q_stud_rel', XMLDB_KEY_UNIQUE, ['fqid', 'studentid']);
+            $dbman->add_key($table, $key);
+
+            $dbman->drop_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2024042202.01, 'flashcards');
+    }
+
     return true;
 }

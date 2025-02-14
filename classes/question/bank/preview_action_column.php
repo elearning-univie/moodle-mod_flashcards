@@ -24,7 +24,13 @@ namespace mod_flashcards\question\bank;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class preview_action_column extends \core_question\local\bank\column_base {
-
+    /**
+     *
+     * get_extra_classes
+     *
+     * {@inheritDoc}
+     * @see \core_question\local\bank\column_base::get_extra_classes()
+     */
     public function get_extra_classes(): array {
         return ['iconcol'];
     }

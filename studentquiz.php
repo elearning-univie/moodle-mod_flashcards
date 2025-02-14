@@ -21,6 +21,7 @@
  * @copyright  2021 University of Vienna
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 
@@ -33,11 +34,10 @@ list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
+require_capability('mod/flashcards:view', $context);
 
 $PAGE->set_url(new moodle_url("/mod/flashcards/studentquiz.php", ['id' => $id, 'box' => $box]));
-$node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
-
-if ($node) {
+if ($node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING)) {
     $node->make_active();
 }
 
@@ -45,46 +45,34 @@ $pagetitle = get_string('pagetitle', 'flashcards');
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
-echo $OUTPUT->header();
+$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
+$returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
+$qid = mod_flashcards_get_next_question($flashcards->id, $box);
+$questionrenderer = $PAGE->get_renderer('mod_flashcards');
 
-if (has_capability('mod/flashcards:view', $context)) {
-    $flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
-    $returnurl = new moodle_url('/mod/flashcards/studentview.php', ['id' => $id]);
-    $returnto = $returnurl->out(true);
-    echo '<div class="btn-div">
-          <a href="' . $returnto .'" class="btn btn-secondary" role="button">' . get_string('backtooverviewbutton', 'mod_flashcards') . '</a>
-          </div>';
+if ($box === -1) {
+    $boxheader = get_string('boxheaderlearnnow', 'mod_flashcards');
+    $lncount = $_SESSION[FLASHCARDS_LN_COUNT . $flashcards->id];
+    $lnknown = $_SESSION[FLASHCARDS_LN_KNOWN . $flashcards->id];
+    $lnunknown = $_SESSION[FLASHCARDS_LN_UNKNOWN . $flashcards->id];
+    $learnprogress = $questionrenderer->render_learn_progress($lncount, $lnknown, $lnunknown);
+    $boxdecorationurl = false;
 
-    $boxheader = get_string('boxheader_' . $box, 'mod_flashcards');
-    $boxdecorationurl = $OUTPUT->image_url('box' . $box . 'deco', 'mod_flashcards');
-    echo '<div class="col-10 py-2">
-             <h2 class="box-title">' . $boxheader . '</h2>
-              <img class="box-smiley" src="' . $boxdecorationurl . '" alt="{{# str }} smileyalt, mod_flashcards {{/ str }}">
-           </div>';
-
-    $qid = mod_flashcards_get_next_question($flashcards->id, $box);
-    $questionrenderer = $PAGE->get_renderer('mod_flashcards');
-
-    $questionhtml = '<div>';
-    if ($box == -1) {
-        $lncount = $_SESSION[FLASHCARDS_LN_COUNT . $flashcards->id];
-        $lnknown = $_SESSION[FLASHCARDS_LN_KNOWN . $flashcards->id];
-        $lnunknown = $_SESSION[FLASHCARDS_LN_UNKNOWN . $flashcards->id];
-        $questionhtml .= '<div id="mod-flashcards-learning-progress" class="progress mb-2">';
-        $questionhtml .= $questionrenderer->render_learn_progress($lncount, $lnknown, $lnunknown);
-        $questionhtml .= '</div>';
-
-        mod_flashcards_load_xp_events($flashcards->id, true);
-    }
-    $questionhtml .= '<div id="mod-flashcards-question">';
-    $questionhtml .= $questionrenderer->render_flashcard($flashcards->id, $USER->id, $box, $qid);
-    $questionhtml .= '</div>';
-    $questionhtml .= '</div>';
-
-    echo $questionhtml;
-    echo $OUTPUT->footer();
+    mod_flashcards_load_xp_events($flashcards->id, true);
 } else {
-    echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
-    echo $OUTPUT->footer();
-    die();
+    $boxheader = get_string('boxheader_' . $box, 'mod_flashcards');
+    $learnprogress = false;
+    $boxdecorationurl = $OUTPUT->image_url('box' . $box . 'deco', 'mod_flashcards');
 }
+
+$templatecontent = [
+    'returnurl' => $returnurl->out(true),
+    'boxheader' => $boxheader,
+    'boxdecorationurl' => $boxdecorationurl,
+    'learnprogress' => $learnprogress,
+    'renderedquestion' => $questionrenderer->render_flashcard($flashcards->id, $USER->id, $box, $qid),
+];
+
+echo $OUTPUT->header();
+echo $questionrenderer->render_from_template('mod_flashcards/quizview', $templatecontent);
+echo $OUTPUT->footer();
