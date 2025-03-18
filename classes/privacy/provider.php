@@ -181,7 +181,7 @@ class provider implements
                 FROM {context} c
                 JOIN {course_modules} cm ON cm.id = c.instanceid  AND contextlevel = 70
                 JOIN {modules} m ON m.id = cm.module AND m.name = 'flashcards'
-                JOIN {flashcards_question} q ON q.cid = cm.instance
+                JOIN {flashcards_question} q ON q.fcid = cm.instance
                 JOIN {flashcards_q_stud_rel} qsr ON qsr.fqid = q.id
                 WHERE studentid = :userid";
         $params = ['userid' => $user->id];
