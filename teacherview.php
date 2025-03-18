@@ -35,14 +35,18 @@ $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $filter = optional_param('fcfilter', 1, PARAM_INT);
 
-$params = [
-    'cmid' => $cmid,
-];
-
 if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
 }
-$params['perpage'] = $perpage;
+
+$params = [
+    'cmid' => $cmid,
+    'perpage' => $perpage,
+];
+
+if ($filter != 1) {
+    $params['fcfilter'] = $filter;
+}
 
 list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);

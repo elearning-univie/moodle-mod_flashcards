@@ -15,25 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Calls the question engine to render a question
+ * Renderer for flashcard questions.
+ *
+ * @package mod_flashcards
+ * @copyright 2025 University of Vienna
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace mod_flashcards\output;
+
+use context_module;
+use plugin_renderer_base;
+use question_bank;
+use question_display_options;
+use question_engine;
+use renderable;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
+
+/**
+ * Class renderer
  *
  * @package   mod_flashcards
  * @copyright 2021 University of Vienna
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once('locallib.php');
-
-/**
- * Class renderer
- *
- * @copyright 2021 University of Vienna
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class mod_flashcards_renderer extends plugin_renderer_base {
-
+class renderer extends plugin_renderer_base {
     /**
      * Creates a flashcard object and calls the question renderer
      *
@@ -99,13 +108,6 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $this->page->set_context($context);
 
         $this->page->requires->js_call_amd('mod_flashcards/studentcontroller', 'init');
-        $jsmodule = [
-                'name' => 'core_question_engine',
-                'fullpath' => '/question/qengine.js',
-        ];
-        $this->page->requires->js_init_call('M.core_question_engine.init_form',
-                ['#mod-flashcards-responseform'], false, $jsmodule);
-
         $quba = question_engine::make_questions_usage_by_activity('mod_flashcards', $context);
         $quba->set_preferred_behaviour('immediatefeedback');
 
@@ -120,9 +122,9 @@ class mod_flashcards_renderer extends plugin_renderer_base {
         $qaid = $quba->get_question_attempt(1)->get_database_id();
 
         $result = '<form id="mod-flashcards-responseform" method="post"' .
-                   'action="javascript:;" onsubmit="window.modFlashcardsCallUpdate(' .
-                   $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
-                   ')" enctype="multipart/form-data" accept-charset="utf-8">';
+            'action="javascript:;" onsubmit="window.modFlashcardsCallUpdate(' .
+            $flashcard->id . ',' . $flashcard->questionid . ',' . $qaid . ',' . $cm->id .
+            ')" enctype="multipart/form-data" accept-charset="utf-8">';
         $result .= "\n<div>\n";
 
         $options = new question_display_options();
