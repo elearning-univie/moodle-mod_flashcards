@@ -60,7 +60,7 @@ function flashcards_supports($feature) {
  * @return bool
  */
 function flashcards_add_instance($flashcards) {
-    global $DB;
+    global $DB, $COURSE;
 
     $flashcardsdb = flashcards_get_database_object($flashcards);
     $id = $DB->insert_record('flashcards', $flashcardsdb);
@@ -84,7 +84,7 @@ function flashcards_check_category($flashcards, $courseid) {
     $coursecontext = context_course::instance($courseid);
     $contexts = [$coursecontext->id => $coursecontext];
 
-    $defaultcategoryobj = question_make_default_categories($contexts);
+//     $defaultcategoryobj = question_make_default_categories($contexts);
     $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
 
     foreach ($coursecategorylist as $category) {
@@ -100,21 +100,22 @@ function flashcards_check_category($flashcards, $courseid) {
         }
         $newparent = $flashcards->category;
     } else {
-        $newparent = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
+        return false;
+//         $newparent = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
     }
 
     if ($flashcards->newcategory) {
         $newcategoryname = get_string('modulenameplural', 'flashcards') . '_' . $flashcards->name;
         $qcontext = new \core_question\local\bank\question_edit_contexts($coursecontext);
-        $qcobject = new \qbank_managecategories\question_category_object(null,
-            new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-            $qcontext->having_one_edit_tab_cap('categories'), 0, $defaultcategoryobj->id, 0,
-            $qcontext->having_cap('moodle/question:add'));
-        $categoryid = $qcobject->add_category($newparent, $newcategoryname, '', true);
-        // $categorymanager = new category_manager();
-        // $categoryid = $categorymanager->add_category($newparent, $newcategoryname, '');
+//         $qcobject = new \qbank_managecategories\question_category_object(null,
+//             new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
+//             $qcontext->having_one_edit_tab_cap('categories'), 0, $defaultcategoryobj->id, 0,
+//             $qcontext->having_cap('moodle/question:add'));
+        //$categoryid = $qcobject->add_category($newparent, $newcategoryname, '', true);
+         $categorymanager = new category_manager();
+         $categoryid = $categorymanager->add_category($newparent, $newcategoryname, '');
 
-        return $categoryid;
+        return 0;
     } else {
         return $catid;
     }
@@ -181,8 +182,13 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->course = $COURSE->id;
     $flashcardsdb->name = $flashcards->name;
 
-    $flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
-
+    $fccatid = flashcards_check_category($flashcards, $COURSE->id);
+    if (!$fccatid) {
+        $fccatid = 0;
+    }
+    //$flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
+    $flashcardsdb->categoryid = $fccatid;
+    
     if (!isset($flashcardsdb->categoryid)) {
         throw new \moodle_exception('invalidcategoryid');
         return;
@@ -375,7 +381,9 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     $thispageurl = new \moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $cmid]);
     $thiscontext = \context_module::instance($cmid);
     $contexts = new \core_question\local\bank\question_edit_contexts($thiscontext);
-    $defaultcategory = question_make_default_categories($contexts->all());
+    //$defaultcategory = question_make_default_categories($contexts->all());
+    $defaultcategory = question_get_default_category($contexts->lowest()->id, true);
+    
     $params['cat'] = implode(',', [$defaultcategory->id, $defaultcategory->contextid]);
 
     $course = get_course($params['courseid']);
@@ -403,7 +411,8 @@ function flashcards_extend_settings_navigation(settings_navigation $settingsnav,
         $url = new moodle_url('/mod/flashcards/teacherview.php', ['cmid' => $settingsnav->get_page()->cm->id]);
         $wordcloudnode->add(get_string('teacherview', 'mod_flashcards'), $url, navigation_node::TYPE_SETTING, null, 'mod_flashcards_teacherview');
 
-        $url = new moodle_url('/question/edit.php', ['courseid' => $settingsnav->get_page()->cm->course]);
+       // $url = new moodle_url('/question/edit.php', ['courseid' => $settingsnav->get_page()->cm->course]);
+        $url = new moodle_url('/question/edit.php', ['cmid' => $settingsnav->get_page()->cm->id]);
         $wordcloudnode->add(get_string('qbank', 'mod_flashcards'), $url, navigation_node::TYPE_SETTING, null, 'mod_flashcards_qbank')->set_force_into_more_menu(true);
     }
 }

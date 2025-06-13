@@ -58,4 +58,9 @@ $observers = [
         'callback'    => '\mod_flashcards\event\levelup_thirdcheckpoint::get_name',
         'internal'    => false,
     ],
+    [
+        'eventname'   => 'core\event\course_module_created',
+        'callback'    => '\mod_flashcards\event\flashcardcreation_observer::flashcard_created',
+        'internal'    => false,
+    ],
 ];
