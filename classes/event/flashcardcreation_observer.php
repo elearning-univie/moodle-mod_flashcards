@@ -37,13 +37,13 @@ class flashcardcreation_observer {
      */
     public static function flashcard_created(\core\event\course_module_created $event) {
         global $DB, $USER;
-        
+
         $cmid = $event->objectid;
         $data = $event->other;
         $fcid = $data['instanceid'];
-        $modulename = $data['modulename']; 
+        $modulename = $data['modulename'];
 
-        if (strcmp($modulename,'flashcards')==0) {
+        if (strcmp($modulename, 'flashcards') == 0) {
             $flashcard = $DB->get_record('flashcards', ['id' => $fcid]);
             if ($flashcard->categoryid == 0) {
                 $thiscontext = \context_module::instance($cmid);
