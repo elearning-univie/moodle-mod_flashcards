@@ -118,7 +118,7 @@ function mod_flashcards_create_student_category_if_not_exists($contextid, $flash
         ['contextid' => $contextid, 'parent' => $categoryid, 'name' => get_string('createdbystudents', 'mod_flashcards')]);
 
     $resultlist = $DB->get_fieldset('flashcards',  'id', ['course' => $courseid, 'studentsubcat' => $subcatid]);
-    if (!empty($resultlist)){
+    if (!empty($resultlist)) {
         $subcatid = null;
     }
 
