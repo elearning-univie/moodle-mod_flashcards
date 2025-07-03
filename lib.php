@@ -209,7 +209,7 @@ function flashcards_get_database_object($flashcards, bool $isedit = false) {
     }
 
     $flashcardsdb->studentsubcat = null;
-  // if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
+    // if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
 
     $context = context_course::instance($COURSE->id);
     $contextid = $context->id;
