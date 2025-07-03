@@ -74,6 +74,7 @@ function flashcards_add_instance($flashcards) {
  *
  * @param stdClass $flashcards
  * @param int $courseid
+ * @param bool $isedit
  * @return number
  */
 function flashcards_check_category($flashcards, $courseid, bool $isedit = false) {

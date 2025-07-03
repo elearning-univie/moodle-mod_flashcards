@@ -108,6 +108,7 @@ function mod_flashcards_get_next_question($flashcardsid, $boxid) {
  * @param int $contextid
  * @param stdClass $flashcards
  * @param int $categoryid
+ * @param int $courseid
  * @return int
  *
  */
