@@ -76,8 +76,8 @@ function flashcards_add_instance($flashcards) {
  * @param int $courseid
  * @return number
  */
-function flashcards_check_category($flashcards, $courseid) {
-    global $CFG;
+function flashcards_check_category($flashcards, $courseid, bool $isedit = false) {
+    global $CFG, $DB;
     require_once($CFG->dirroot . '/question/editlib.php');
 
     $categorylist = [];
@@ -86,7 +86,6 @@ function flashcards_check_category($flashcards, $courseid) {
 
 //     $defaultcategoryobj = question_make_default_categories($contexts);
     $coursecategorylist = question_get_top_categories_for_contexts([$coursecontext->id]);
-
     foreach ($coursecategorylist as $category) {
         list($catid, $catcontextid) = explode(",", $category);
         $categorylist = array_merge(question_categorylist($catid), $categorylist);
@@ -99,22 +98,15 @@ function flashcards_check_category($flashcards, $courseid) {
             return;
         }
         $newparent = $flashcards->category;
-    } else {
-        return false;
-//         $newparent = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
+    }
+    
+    if ($isedit) {
+        
     }
 
     if ($flashcards->newcategory) {
         $newcategoryname = get_string('modulenameplural', 'flashcards') . '_' . $flashcards->name;
         $qcontext = new \core_question\local\bank\question_edit_contexts($coursecontext);
-//         $qcobject = new \qbank_managecategories\question_category_object(null,
-//             new moodle_url("/mod/flashcards/view.php", ['id' => $courseid]),
-//             $qcontext->having_one_edit_tab_cap('categories'), 0, $defaultcategoryobj->id, 0,
-//             $qcontext->having_cap('moodle/question:add'));
-        //$categoryid = $qcobject->add_category($newparent, $newcategoryname, '', true);
-         $categorymanager = new category_manager();
-         $categoryid = $categorymanager->add_category($newparent, $newcategoryname, '');
-
         return 0;
     } else {
         return $catid;
@@ -136,7 +128,7 @@ function flashcards_delete_instance(int $id) {
 
     $transaction = $DB->start_delegated_transaction();
 
-    $questions = $DB->get_records('flashcards_question', ['fcid' => $id], '', 'id');
+    $questions = $DB->get_records('flashcards_question', ['fcid' => $id], '', 'id'); 
     $questionids = array_keys($questions);
 
     // If there are any questions, delete the corresponding question_references.
@@ -171,9 +163,10 @@ function flashcards_delete_instance(int $id) {
  * flashcards_get_database_object
  *
  * @param stdClass $flashcards
+ * @param bool $isedit
  * @return stdClass
  */
-function flashcards_get_database_object($flashcards) {
+function flashcards_get_database_object($flashcards, bool $isedit = false) {
     global $COURSE;
     require_once('locallib.php');
 
@@ -183,12 +176,12 @@ function flashcards_get_database_object($flashcards) {
     $flashcardsdb->name = $flashcards->name;
 
     $fccatid = flashcards_check_category($flashcards, $COURSE->id);
-    if (!$fccatid) {
+    if (!$fccatid && !$isedit) {
         $fccatid = 0;
     }
     //$flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
     $flashcardsdb->categoryid = $fccatid;
-    
+   // print_object($flashcardsdb);
     if (!isset($flashcardsdb->categoryid)) {
         throw new \moodle_exception('invalidcategoryid');
         return;
@@ -220,17 +213,23 @@ function flashcards_get_database_object($flashcards) {
     }
 
     $flashcardsdb->studentsubcat = null;
-    if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
-        if ($flashcards->addfcstudent == 1) {
-            $flashcardsdb->inclsubcats = 1;
-            $context = context_course::instance($COURSE->id);
-            $contextid = $context->id;
-            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid);
+  //  if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
+  
+    $context = context_course::instance($COURSE->id);
+    $contextid = $context->id;
+    if ($isedit) {
+        if ($flashcardsdb->addfcstudent == 1) {
+            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid, $COURSE->id);
             $flashcardsdb->studentsubcat = $subcatid;
+            //$flashcardsdb->studentsubcat = $flashcards->studentsubcat;
+        } else {
+            $flashcardsdb->studentsubcat = null;
         }
     } else {
-        if ($flashcardsdb->addfcstudent == 1) {
-            $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
+        if ($flashcards->addfcstudent == 1) {
+            $flashcardsdb->inclsubcats = 1;
+            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid, $COURSE->id);
+            $flashcardsdb->studentsubcat = $subcatid;
         }
     }
     return $flashcardsdb;
@@ -281,7 +280,7 @@ function flashcards_update_instance($flashcards) {
     global $DB;
     require_once('locallib.php');
 
-    $flashcardsdb = flashcards_get_database_object($flashcards);
+    $flashcardsdb = flashcards_get_database_object($flashcards, true);
     $flashcardsdb->id = $flashcards->instance;
     $DB->update_record('flashcards', $flashcardsdb);
 

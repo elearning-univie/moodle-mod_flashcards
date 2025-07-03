@@ -111,11 +111,16 @@ function mod_flashcards_get_next_question($flashcardsid, $boxid) {
  * @return int
  *
  */
-function mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $categoryid) {
+function mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $categoryid, $courseid) {
     global $DB;
 
     $subcatid = $DB->get_field('question_categories', 'id',
         ['contextid' => $contextid, 'parent' => $categoryid, 'name' => get_string('createdbystudents', 'mod_flashcards')]);
+
+    $resultlist = $DB->get_fieldset('flashcards',  'id', ['course' => $courseid, 'studentsubcat' => $subcatid]);
+    if (!empty($resultlist)){
+        $subcatid = null;
+    }
 
     if (!$flashcards->studentsubcat && !$subcatid) {
         $cat = new stdClass();

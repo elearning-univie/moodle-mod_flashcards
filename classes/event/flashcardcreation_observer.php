@@ -50,12 +50,14 @@ class flashcardcreation_observer {
 
                 $contexts = new \core_question\local\bank\question_edit_contexts($thiscontext);
                 $defaultcategoryobj = question_get_default_category($contexts->lowest()->id, true);
-                $newparent = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
-                $newcategoryname = get_string('modulenameplural', 'flashcards') . '_' . $flashcard->name;
-                $categorymanager = new category_manager();
-                $categoryid = $categorymanager->add_category($newparent, $newcategoryname, '');
-                $flashcard->categoryid = $categoryid;
+                $flashcard->categoryid = $defaultcategoryobj->id;
                 $DB->update_record('flashcards', $flashcard);
+                if ($flashcard->addfcstudent == 1) {
+                    $studentsubcat = $DB->get_record('question_categories', ['id' => $flashcard->studentsubcat]);
+                    $studentsubcat->parent = $defaultcategoryobj->id;
+                    $studentsubcat->contextid = $defaultcategoryobj->contextid;
+                    $DB->update_record('question_categories', $studentsubcat);
+                }
             }
         }
 
