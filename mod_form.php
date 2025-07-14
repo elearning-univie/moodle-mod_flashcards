@@ -71,9 +71,11 @@ class mod_flashcards_mod_form extends moodleform_mod {
             $mform->setType('category', PARAM_RAW);
             $mform->setDefault('category', $catdefault);
             $mform->addElement('hidden', 'fcstudcatvis', 'no');
+            $mform->setType('fcstudcatvis', PARAM_TEXT);
         } else {
             $mform->setDefault('newcategory', 1);
             $mform->addElement('hidden', 'fcstudcatvis', 'yes');
+            $mform->setType('fcstudcatvis', PARAM_TEXT);
         }
 
         $mform->addElement('select', 'addfcstudent', get_string('addfcstudent', 'flashcards'),
