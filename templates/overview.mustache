@@ -21,44 +21,52 @@
     {
     }
 }}
-<div class="container">
-    <div class="row py-3 alert-info infobox">
-        <div>
-            <div class="col">
-                {{notification}}
-                {{# str}} overviewinfo, mod_flashcards {{/str}}
-            </div>
+<div class="container-fluid my-3" data-region="flashcards-overview">
+    <div class="row mb-3">
+        <div class="col alert alert-info py-3" role="status">
+            {{#str}} overviewinfo, mod_flashcards {{/str}}
         </div>
     </div>
-    <div class="row py-3">
-        <div class="col-auto pl-0">
-            <button class="btn btn-primary" onclick="window.location.href = '{{createbtnlink}}';">{{# str }} createflashcardbutton, mod_flashcards {{/ str }}</button>
+
+    <div class="row g-2 mb-4">
+        <div class="col-auto ps-0">
+            <a class="btn btn-primary" href="{{createbtnlink}}">
+                {{#str}} createflashcardbutton, mod_flashcards {{/str}}
+            </a>
         </div>
         <div class="col-auto">
-            <button class="btn btn-secondary" onclick="window.location.href = '{{teacherviewlink}}';">{{#str}} teacherviewedit, mod_flashcards {{/str}}</button>
+            <a class="btn btn-secondary" href="{{teacherviewlink}}">
+                {{#str}} teacherviewedit, mod_flashcards {{/str}}
+            </a>
         </div>
         <div class="col-auto">
-            <button class="btn btn-secondary" onclick="window.location.href = '{{studentviewlink}}';">{{#str}} viewstudentview, mod_flashcards {{/str}}</button>
+            <a class="btn btn-secondary" href="{{studentviewlink}}">
+                {{#str}} viewstudentview, mod_flashcards {{/str}}
+            </a>
         </div>
         <div class="col"></div>
     </div>
-    <div class="row py-3">
-        <h3>
-            {{# str }} overview, core_group {{/ str }}
-        </h3>
+
+    <div class="row mb-2">
+        <div class="col">
+            <h3>{{#str}} overview, core_group {{/str}}</h3>
+        </div>
     </div>
-    <div class="row py-3">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <tbody>
-                {{#listentries}}
-                    <tr>
-                        <td>{{text}}</td>
-                        <td>{{{link}}}</td>
-                    </tr>
-                {{/listentries}}
-                </tbody>
-            </table>
+
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <tbody>
+                    {{#listentries}}
+                        <tr>
+                            <td>{{text}}</td>
+                            <td>{{{link}}}</td>
+                        </tr>
+                    {{/listentries}}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
