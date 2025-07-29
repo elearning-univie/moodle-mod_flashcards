@@ -24,6 +24,8 @@
 
 namespace mod_flashcards\question\bank;
 
+defined('MOODLE_INTERNAL') || die();
+
 use coding_exception;
 use core\output\datafilter;
 use core_question\local\bank\column_base;
@@ -34,7 +36,6 @@ use mod_flashcards;
 use mod_flashcards\question\bank\filter\custom_category_condition;
 use question_bank;
 
-defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/flashcards/locallib.php');
 /**
  * Subclass to customise the view of the question bank for the quiz editing screen.
@@ -56,6 +57,13 @@ class custom_view extends \core_question\local\bank\view {
      * @var string $component the component the api is used from.
      */
     public $component = 'mod_flashcards';
+
+    /**
+     * Determine if the 'switch question bank' button must be displayed.
+     *
+     * @var bool
+     */
+    protected bool $requirebankswitch;
 
     /**
      * Constructor
@@ -85,6 +93,7 @@ class custom_view extends \core_question\local\bank\view {
         $this->pagesize = self::DEFAULT_PAGE_SIZE;
         parent::__construct($contexts, $pageurl, $course, $cm, $params, $extraparams);
         [$this->flashcards, ] = get_module_from_cmid($cm->id);
+        $this->requirebankswitch = $extraparams['requirebankswitch'] ?? true;
     }
 
     /**
@@ -358,5 +367,45 @@ class custom_view extends \core_question\local\bank\view {
                 }
             }
         }
+    }
+
+    /**
+     * Shows the question bank interface.
+     *
+     * @return void
+     */
+    public function display(): void {
+
+        echo \html_writer::start_div('questionbankwindow boxwidthwide boxaligncenter', [
+            'data-component' => 'core_question',
+            'data-callback' => 'display_question_bank',
+            'data-contextid' => $this->contexts->lowest()->id,
+        ]);
+
+        // Show the 'switch question bank' button.
+        echo $this->display_bank_switch();
+
+        // Show the filters and search options.
+        $this->wanted_filters();
+        // Continues with list of questions.
+        $this->display_question_list();
+        echo \html_writer::end_div();
+    }
+
+    /**
+     * Get the current bank header and bank switch button.
+     *
+     * @return string
+     */
+    protected function display_bank_switch(): string {
+        global $OUTPUT;
+
+        if (!$this->requirebankswitch) {
+            return '';
+        }
+
+        $cminfo = \cm_info::create($this->cm);
+
+        return $OUTPUT->render_from_template('mod_flashcards/switch_bank_header', ['currentbank' => $cminfo->get_formatted_name()]);
     }
 }

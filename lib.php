@@ -316,18 +316,24 @@ function mod_flashcards_output_fragment_flashcards_question_bank($args): string 
     $querystring = parse_url($args['querystring'], PHP_URL_QUERY);
     parse_str($querystring, $params);
 
+    // Load the bank we are looking at rather than always the quiz module itself.
+    $params['cmid'] = clean_param($args['bankcmid'], PARAM_INT);
+
     $viewclass = \mod_flashcards\question\bank\custom_view::class;
     $extraparams['view'] = $viewclass;
 
+    // We need the quiz modid to POST back to.
+    $extraparams['quizcmid'] = clean_param($args['quizcmid'], PARAM_INT);
+
     // Build required parameters.
-    [$contexts, $thispageurl, $cm, $flashcards, $pagevars, $extraparams] =
+    [$contexts, $thispageurl, $cm, $pagevars, $extraparams] =
     mod_flashcards_build_required_params_for_custom_view($params, $extraparams);
 
     $course = get_course($cm->course);
     require_capability('mod/flashcards:editallquestions', $contexts->lowest());
 
     // Custom View.
-    $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $pagevars, $extraparams, $flashcards);
+    $questionbank = new $viewclass($contexts, $thispageurl, $course, $cm, $pagevars, $extraparams);
 
     // Output.
     $renderer = $PAGE->get_renderer('mod_flashcards', 'edit');
@@ -345,7 +351,7 @@ function mod_flashcards_build_required_params_for_custom_view(array $params, arr
     $viewclass = $extraparams['view'] ?? null;
     $defaultpagesize = $viewclass ? $viewclass::DEFAULT_PAGE_SIZE : DEFAULT_QUESTIONS_PER_PAGE;
     // Build the required params.
-    [$thispageurl, $contexts, $cmid, $cm, $module, $pagevars] = question_build_edit_resources(
+    [$thispageurl, $contexts, $cmid, $cm, , $pagevars] = question_build_edit_resources(
         'editq',
         '/mod/flashcards/teacherview.php',
         array_merge($params, $extraparams),
@@ -354,7 +360,7 @@ function mod_flashcards_build_required_params_for_custom_view(array $params, arr
     // Add cmid so we can retrieve later in extra params.
     $extraparams['cmid'] = $cmid;
 
-    return [$contexts, $thispageurl, $cm, $module, $pagevars, $extraparams];
+    return [$contexts, $thispageurl, $cm, $pagevars, $extraparams];
 }
 
 /**
@@ -396,6 +402,23 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     $questionbank->display_question_list();
     return ob_get_clean();
 }
+
+/**
+ * Build and return the output for the question bank and category chooser.
+ *
+ * @param array $args provided by the AJAX request.
+ * @return string html to render to the modal.
+ */
+function mod_flashcards_output_fragment_switch_question_bank($args): string {
+    global $USER, $COURSE, $OUTPUT;
+
+    $quizcmid = clean_param($args['quizcmid'], PARAM_INT);
+
+    $switchbankwidget = new \core_question\output\switch_question_bank($quizcmid, $COURSE->id, $USER->id);
+
+    return $OUTPUT->render($switchbankwidget);
+}
+
 /**
  * Adds module specific settings to the settings block
  *

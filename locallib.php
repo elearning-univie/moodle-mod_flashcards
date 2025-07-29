@@ -1125,3 +1125,32 @@ function mod_flashcards_move_question($flashcardsid, $qids, $currentbox=null) {
     }
     $DB->insert_records('flashcards_q_stud_rel', $questionarray);
 }
+
+function mod_flashcards_create_filter_values($flashcardsid, $selectedid) {
+    global $DB;
+    $valuetext = [
+        '1' => get_string('filterall', 'mod_flashcards'),
+        '2' => get_string('filterteachercreated', 'mod_flashcards'),
+        '3' => get_string('filterstudcreated', 'mod_flashcards'),
+        '4' => get_string('filternew', 'mod_flashcards'),
+        '5' => get_string('filterteacheradded', 'mod_flashcards'),
+        '6' => get_string('filterstudadded', 'mod_flashcards'),
+    ];
+
+    $selswitch = [1,2,5,3,6,4];
+    $addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_question} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcardsid]);
+    if ($addedbyisnull > 0) {
+        $selswitch = [1,2,3,4];
+    }
+
+    $filtervalues = [];
+    for ($i=0; $i < count($selswitch); $i++) {
+        $filtervalues[] = [
+            'value' => $selswitch[$i],
+            'text' => $valuetext[$selswitch[$i]],
+            'selected' => $selectedid == $selswitch[$i] ? 'selected' : '',
+        ];
+    }
+
+    return $filtervalues;
+}

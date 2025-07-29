@@ -21,18 +21,24 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import $ from 'jquery';
 import Modal from './add_question_modal';
 import * as Fragment from 'core/fragment';
 import * as FormChangeChecker from 'core_form/changechecker';
 import * as ModalEvents from 'core/modal_events';
+import * as Notification from "core/notification";
 
 const SELECTORS = {
-    ADD_TO_FLASHCARDS_CONTAINER: 'td.addtoflashcardsaction',
+    ADD_TO_QUIZ_CONTAINER: 'td.addtoquizaction',
     ANCHOR: 'a[href]',
-    PREVIEW_CONTAINER: 'td.previewaction',
+    PREVIEW_CONTAINER: 'td.previewquestionaction',
     ADD_QUESTIONS_FORM: 'form#questionsubmit',
     SORTERS: '.sorters',
+    SWITCH_TO_OTHER_BANK: 'button[data-action="switch-question-bank"]',
+    NEW_BANKMOD_ID: 'data-newmodid',
+    BANK_SEARCH: '#searchbanks',
+    GO_BACK_BUTTON: 'button[data-action="go-back"]',
+    ADD_ON_PAGE_FORM_ELEMENT: 'input[name="addonpage"]',
+    CMID_FORM_ELEMENT: 'form#questionsubmit input[name="cmid"]',
 };
 
 export default class ModalFlashcardsQuestionBank extends Modal {
@@ -42,8 +48,10 @@ export default class ModalFlashcardsQuestionBank extends Modal {
      * Create the question bank modal.
      *
      * @param {Number} contextId Current context id.
+     * @param {Number} bankCmId Current question bank course module id.
+     * @param {Number} quizCmId Current quiz course module id.
      */
-    static init(contextId) {
+    static init(contextId, bankCmId, quizCmId) {
         const selector = '.menu [data-action="questionbank"]';
         document.addEventListener('click', (e) => {
             const trigger = e.target.closest(selector);
@@ -54,6 +62,8 @@ export default class ModalFlashcardsQuestionBank extends Modal {
 
             ModalFlashcardsQuestionBank.create({
                 contextId,
+                quizCmId,
+                bankCmId,
                 title: trigger.dataset.header,
                 addOnPage: trigger.dataset.addonpage,
                 templateContext: {
@@ -90,13 +100,17 @@ export default class ModalFlashcardsQuestionBank extends Modal {
      * @param {string} querystring URL encoded string.
      */
     reloadBodyContent(querystring) {
-        // Load the question bank fragment to be displayed in the modal.
+        // Load the question bank fragment to be displayed in the modal and hide the 'go back' button.
+        this.hideFooter();
+        this.setTitle(this.originalTitle);
         this.setBody(Fragment.loadFragment(
             'mod_flashcards',
             'flashcards_question_bank',
             this.getContextId(),
             {
                 querystring,
+                quizcmid: this.quizCmId,
+                bankcmid: this.bankCmId,
             }
         ));
     }
@@ -116,6 +130,7 @@ export default class ModalFlashcardsQuestionBank extends Modal {
         // redirected.
         const href = new URL(anchorElement.attr('href'));
         href.searchParams.set('addonpage', this.getAddOnPageId());
+        href.searchParams.set('cmid', this.quizCmId);
         anchorElement.attr('href', href);
     }
 
@@ -162,32 +177,62 @@ export default class ModalFlashcardsQuestionBank extends Modal {
             // If the user clicks on the "Add selected questions to the flashcards" button to add some questions to the page
             // then we need to intercept the submit in order to include the correct "add on page id" before the form is
             // submitted.
-            const formElement = $(e.currentTarget);
+            const formElement = e.currentTarget;
+            document.querySelector(SELECTORS.ADD_ON_PAGE_FORM_ELEMENT).setAttribute('value', this.getAddOnPageId());
 
-            $('<input />').attr('type', 'hidden')
-                .attr('name', "addonpage")
-                .attr('value', this.getAddOnPageId())
-                .appendTo(formElement);
+            // We also need to set the form cmid & action as the quiz modid as this could be coming from a module that isn't a quiz.
+            document.querySelector(SELECTORS.CMID_FORM_ELEMENT).setAttribute('value', this.quizCmId);
+            const actionUrl = new URL(formElement.getAttribute('action'));
+            actionUrl.searchParams.set('cmid', this.quizCmId);
+            formElement.setAttribute('action', actionUrl.toString());
+        });
+
+        this.getModal().on('click', SELECTORS.SWITCH_TO_OTHER_BANK, () => {
+            this.handleSwitchBankContentReload(SELECTORS.BANK_SEARCH)
+                .then(function(ModalFlashcardsQuestionBank) {
+                        document.querySelector(SELECTORS.BANK_SEARCH)?.addEventListener('change', (e) => {
+                            const bankCmId = e.currentTarget.value;
+                            if (bankCmId > 0) {
+                                ModalFlashcardsQuestionBank.bankCmId = bankCmId;
+                                ModalFlashcardsQuestionBank.reloadBodyContent(window.location.search);
+                            }
+                        });
+                        document.querySelector(SELECTORS.GO_BACK_BUTTON).addEventListener('click', (e) => {
+                            ModalFlashcardsQuestionBank.bankCmId = e.currentTarget.value;
+                            ModalFlashcardsQuestionBank.reloadBodyContent(window.location.search);
+                        });
+                    }
+                )
+                .catch(Notification.exception);
         });
 
         this.getModal().on('click', SELECTORS.ANCHOR, (e) => {
-            const anchorElement = $(e.currentTarget);
+            const anchorElement = e.currentTarget;
 
             // If the anchor element was the add to quiz link.
-            if (anchorElement.closest(SELECTORS.ADD_TO_FLASHCARDS_CONTAINER).length) {
+            if (anchorElement.closest(SELECTORS.ADD_TO_FLASHCARDS_CONTAINER)) {
                 this.handleAddToFlashcardsEvent(e, anchorElement);
                 return;
             }
 
             // If the anchor element was a preview question link.
-            if (anchorElement.closest(SELECTORS.PREVIEW_CONTAINER).length) {
+            if (anchorElement.closest(SELECTORS.PREVIEW_CONTAINER)) {
                 this.handlePreviewContainerEvent(e, anchorElement);
                 return;
             }
 
             // Sorting links have their own handler.
-            if (anchorElement.closest(SELECTORS.SORTERS).length) {
+            if (anchorElement.closest(SELECTORS.SORTERS)) {
                 return;
+            }
+
+            if (anchorElement.closest('a[' + SELECTORS.NEW_BANKMOD_ID + ']')) {
+                this.bankCmId = anchorElement.getAttribute(SELECTORS.NEW_BANKMOD_ID);
+
+                // We need to clear the filter as we are about to reload the content.
+                const url = new URL(location.href);
+                url.searchParams.delete('filter');
+                history.pushState({}, '', url);
             }
 
             // Anything else means reload the pop-up contents.
@@ -205,4 +250,3 @@ export default class ModalFlashcardsQuestionBank extends Modal {
 }
 
 ModalFlashcardsQuestionBank.registerModalType();
-

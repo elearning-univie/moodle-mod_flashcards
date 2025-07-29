@@ -263,19 +263,6 @@ img.mod-flashcards-appstore-badge {
     word-break: break-all;
 }
 
-.path-mod-flashcards .infobox {
-    border-radius: 0.5rem;
-}
-
-.path-mod-flashcards .infospacing {
-    padding: 1em;
-}
-
-.path-mod-flashcards .notextdecoration {
-    text-decoration: none;
-    color: black;
-}
-
 #page-mod-flashcards-teacherview .question-bank-table {
     width: 100%;
 }

@@ -82,7 +82,7 @@ if (!has_capability('mod/flashcards:teacherview', $context)) {
 }
 
 list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
-    question_edit_setup('editq', '/mod/flashcards/teacherview.php', true);
+    question_edit_setup('editq', '/mod/flashcards/teacherview.php');
 
 if ($deleteselected) {
     if (!$DB->record_exists('question', ['id' => $deleteselected])) {
@@ -212,11 +212,7 @@ $table->define_baseurl($PAGE->url);
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
 $link = new moodle_url('/mod/flashcards/simplequestion.php', $params);
 
-$selswitch = 1;
-$addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_question} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcards->id]);
-if ($addedbyisnull > 0) {
-    $selswitch = 0;
-}
+$filtervalues = mod_flashcards_create_filter_values($flashcards->id, $filter);
 
 $renderer = $PAGE->get_renderer('core');
 
@@ -224,8 +220,8 @@ $templateinfo = [
     'cmid' => $cmid,
     'sesskey' => sesskey(),
     'actionurl' => $PAGE->url,
-    'selected2' . $filter => true,
-    'filter' => $selswitch,
+    'filter' => true,
+    'filtervalues' => $filtervalues,
     'selected' . $perpage => true,
 ];
 
