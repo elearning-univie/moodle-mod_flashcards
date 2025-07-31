@@ -77,7 +77,7 @@ if ($id) {
     // We can use $COURSE here because it's been initialised as part of the
     // require_login above. Passing it as the third parameter tells the function
     // to filter the course tags by that course.
-    get_question_options($question, true, [$COURSE]);
+    get_question_options($question, true);
 } else if ($categoryid) {
     $question = new stdClass();
     $question->category = $categoryid;
