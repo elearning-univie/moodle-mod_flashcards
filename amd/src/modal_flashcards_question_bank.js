@@ -237,7 +237,7 @@ export default class ModalFlashcardsQuestionBank extends Modal {
 
             // Anything else means reload the pop-up contents.
             e.preventDefault();
-            this.reloadBodyContent(anchorElement.prop('search'));
+            this.reloadBodyContent(anchorElement.search);
         });
 
         // Disable the form change checker when the body is rendered.

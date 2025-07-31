@@ -31,6 +31,7 @@ use core\output\datafilter;
 use core_question\local\bank\column_base;
 use core_question\local\bank\column_manager_base;
 use core_question\local\bank\condition;
+use core_question\local\bank\filter_condition_manager;
 use core_question\local\bank\question_version_status;
 use mod_flashcards;
 use mod_flashcards\question\bank\filter\custom_category_condition;
@@ -77,7 +78,7 @@ class custom_view extends \core_question\local\bank\view {
      */
     public function __construct($contexts, $pageurl, $course, $cm, $params, $extraparams, $flashcards = null) {
         // Default filter condition.
-        if (!isset($params['filter'])) {
+        /*if (!isset($params['filter'])) {
             $params['filter']  = [];
             [$categoryid, $contextid] = custom_category_condition::validate_category_param($params['cat']);
             if (!is_null($categoryid)) {
@@ -88,6 +89,13 @@ class custom_view extends \core_question\local\bank\view {
                     'filteroptions' => ['includesubcategories' => false],
                 ];
             }
+        }*/
+        // Default filter condition.
+        if (!isset($params['filter'])) {
+            $params['filter']  = filter_condition_manager::get_default_filter($params['cat']);
+            // The quiz question bank modal doesn't include a hidden filter option.
+            // Therefore, the default filter hidden condition is unnecessary.
+            unset($params['filter']['hidden']);
         }
         $this->init_columns($this->wanted_columns(), $this->heading_column());
         $this->pagesize = self::DEFAULT_PAGE_SIZE;
@@ -197,9 +205,6 @@ class custom_view extends \core_question\local\bank\view {
      * @param \context  $catcontext  The context of the category being displayed.
      */
     protected function display_bottom_controls(\context $catcontext): void {
-        $cmoptions = new \stdClass();
-        $cmoptions->hasattempts = !empty($this->quizhasattempts);
-
         $canuseall = has_capability('moodle/question:useall', $catcontext);
 
         echo '<div class="modulespecificbuttonscontainer">';
