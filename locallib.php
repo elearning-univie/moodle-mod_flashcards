@@ -229,7 +229,7 @@ function mod_flashcards_has_delete_rights($context, $flashcards, $questionid, $v
     $result = has_capability('mod/flashcards:deleteownquestion', $context);
     $question = question_bank::load_question_data($questionid);
     if ($v1createdby != $USER->id ||
-        $question->category != $flashcards->studentsubcat ||
+        ($question->category != $flashcards->studentsubcat) ||
         $question->qtype != 'flashcard') {
         $result = false;
     }

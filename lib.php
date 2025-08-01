@@ -94,10 +94,10 @@ function flashcards_check_category($flashcards, $courseid, bool $isedit = false)
 
     if (isset($flashcards->category)) {
         list($catid, $catcontextid) = explode(",", $flashcards->category);
-
-        if (!in_array($catid, $categorylist)) {
-            return;
-        }
+        echo "pffff " . $catid;
+//         if (!in_array($catid, $categorylist)) {
+//             return;
+//         }
         $newparent = $flashcards->category;
     }
 
@@ -172,13 +172,13 @@ function flashcards_get_database_object($flashcards, bool $isedit = false) {
     $flashcardsdb->course = $COURSE->id;
     $flashcardsdb->name = $flashcards->name;
 
-    $fccatid = flashcards_check_category($flashcards, $COURSE->id);
+    $fccatid = flashcards_check_category($flashcards, $COURSE->id, $isedit);
     if (!$fccatid && !$isedit) {
         $fccatid = 0;
     }
     // $flashcardsdb->categoryid = flashcards_check_category($flashcards, $COURSE->id);
     $flashcardsdb->categoryid = $fccatid;
-    // print_object($flashcardsdb);
+
     if (!isset($flashcardsdb->categoryid)) {
         throw new \moodle_exception('invalidcategoryid');
         return;
@@ -209,24 +209,19 @@ function flashcards_get_database_object($flashcards, bool $isedit = false) {
         $flashcardsdb->addfcstudent = $flashcards->addfcstudent;
     }
 
-    $flashcardsdb->studentsubcat = null;
-    // if (!property_exists($flashcards, 'studentsubcat') || !$flashcards->studentsubcat) {
+    //$flashcardsdb->studentsubcat = null;
 
-    $context = context_course::instance($COURSE->id);
-    $contextid = $context->id;
     if ($isedit) {
-        if ($flashcardsdb->addfcstudent == 1) {
-            $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid, $COURSE->id);
-            $flashcardsdb->studentsubcat = $subcatid;
-            // $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
-        } else {
-            $flashcardsdb->studentsubcat = null;
-        }
+        $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
     } else {
+        $context = context_course::instance($COURSE->id);
+        $contextid = $context->id;
         if ($flashcards->addfcstudent == 1) {
             $flashcardsdb->inclsubcats = 1;
             $subcatid = mod_flashcards_create_student_category_if_not_exists($contextid, $flashcards, $flashcardsdb->categoryid, $COURSE->id);
             $flashcardsdb->studentsubcat = $subcatid;
+        } else {
+            $flashcardsdb->studentsubcat = null;
         }
     }
     return $flashcardsdb;

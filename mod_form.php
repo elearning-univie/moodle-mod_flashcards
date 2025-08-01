@@ -58,6 +58,7 @@ class mod_flashcards_mod_form extends moodleform_mod {
         if (optional_param('update', 0, PARAM_INT)) {
             $mform->setDefault('newcategory', 0);
             $flashcards = $DB->get_record('flashcards', ['id' => $this->_instance]);
+
             $catdefault = "$flashcards->categoryid,$context->id";
             $contexts[] = $context;
 
