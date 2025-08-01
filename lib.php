@@ -95,10 +95,6 @@ function flashcards_check_category($flashcards, $courseid, bool $isedit = false)
 
     if (isset($flashcards->category)) {
         list($catid, $catcontextid) = explode(",", $flashcards->category);
-        echo "pffff " . $catid;
-//         if (!in_array($catid, $categorylist)) {
-//             return;
-//         }
         $newparent = $flashcards->category;
     }
 
