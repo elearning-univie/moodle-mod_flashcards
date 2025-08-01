@@ -30,6 +30,7 @@
  */
 use core\context;
 use core_question\category_manager;
+use core_question\local\bank\question_bank_helper;
 /**
  * flashcards_supports
  *
@@ -354,6 +355,8 @@ function mod_flashcards_build_required_params_for_custom_view(array $params, arr
 
     // Add cmid so we can retrieve later in extra params.
     $extraparams['cmid'] = $cmid;
+
+    $extraparams['requirebankswitch'] = !empty(question_bank_helper::get_activity_types_with_shareable_questions());
 
     return [$contexts, $thispageurl, $cm, $pagevars, $extraparams];
 }

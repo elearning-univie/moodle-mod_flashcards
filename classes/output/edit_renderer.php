@@ -45,14 +45,14 @@ class edit_renderer extends \plugin_renderer_base {
      * @param array $pagevars
      * @return string
      */
-    public function edit_flashcards($pageurl, $contexts, $pagevars) {
+    public function edit_flashcards($pageurl, $contexts, $pagevars, $cmid) {
 
         // Include the contents of any other popups required.
         $thiscontext = $contexts->lowest();
         $this->page->requires->js_call_amd('mod_flashcards/modal_flashcards_question_bank', 'init', [
             $thiscontext->id,
-            1,
-            1,
+            $cmid,
+            $cmid,
         ]);
         $addmenu = html_writer::tag('span', $this->add_menu_actions($pageurl, $contexts, $pagevars),
             ['class' => 'add-menu-outer']);

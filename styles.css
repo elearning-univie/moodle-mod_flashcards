@@ -288,3 +288,18 @@ img.mod-flashcards-appstore-badge {
 #page-mod-flashcards-teacherview .question-bank-table .questionnametext {
     padding: 0 0.2em;
 }
+
+#page-mod-flashcards-teacherview table.question-bank-table td,
+#page-mod-flashcards-teacherview table.question-bank-table th {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 1.2em !important;
+}
+
+#page-mod-flashcards-teacherview .question-bank-table .header {
+    text-align: center;
+    padding: 0 2px;
+    border: 0 none;
+    vertical-align: top;
+    width: auto;
+}
