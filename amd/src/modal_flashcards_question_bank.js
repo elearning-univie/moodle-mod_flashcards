@@ -28,7 +28,7 @@ import * as ModalEvents from 'core/modal_events';
 import * as Notification from "core/notification";
 
 const SELECTORS = {
-    ADD_TO_QUIZ_CONTAINER: 'td.addtoquizaction',
+    ADD_TO_FLASHCARDS_CONTAINER: 'td.addtoflashcardsaction',
     ANCHOR: 'a[href]',
     PREVIEW_CONTAINER: 'td.previewquestionaction',
     ADD_QUESTIONS_FORM: 'form#questionsubmit',
