@@ -289,7 +289,7 @@ class provider implements
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    private function do_delete($flashcardsid, $userid) {
+    public function do_delete($flashcardsid, $userid) {
         global $DB;
 
         $questions = $DB->get_records('flashcards_question', ['fcid' => $flashcardsid], '', 'id');
