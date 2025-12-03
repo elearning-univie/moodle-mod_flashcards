@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['actions'] = 'Aktionen';
 $string['addedby'] = 'Hinzugefügt von';
 $string['addfcstudent'] = 'Teilnehmer/innen dürfen Lernkarten hinzufügen';
 $string['addfcstudent_help'] = 'Die erstellten Lernkarten erscheinen als eigene Unterkategorie.';
@@ -121,7 +122,7 @@ $string['minorchange'] = 'marginale Änderung';
 $string['modifiedby'] = 'Bearbeitet von';
 $string['modulename'] = 'Lernkartei';
 $string['modulename_help'] = 'Die Lernkartei Aktivität ermöglicht Trainer/innen (1) eine Lernkartei mit Lernkarten für Teilnehmer/innen anzulegen oder (2) Teilnehmer/innen zu erlauben, selbst Lernkarten anzulegen und zu nutzen.';
-$string['modulenameplural'] = 'Lernkartei';
+$string['modulenameplural'] = 'Lernkarteien';
 $string['multipepossibleanswers'] = 'Auf diese Frage gibt es mehrere mögliche Antworten:';
 $string['newcardnumber'] = 'Neu: {{count}} Karten';
 $string['newcategory'] = 'Neu';
@@ -141,10 +142,10 @@ $string['overviewinfo'] = '<details><summary>
 <li>Mittels <strong>Peer-Review</strong> kann für Lernkarten abgestimmt werden (Gefällt mir/ Gefällt mir nicht), wodurch sich Teilnehmer/innen bei der Zusammenstellung ihrer eigenen Lernkartei orientieren können.</li>
 <li>Die <strong>Teilnehmer/innen-Vorschau</strong> ermöglicht Ihnen als Trainer/in, den gesamten Prozess aus Sicht von Teilnehmer/innen durchzuführen, genauso wie parallel mittels Lernkartei-App über Ihr Smartphone zu testen.</li></ul></p></details>';
 $string['overviewnq'] = 'Trainer/innen-Check notwendig';
-$string['overviewsaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a> / <a href="{$a->linkadded}">{$a->valueadded}</a>';
+$string['overviewsaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a>';
 $string['overviewslink'] = '<a href="{$a->linkst}">{$a->valuest}</a>';
 $string['overviewsq'] = 'Lernkarten von Teilnehmer/innen erstellt';
-$string['overviewsqadd'] = 'Lernkarten von Teilnehmer/innen erstellt/hinzugefügt';
+$string['overviewsqadd'] = 'Lernkarten von Teilnehmer/innen erstellt';
 $string['overviewtaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a> / <a href="{$a->linkadded}">{$a->valueadded}</a>';
 $string['overviewtlink'] = '<a href="{$a->linkt}">{$a->valuet}</a>';
 $string['overviewtnqlink'] = '<a href="{$a->linknq}">{$a->valuenq}</a>';
@@ -198,8 +199,9 @@ $string['progressknowncards'] = 'Gelernt: {$a}';
 $string['progressunknowncards'] = 'Noch zu lernen: {$a}';
 $string['proposecardsexplained'] = 'Nutzen Sie „Peer-Review“ um für Lernkarten zu voten bzw. dafür, sich Ihre persönliche Lernkartei anhand dieser Information zusammenzustellen.';
 $string['qbank'] = 'Fragensammlung';
-$string['question'] = 'Fragentitel';
+$string['question'] = 'Lernkarte';
 $string['questioncount'] = 'Vorhandene Lernkarten';
+$string['questiontext'] = 'Frage';
 $string['removeflashcadcheck'] = 'Sind Sie sich absolut sicher, dass sie die folgenden Lernkarten aus dieser Lernkartei entfernen wollen?';
 $string['removeflashcard'] = 'Entfernen';
 $string['removeflashcardbutton'] = 'Aus meiner Lernkartei entfernen';
@@ -208,6 +210,9 @@ $string['removeflashcardinfo_help'] = 'Entfernt eine Lernkarte aus dieser Lernka
 $string['removeflashcardsdonemessage'] = 'Lernkarte(n) wurde(n) aus der Lernkartei entfernt!';
 $string['reporttext'] = 'Ist die Karte offensichtlich falsch oder problematisch?';
 $string['save'] = 'Speichern';
+$string['saveandcreate'] = 'Speichern und weitere Lernkarte erstellen';
+$string['searchedquestionsresult'] = 'Suchergebnisse: ';
+$string['searchplaceholder'] = 'Geben Sie einen Suchbegriff ein';
 $string['selectall'] = 'Alle';
 $string['settingappstoreappledesc'] = 'URL für die Flashcards Mobile App für iOS-Geräte.';
 $string['settingappstoreappletitle'] = 'Apple App Store';

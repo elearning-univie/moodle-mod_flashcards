@@ -76,7 +76,7 @@ class simplequestionform_observer {
             if (!($record = $DB->get_record('flashcards_question', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid']]))) {
                 $fcqstatusid = $DB->insert_record('flashcards_question', ['qbankentryid' => $qbe->id, 'fcid' => $data['fcid'], 'teachercheck' => $tc,
                     'questionid' => $event->objectid, 'addedby' => $USER->id], true);
-                list ($course, $cm) = get_course_and_cm_from_instance($data['fcid'], 'flashcards');
+                list($course, $cm) = get_course_and_cm_from_instance($data['fcid'], 'flashcards');
                 $context = $event->get_context();
                 $questionreferences = new \StdClass();
                 $questionreferences->usingcontextid = $context->id;

@@ -36,7 +36,6 @@ require_once(__DIR__ . '/backup_flashcards_stepslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_flashcards_activity_task extends backup_activity_task {
-
     /**
      * No specific settings for this activity
      */
@@ -64,11 +63,11 @@ class backup_flashcards_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot, '/');
 
         // Link to the list of newmodules.
-        $search = '/('.$base.'\/mod\/flashcards\/index.php\?id\=)([0-9]+)/';
+        $search = '/(' . $base . '\/mod\/flashcards\/index.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@FLASHCARDSINDEX*$2@$', $content);
 
         // Link to flashcards view by moduleid.
-        $search = '/('.$base.'\/mod\/flashcards\/view.php\?id\=)([0-9]+)/';
+        $search = '/(' . $base . '\/mod\/flashcards\/view.php\?id\=)([0-9]+)/';
         $content = preg_replace($search, '$@FLASHCARDSVIEWBYID*$2@$', $content);
 
         return $content;

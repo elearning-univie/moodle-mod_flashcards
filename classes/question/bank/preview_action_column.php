@@ -57,6 +57,6 @@ class preview_action_column extends \core_question\local\bank\column_base {
             return;
         }
         $editrenderer = $PAGE->get_renderer('flashcards', 'edit');
-        // echo $editrenderer->question_preview_icon($this->qbank->get_quiz(), $question);
+        echo $editrenderer->question_preview_icon($this->qbank->get_quiz(), $question);
     }
 }

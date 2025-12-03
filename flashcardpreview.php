@@ -32,33 +32,65 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once('locallib.php');
 
 use qbank_previewquestion\question_preview_options;
+use qbank_previewquestion\helper;
+
+/**
+ * The maximum number of variants previewable. If there are more variants than this for a question
+ * then we only allow the selection of the first x variants.
+ *
+ * @var integer
+ */
+define('QUESTION_PREVIEW_MAX_VARIANTS', 100);
 
 global $PAGE, $DB, $OUTPUT, $USER;
 
 $id = required_param('id', PARAM_INT);
-$cmid = required_param('cmid', PARAM_INT);
-$flashcardsid = required_param('flashcardsid', PARAM_INT);
+$returnurl = optional_param('returnurl', null, PARAM_LOCALURL);
+$restartversion = optional_param('restartversion', question_preview_options::ALWAYS_LATEST, PARAM_INT);
+//$cmid = required_param('cmid', PARAM_INT);
+//$flashcardsid = optional_param('flashcardsid', 0, PARAM_INT);
 
-list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
+/*list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
 $context = context_module::instance($cm->id);
-require_login($course, false, $cm);
+require_login($course, false, $cm);*/
 
 $question = question_bank::load_question($id);
 
+// Were we given a particular context to run the question in?
+// This affects things like filter settings, or forced theme or language.
+if ($cmid = optional_param('cmid', 0, PARAM_INT)) {
+    $cm = get_coursemodule_from_id(false, $cmid);
+    require_login($cm->course, false, $cm);
+    $context = context_module::instance($cmid);
+} else {
+    require_login();
+    $category = $DB->get_record('question_categories', ['id' => $question->category], '*', MUST_EXIST);
+    $context = context::instance_by_id($category->contextid);
+    $PAGE->set_context($context);
+    // Note that in the other cases, require_login will set the correct page context.
+}
+
+require_capability('mod/flashcards:view', $context);
+//question_require_capability_on($question, 'view');
+$PAGE->set_pagelayout('popup');
+
 // Get and validate display options.
-$maxvariant = 1;
+$maxvariant = min($question->get_num_variants(), QUESTION_PREVIEW_MAX_VARIANTS);
 $options = new question_preview_options($question);
 $options->load_user_defaults();
 $options->set_from_request();
+$options->versioninfo = false;
+//$PAGE->set_url(helper::question_preview_url($id, $options->behaviour, $options->maxmark,
+//    $options, $options->variant, $context, null, $restartversion));
 
-$params = [
+/*$params = [
     'id' => $question->id,
     'cmid' => $context->instanceid,
     'flashcardsid' => $flashcardsid,
 ];
 
-$prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
-$PAGE->set_url($prevurl);
+//$prevurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
+//$PAGE->set_url($prevurl);*/
 
 // Get and validate existing preview, or start a new one.
 $previewid = optional_param('previewid', 0, PARAM_INT);
@@ -69,32 +101,34 @@ if ($previewid) {
     } catch (Exception $e) {
         // This may not seem like the right error message to display, but
         // actually from the user point of view, it makes sense.
-        throw new \moodle_exception('submissionoutofsequencefriendlymessage', 'question',
-                $prevurl, null, $e);
+        throw new moodle_exception('submissionoutofsequencefriendlymessage', 'question',
+            helper::question_preview_url($question->id, $options->behaviour,
+                $options->maxmark, $options, $options->variant, $context, null, $restartversion), null, $e);
     }
 
-    if ($quba->get_owning_context()->instanceid != $context->instanceid) {
-        throw new \moodle_exception('notyourpreview', 'question');
+    if ($quba->get_owning_context()->instanceid != $USER->id) {
+        throw new moodle_exception('notyourpreview', 'question');
     }
 
     $slot = $quba->get_first_question_number();
-    $usedquestion = $quba->get_question($slot);
+    $usedquestion = $quba->get_question($slot, false);
     if ($usedquestion->id != $question->id) {
-        throw new \moodle_exception('questionidmismatch', 'question');
+        throw new moodle_exception('questionidmismatch', 'question');
     }
     $question = $usedquestion;
     $options->variant = $quba->get_variant($slot);
 
 } else {
+    // Changed to put the file into module space.
     $quba = question_engine::make_questions_usage_by_activity(
-        'mod_flashcards', context_user::instance($USER->id));
+        'mod_flashcards', $context);
     $quba->set_preferred_behaviour($options->behaviour);
     $slot = $quba->add_question($question, $options->maxmark);
 
     if ($options->variant) {
         $options->variant = min($maxvariant, max(1, $options->variant));
     } else {
-        $options->variant = 1;
+        $options->variant = rand(1, $maxvariant);
     }
 
     $quba->start_question($slot, $options->variant);
@@ -107,85 +141,162 @@ if ($previewid) {
 $options->behaviour = $quba->get_preferred_behaviour();
 $options->maxmark = $quba->get_question_max_mark($slot);
 
-$params = [
-        'id' => $question->id,
-        'cmid' => $cmid,
-        'previewid' => $quba->get_id(),
-        'flashcardsid' => $flashcardsid,
-];
-
-$actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
-$nostatus = false;
-
-$statusrec = $DB->get_record('flashcards_question', ['questionid' => $question->id, 'fcid' => $flashcardsid]);
-if ($statusrec === false) {
-    $nostatus = true;
-    $statusval = 0;
-    $fqid = 0;
-} else {
-    $statusval = $statusrec->teachercheck;
-    $fqid = $statusrec->id;
-}
-
-if (!has_capability('mod/flashcards:editreview', $context)) {
-    $canedit = false;
-} else {
-    $canedit = true;
-
-    // Process any actions from the buttons at the bottom of the form.
-    if (data_submitted() && confirm_sesskey()) {
-        try {
-            if (optional_param('finish', null, PARAM_BOOL)) {
-                $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
-                if ($nostatus) {
-                    $fqid = $DB->insert_record('flashcards_question',
-                        ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck, 'addedby' => $USER->id]);
-                } else if ($statusrec->teachercheck != $teachercheck) {
-                    $statusrec->teachercheck = $teachercheck;
-                    $DB->update_record('flashcards_question', $statusrec);
-                }
-
-                $quba->process_all_actions();
-                $quba->finish_all_questions();
-
-                $transaction = $DB->start_delegated_transaction();
-                question_engine::save_questions_usage_by_activity($quba);
-                $transaction->allow_commit();
-                redirect($actionurl);
-            } else {
-                $quba->process_all_actions();
-
-                $transaction = $DB->start_delegated_transaction();
-                question_engine::save_questions_usage_by_activity($quba);
-                $transaction->allow_commit();
-
-                $scrollpos = optional_param('scrollpos', '', PARAM_RAW);
-                if ($scrollpos !== '') {
-                    $actionurl->param('scrollpos', (int) $scrollpos);
-                }
-                redirect($actionurl);
-            }
-
-        } catch (question_out_of_sequence_exception $e) {
-            throw new \moodle_exception('submissionoutofsequencefriendlymessage', 'question', $actionurl);
-
-        } catch (Exception $e) {
-            // This sucks, if we display our own custom error message, there is no way
-            // to display the original stack trace.
-            $debuginfo = '';
-            if (!empty($e->debuginfo)) {
-                $debuginfo = $e->debuginfo;
-            }
-            throw new \moodle_exception('errorprocessingresponses', 'question', $actionurl,
-                    $e->getMessage(), $debuginfo);
-        }
-    }
-}
-
 if ($question->length) {
     $displaynumber = '1';
 } else {
     $displaynumber = 'i';
+}
+
+if ($flashcardsid = optional_param('flashcardsid', 0, PARAM_INT)) {
+    $params = [
+        'id' => $question->id,
+        'cmid' => $cmid,
+        'previewid' => $quba->get_id(),
+        'flashcardsid' => $flashcardsid,
+    ];
+
+    $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
+    $nostatus = false;
+
+    $statusrec = $DB->get_record('flashcards_question', ['questionid' => $question->id, 'fcid' => $flashcardsid]);
+    if ($statusrec === false) {
+        $nostatus = true;
+        $statusval = 0;
+        $fqid = 0;
+    } else {
+        $statusval = $statusrec->teachercheck;
+        $fqid = $statusrec->id;
+    }
+    $PAGE->set_url($actionurl);
+
+    if (!has_capability('mod/flashcards:editreview', $context)) {
+        $canedit = false;
+    } else {
+        $canedit = true;
+
+        // Process any actions from the buttons at the bottom of the form.
+        if (data_submitted() && confirm_sesskey()) {
+            try {
+                if (optional_param('finish', null, PARAM_BOOL)) {
+                    $teachercheck = optional_param('teachercheck', 0, PARAM_INT);
+                    if ($nostatus) {
+                        $fqid = $DB->insert_record('flashcards_question',
+                            ['questionid' => $question->id, 'fcid' => $flashcardsid, 'teachercheck' => $teachercheck, 'addedby' => $USER->id]);
+                    } else if ($statusrec->teachercheck != $teachercheck) {
+                        $statusrec->teachercheck = $teachercheck;
+                        $DB->update_record('flashcards_question', $statusrec);
+                    }
+
+                    $quba->process_all_actions();
+                    $quba->finish_all_questions();
+
+                    $transaction = $DB->start_delegated_transaction();
+                    question_engine::save_questions_usage_by_activity($quba);
+                    $transaction->allow_commit();
+                    redirect($actionurl);
+                } else {
+                    $quba->process_all_actions();
+
+                    $transaction = $DB->start_delegated_transaction();
+                    question_engine::save_questions_usage_by_activity($quba);
+                    $transaction->allow_commit();
+
+                    $mdlscrollto = optional_param('mdlscrollto', '', PARAM_RAW);
+                    if ($mdlscrollto !== '') {
+                        $actionurl->param('mdlscrollto', (int) $mdlscrollto);
+                    }
+                    redirect($actionurl);
+                }
+
+            } catch (question_out_of_sequence_exception $e) {
+                throw new \moodle_exception('submissionoutofsequencefriendlymessage', 'question', $actionurl);
+
+            } catch (Exception $e) {
+                // This sucks, if we display our own custom error message, there is no way
+                // to display the original stack trace.
+                $debuginfo = '';
+                if (!empty($e->debuginfo)) {
+                    $debuginfo = $e->debuginfo;
+                }
+                throw new \moodle_exception('errorprocessingresponses', 'question', $actionurl,
+                    $e->getMessage(), $debuginfo);
+            }
+        }
+    }
+
+    $votes = mod_flashcard_get_peer_review_votes($fqid);
+    $peerreviewvote = mod_flashcard_get_peer_review_vote_user($fqid);
+    $helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
+    $helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
+
+    $templatecontent = [
+        'actionurl' => $actionurl,
+        'sesskey' => sesskey(),
+        'slot' => $slot,
+        //'question' => $quba->render_question($slot, $options, $displaynumber),
+        'upvotes' => $votes['upvotes'],
+        'downvotes' => $votes['downvotes'],
+        'fqid' => $fqid,
+        'questiontitle' => $question->name,
+        'prbtncolorinfoup' => mod_flashcard_get_peer_review_info($peerreviewvote, true),
+        'prbtncolorinfodown' => mod_flashcard_get_peer_review_info($peerreviewvote, false),
+        'statval' => $statusval,
+        'upvote' => FLASHCARDS_PEER_REVIEW_UP,
+        'downvote' => FLASHCARDS_PEER_REVIEW_DOWN,
+        'helppeerreview' => $helppeerreview->export_for_template($OUTPUT),
+        'helpteachercheck' => $helpteachercheck->export_for_template($OUTPUT),
+        'renderoptions' => 1,
+    ];
+
+    if ($canedit) {
+        for ($i = 0; $i < 3; $i++) {
+            $checkinfo = mod_flashcard_get_teacher_check_info($i);
+            $templatecontent['checkicon' . $i] = $checkinfo['icon'];
+            $templatecontent['checkicon' . $i]['title'] = get_string('statusval' . $i, 'mod_flashcards');
+            $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
+        }
+
+        $templatecontent['canedit'] = $canedit;
+        $templatecontent['selected' . $statusval] = true;
+        $templatecontent['icon' . $statusval] = 1;
+    } else {
+        $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
+        $templatecontent['checkicon'] = $checkinfo['icon'];
+        $templatecontent['checkicon']['title'] = get_string('statusval' . $statusval, 'mod_flashcards');
+        $templatecontent['teachercheckcolor'] = $checkinfo['color'];
+    }
+
+    // Edit button.
+    $fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
+    $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+        ['action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => /*$prevurl->out(false)*/ $PAGE->url->out(false), 'fcid' => $flashcardsid]);
+    $templatecontent['fceditlink'] = $eurl;
+
+    $sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
+      WHERE v.questionbankentryid  = $question->questionbankentryid
+        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
+    $v1createdby = $DB->get_field_sql($sql);
+
+    if (mod_flashcards_has_delete_rights($context, $fcobj, $id, $v1createdby) ||
+        has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
+        $templatecontent['showfceditlink'] = true;
+    }
+} else {
+    $templatecontent = [
+        'actionurl' => '',
+        'sesskey' => sesskey(),
+        'slot' => $slot,
+        'question' => $quba->render_question($slot, $options, $displaynumber),
+        'questiontitle' => $question->name,
+    ];
+
+    $params = [
+        'id' => $question->id,
+        'cmid' => $cmid,
+    ];
+
+    $actionurl = new moodle_url('/mod/flashcards/flashcardpreview.php', $params);
+    $PAGE->set_url($actionurl);
 }
 
 // Prepare technical info to be output.
@@ -210,63 +321,6 @@ if ($node) {
 $PAGE->add_body_class('limitedwidth');
 echo $OUTPUT->header();
 
-$votes = mod_flashcard_get_peer_review_votes($fqid);
-$peerreviewvote = mod_flashcard_get_peer_review_vote_user($fqid);
-$helppeerreview = new \help_icon('peerreview', 'mod_flashcards');
-$helpteachercheck = new \help_icon('teachercheck', 'mod_flashcards');
-
-$templatecontent = [
-    'actionurl' => $actionurl,
-    'sesskey' => sesskey(),
-    'slot' => $slot,
-    'question' => $quba->render_question($slot, $options, $displaynumber),
-    'upvotes' => $votes['upvotes'],
-    'downvotes' => $votes['downvotes'],
-    'fqid' => $fqid,
-    'questiontitle' => $question->name,
-    'prbtncolorinfoup' => mod_flashcard_get_peer_review_info($peerreviewvote, true),
-    'prbtncolorinfodown' => mod_flashcard_get_peer_review_info($peerreviewvote, false),
-    'statval' => $statusval,
-    'upvote' => FLASHCARDS_PEER_REVIEW_UP,
-    'downvote' => FLASHCARDS_PEER_REVIEW_DOWN,
-    'helppeerreview' => $helppeerreview->export_for_template($OUTPUT),
-    'helpteachercheck' => $helpteachercheck->export_for_template($OUTPUT),
-];
-
-if ($canedit) {
-    for ($i = 0; $i < 3; $i++) {
-        $checkinfo = mod_flashcard_get_teacher_check_info($i);
-        $templatecontent['checkicon' . $i] = $checkinfo['icon'];
-        $templatecontent['checkicon' . $i]['title'] = get_string('statusval' . $i, 'mod_flashcards');
-        $templatecontent['teachercheckcolor' . $i] = $checkinfo['color'];
-    }
-
-    $templatecontent['canedit'] = $canedit;
-    $templatecontent['selected' . $statusval] = true;
-    $templatecontent['icon' . $statusval] = 1;
-} else {
-    $checkinfo = mod_flashcard_get_teacher_check_info($statusval);
-    $templatecontent['checkicon'] = $checkinfo['icon'];
-    $templatecontent['checkicon']['title'] = get_string('statusval' . $statusval, 'mod_flashcards');
-    $templatecontent['teachercheckcolor'] = $checkinfo['color'];
-}
-
-// Edit button.
-$fcobj = $DB->get_record('flashcards', ['id' => $flashcardsid]);
-$eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-    ['action' => 'edit', 'id' => $question->id, 'cmid' => $cmid, 'origin' => $prevurl->out(false), 'fcid' => $flashcardsid]);
-$templatecontent['fceditlink'] = $eurl;
-
-$sql = "SELECT q.createdby FROM {question} q JOIN {question_versions} v ON v.questionid = q.id
-      WHERE v.questionbankentryid  = $question->questionbankentryid
-        AND v.version = (SELECT MIN(v.version) FROM {question_versions} v WHERE v.questionbankentryid = $question->questionbankentryid)";
-$v1createdby = $DB->get_field_sql($sql);
-
-if (mod_flashcards_has_delete_rights($context, $fcobj, $id, $v1createdby) ||
-    has_capability('mod/flashcards:editcardwithouttcreset', $context)) {
-    $templatecontent['showfceditlink'] = true;
-}
-
 foreach ($question->answers as $answer) {
     $ans = $answer;
 }
@@ -289,7 +343,7 @@ $PAGE->requires->js_module('core_question_engine');
 $PAGE->requires->strings_for_js([
         'closepreview',
 ], 'question');
-$PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
+//$PAGE->requires->yui_module('moodle-question-preview', 'M.question.preview.init');
 $PAGE->requires->js_call_amd('mod_flashcards/previewevents', 'init');
 
 echo $OUTPUT->footer();

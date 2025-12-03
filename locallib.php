@@ -169,7 +169,7 @@ function mod_flashcards_get_preview_questiontext($context, $questionid, $questio
     $questiontext = html_to_text($questiontext, 0);
 
     if (strlen($questiontext) > 30) {
-        $questiontext = substr($questiontext, 0, 30) . '...';
+        $questiontext = substr($questiontext, 0, 60) . '...';
     }
     return $questiontext;
 }
@@ -1125,7 +1125,12 @@ function mod_flashcards_move_question($flashcardsid, $qids, $currentbox=null) {
     }
     $DB->insert_records('flashcards_q_stud_rel', $questionarray);
 }
-
+/**
+ *
+ * @param int $flashcardsid
+ * @param int $selectedid
+ * @return string[][]|number[][]|NULL[][]
+ */
 function mod_flashcards_create_filter_values($flashcardsid, $selectedid) {
     global $DB;
     $valuetext = [
@@ -1134,17 +1139,16 @@ function mod_flashcards_create_filter_values($flashcardsid, $selectedid) {
         '3' => get_string('filterstudcreated', 'mod_flashcards'),
         '4' => get_string('filternew', 'mod_flashcards'),
         '5' => get_string('filterteacheradded', 'mod_flashcards'),
-        '6' => get_string('filterstudadded', 'mod_flashcards'),
     ];
 
-    $selswitch = [1,2,5,3,6,4];
+    $selswitch = [1, 2, 5, 3, 4];
     $addedbyisnull = $DB->count_records_sql("SELECT COUNT(s.id) FROM {flashcards_question} s WHERE s.fcid = :fcid AND s.addedby IS NULL ", ['fcid' => $flashcardsid]);
     if ($addedbyisnull > 0) {
-        $selswitch = [1,2,3,4];
+        $selswitch = [1, 2, 3, 4];
     }
 
     $filtervalues = [];
-    for ($i=0; $i < count($selswitch); $i++) {
+    for ($i = 0; $i < count($selswitch); $i++) {
         $filtervalues[] = [
             'value' => $selswitch[$i],
             'text' => $valuetext[$selswitch[$i]],

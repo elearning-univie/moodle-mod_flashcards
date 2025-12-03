@@ -202,8 +202,7 @@ if ($addedbyisnull > 0) {
             'link' => get_string('overviewtaddlinks', 'flashcards', ['linkcreated' => $filterlink2->out(false), 'valuecreated' => $teacherquestioncount,
                 'linkadded' => $filterlink5->out(false), 'valueadded' => $teacherquestioncountadd])],
         ['text' => get_string('overviewsqadd', 'flashcards'),
-            'link' => get_string('overviewsaddlinks', 'flashcards', ['linkcreated' => $filterlink3->out(false), 'valuecreated' => $studentquestioncount,
-                'linkadded' => $filterlink6->out(false), 'valueadded' => $studentquestioncountadd])],
+            'link' => get_string('overviewsaddlinks', 'flashcards', ['linkcreated' => $filterlink3->out(false), 'valuecreated' => $studentquestioncount])],
         ['text' => get_string('overviewnq', 'flashcards'),
             'link' => get_string('overviewtnqlink', 'flashcards', ['linknq' => $filterlink4->out(false), 'valuenq' => $newquestioncount])],
     ];

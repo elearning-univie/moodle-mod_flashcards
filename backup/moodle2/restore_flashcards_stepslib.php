@@ -31,22 +31,22 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_flashcards_activity_structure_step extends restore_questions_activity_structure_step {
-
     /**
      * Defines structure of path elements to be processed during the restore
      *
      * @return array of {@see restore_path_element}
      */
     protected function define_structure() {
-
         $paths = [];
         $paths[] = new restore_path_element('flashcards', '/activity/flashcards');
         $paths[] = new restore_path_element('flashcards_question', '/activity/flashcards/flashcards_question');
-        $quizquestioninstance = new restore_path_element('flashcards_question_instance',
-            '/activity/flashcards/question_instances/question_instance');
+        $quizquestioninstance = new restore_path_element(
+            'flashcards_question_instance',
+            '/activity/flashcards/question_instances/question_instance'
+        );
         $paths[] = $quizquestioninstance;
-            $this->add_question_references($quizquestioninstance, $paths);
-            $this->add_question_set_references($quizquestioninstance, $paths);
+        $this->add_question_references($quizquestioninstance, $paths);
+        $this->add_question_set_references($quizquestioninstance, $paths);
 
         return $this->prepare_activity_structure($paths);
     }

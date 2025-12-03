@@ -206,8 +206,6 @@ function flashcards_get_database_object($flashcards, bool $isedit = false) {
         $flashcardsdb->addfcstudent = $flashcards->addfcstudent;
     }
 
-    //$flashcardsdb->studentsubcat = null;
-
     if ($isedit) {
         $flashcardsdb->studentsubcat = $flashcards->studentsubcat;
     } else {
@@ -241,16 +239,111 @@ function flashcards_get_database_object($flashcards, bool $isedit = false) {
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function flashcards_question_pluginfile($course, $context, $component,
-        $filearea, $qubaid, $slot, $args, $forcedownload, array $options=[]) {
+                                        $filearea, $qubaid, $slot, $args, $forcedownload, array $options = []) {
+    global $DB, $CFG, $USER;
+    require_once($CFG->libdir . '/questionlib.php');
 
-    list($context, $course, $cm) = get_context_info_array($context->id);
-    require_login($course, false, $cm);
+    // Load the usage and ensure it belongs to mod_flashcards.
+    $quba = question_engine::load_questions_usage_by_activity($qubaid);
+
+    if ($quba->get_owning_component() !== 'mod_flashcards') {
+        send_file_not_found();
+    }
+
+    $owningcontext = $quba->get_owning_context();
+
+    // Access control based on owning context.
+    switch ($owningcontext->contextlevel) {
+        case CONTEXT_MODULE:
+            // Ignore $course passed in, always use the course from $cm.
+            $cm = get_coursemodule_from_id('flashcards',
+                $owningcontext->instanceid, 0, false, MUST_EXIST);
+
+            $course = $DB->get_record('course',
+                ['id' => $cm->course], '*', MUST_EXIST);
+
+            require_login($course, false, $cm);
+            require_capability('mod/flashcards:view', $owningcontext);
+            break;
+
+        case CONTEXT_USER:
+            // For previews owned by a user context.
+            require_login();
+            if ($owningcontext->instanceid != $USER->id) {
+                send_file_not_found();
+            }
+            break;
+
+        default:
+            send_file_not_found();
+    }
+
+    // Decode args: first element is the itemid; rest is path.
+    if (empty($args)) {
+        send_file_not_found();
+    }
+
+    $itemid = (int) array_shift($args);
+
+    switch ($filearea) {
+        case 'questiontext':
+        case 'generalfeedback': {
+            // itemid is question.id.
+            $questionid = $itemid;
+
+            $version = $DB->get_record('question_versions',
+                ['questionid' => $questionid], '*', MUST_EXIST);
+
+            $qbe = $DB->get_record('question_bank_entries',
+                ['id' => $version->questionbankentryid], '*', MUST_EXIST);
+
+            $qcat = $DB->get_record('question_categories',
+                ['id' => $qbe->questioncategoryid], '*', MUST_EXIST);
+
+            $filecontext = \context::instance_by_id($qcat->contextid);
+            break;
+        }
+
+        case 'answer': {
+            // itemid is question_answers.id.
+            $answer = $DB->get_record('question_answers',
+                ['id' => $itemid], '*', MUST_EXIST);
+
+            $questionid = $answer->question;
+
+            $version = $DB->get_record('question_versions',
+                ['questionid' => $questionid], '*', MUST_EXIST);
+
+            $qbe = $DB->get_record('question_bank_entries',
+                ['id' => $version->questionbankentryid], '*', MUST_EXIST);
+
+            $qcat = $DB->get_record('question_categories',
+                ['id' => $qbe->questioncategoryid], '*', MUST_EXIST);
+
+            $filecontext = \context::instance_by_id($qcat->contextid);
+            break;
+        }
+
+        default:
+            // If you add more fileareas later, handle them here.
+            send_file_not_found();
+    }
+
+    $filename = array_pop($args);
+    $filepath = '/';
+    if (!empty($args)) {
+        $filepath .= implode('/', $args) . '/';
+    }
 
     $fs = get_file_storage();
-    $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/$component/$filearea/$relativepath";
-    $sha = sha1($fullpath);
-    $file = $fs->get_file_by_hash($sha);
+    $file = $fs->get_file(
+        $filecontext->id,
+        $component,   // 'question'
+        $filearea,    // 'questiontext', 'answer', etc.
+        $itemid,
+        $filepath,
+        $filename
+    );
 
     if (!$file || $file->is_directory()) {
         send_file_not_found();
@@ -281,7 +374,7 @@ function flashcards_update_instance($flashcards) {
  */
 function mod_flashcards_get_fontawesome_icon_map() {
     return [
-        'mod_flashcards:viewfc' => 'fa-window-maximize',
+        'mod_flashcards:viewfc' => 'fa-magnifying-glass-plus',
     ];
 }
 
@@ -300,7 +393,7 @@ function mod_flashcards_get_fontawesome_icon_map() {
  * @return string The rendered mform fragment.
  */
 function mod_flashcards_output_fragment_flashcards_question_bank($args): string {
-    global $PAGE;
+    global $PAGE, $DB;
 
     // Retrieve params.
     $params = [];
@@ -316,6 +409,13 @@ function mod_flashcards_output_fragment_flashcards_question_bank($args): string 
 
     // We need the quiz modid to POST back to.
     $extraparams['quizcmid'] = clean_param($args['quizcmid'], PARAM_INT);
+
+    $sql = 'SELECT * FROM {flashcards} f WHERE f.id = (SELECT instance FROM {course_modules} cm WHERE cm.id = :cmid)';
+
+    if (($flashcards = $DB->get_record_sql($sql, ['cmid' => $extraparams['quizcmid']]))) {
+        $thiscontext = context_module::instance($extraparams['quizcmid']);
+        $extraparams['cat'] = "$flashcards->categoryid,$thiscontext->id";
+    }
 
     // Build required parameters.
     [$contexts, $thispageurl, $cm, $pagevars, $extraparams] =
@@ -342,6 +442,7 @@ function mod_flashcards_build_required_params_for_custom_view(array $params, arr
     // Retrieve questions per page.
     $viewclass = $extraparams['view'] ?? null;
     $defaultpagesize = $viewclass ? $viewclass::DEFAULT_PAGE_SIZE : DEFAULT_QUESTIONS_PER_PAGE;
+
     // Build the required params.
     [$thispageurl, $contexts, $cmid, $cm, , $pagevars] = question_build_edit_resources(
         'editq',
@@ -396,6 +497,7 @@ function mod_flashcards_output_fragment_question_data(array $args): string {
     $questionbank->display_question_list();
     return ob_get_clean();
 }
+
 
 /**
  * Build and return the output for the question bank and category chooser.

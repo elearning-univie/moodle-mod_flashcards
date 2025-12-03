@@ -91,7 +91,10 @@ class teacherviewtable extends table_sql {
         // Define the list of columns to show. TODO: createdby zu addedby umschreiben
         $columns = ['name', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'addedby',
             'timemodified', 'version', 'preview', 'edit', 'remove'];
+        /*$columns = ['name', 'questiontext', 'teachercheck', 'upvotes', 'sep', 'downvotes', 'v1createdby', 'modifiedby', 'addedby',
+            'timemodified', 'version', 'actions'];*/
         $this->define_columns($columns);
+        //$this->column_class('questiontext', 'flashcards_questiontext');
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
         $this->column_class('upvotes', 'flashcards_up');
         $this->column_class('sep', 'flashcards_sep');
@@ -101,6 +104,8 @@ class teacherviewtable extends table_sql {
         $this->column_class('createdby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('version', 'flashcards_studentview_dr');
+        
+//        $this->column_class('actions', 'flashcards_teacherview_ec');
         $this->column_class('edit', 'flashcards_teacherview_ec');
         $this->column_class('preview', 'flashcards_teacherview_ec');
         $this->column_class('remove', 'flashcards_teacherview_dr');
@@ -108,6 +113,7 @@ class teacherviewtable extends table_sql {
         // Define the titles of columns to show in header.
         $headers = [
             get_string('question', 'mod_flashcards'),
+            //get_string('questiontext', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
             "/",
@@ -117,6 +123,7 @@ class teacherviewtable extends table_sql {
             get_string('addedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('version', 'mod_flashcards'),
+//            get_string('actions', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
             get_string('removeflashcard', 'mod_flashcards'),
@@ -124,6 +131,31 @@ class teacherviewtable extends table_sql {
         $this->define_headers($headers);
 
         // Define help for columns teachercheck and peer review.
+        /*$helpforheaders = [
+            null,
+            null,
+            new \help_icon('teachercheck', 'mod_flashcards'),
+            null,
+            null,
+            new \help_icon('peerreview', 'mod_flashcards'),
+            null,
+            null,
+            null,
+            null,
+            null,
+            new \help_icon('removeflashcardinfo', 'mod_flashcards'),
+        ];
+        $this->define_help_for_headers($helpforheaders);
+
+        $this->collapsible(false);
+        $this->sortable(true, 'timemodified', SORT_DESC);
+        $this->pageable(true);
+        $this->is_downloadable(false);
+
+        $this->no_sorting('peerreview');
+        $this->no_sorting('sep');
+        $this->no_sorting('version');*/
+
         $helpforheaders = [
             null,
             new \help_icon('teachercheck', 'mod_flashcards'),
@@ -162,6 +194,17 @@ class teacherviewtable extends table_sql {
         return html_writer::div($values->name, null,
             ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
                 'class' => 'qtitle_tooltip']);
+        //return html_writer::div($values->name, null);
+    }
+
+    /**
+     * Prepares column name for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_questiontext($values) {
+        return html_writer::div(mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext), null);
     }
 
     /**
@@ -253,15 +296,39 @@ class teacherviewtable extends table_sql {
      * @return string
      */
     public function col_timemodified($values) {
-        return userdate($values->timemodified, get_string('strftimedatetimeshort', 'langconfig'));
+        return userdate($values->timemodified, get_string('strftimedatetime', 'langconfig'));
     }
 
     /**
-     * Prepares column edit for display
+     * Prepares column actions for display
      *
      * @param object $values
      * @return string
      */
+    public function col_actions($values) {
+        global $OUTPUT;
+
+        $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
+            ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
+        $html = html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+        
+        
+        $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+            ['action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid,
+                'fcid' => $values->flashcardsid, 'origin' => $this->editreturnurl]);
+            
+        $html .= html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext));
+            
+        $durl = new moodle_url('/mod/flashcards/teacherview.php',
+            ['cmid' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey(),
+                'delete' => true, 'fcid' => $values->fqid]);
+            
+        $html .= html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext));
+            
+        return $html;
+    }
+
     public function col_edit($values) {
         global $OUTPUT;
 
@@ -285,7 +352,7 @@ class teacherviewtable extends table_sql {
             ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
 
         return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
-                ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+            ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
     }
 
     /**

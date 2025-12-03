@@ -31,7 +31,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_flashcards_activity_structure_step extends backup_questions_activity_structure_step {
-
     /**
      * Defines the backup structure of the module
      *
@@ -40,19 +39,19 @@ class backup_flashcards_activity_structure_step extends backup_questions_activit
     protected function define_structure() {
 
         $flashcards = new backup_nested_element('flashcards', ['id'],
-                ['course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat']);
+            ['course', 'name', 'categoryid', 'inclsubcats', 'intro', 'introformat', 'timemodified', 'addfcstudent', 'studentsubcat']
+        );
 
         $flashcards->set_source_table('flashcards', ['id' => backup::VAR_ACTIVITYID]);
         $flashcards->annotate_files('mod_flashcards', 'intro', null);
 
-        $qinstance = new backup_nested_element('question_instance', ['id'], [
-            'questionid',
-        ]);
+        $qinstance = new backup_nested_element('question_instance', ['id'], ['questionid']);
 
         $this->add_question_references($qinstance, 'mod_flashcards', 'slot');
 
         $flashcardsqstatus = new backup_nested_element('flashcards_question', ['id'],
-        ['questionid', 'qbankentryid', 'fcid', 'teachercheck']);
+            ['questionid', 'qbankentryid', 'fcid', 'teachercheck']
+        );
         $flashcardsqstatus->add_child($qinstance);
 
         $flashcards->add_child($flashcardsqstatus);

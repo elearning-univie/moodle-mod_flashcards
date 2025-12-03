@@ -33,6 +33,7 @@ $deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $tab = optional_param('tab', 'notadded', PARAM_ALPHAEXT);
+$fctxtfilter = optional_param('fctextfilter', '', PARAM_TEXT);
 
 if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
@@ -44,11 +45,17 @@ $params = [
     'perpage' => $perpage,
 ];
 
+if ($fctxtfilter) {
+    $params['fctxtfilter'] = $fctxtfilter;
+}
+
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'flashcards');
 $context = context_module::instance($cm->id);
 require_login($course, false, $cm);
 
-$PAGE->set_url(new moodle_url("/mod/flashcards/studentquestioninit.php", $params));
+$pageurl = new moodle_url("/mod/flashcards/studentquestioninit.php", $params);
+
+$PAGE->set_url($pageurl);
 $node = $PAGE->settingsnav->find('mod_flashcards', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -61,6 +68,15 @@ $activityheader->set_attrs([
         'description' => '',
         'hidecompletion' => true,
 ]);
+
+$fctextsearchform = new \mod_flashcards\form\fctextsearchform($pageurl, $fctxtfilter);
+$fctxtfilter = "";
+if ($fromform = $fctextsearchform->get_data()) {
+    $fctxtfilter = $fromform->fctextfilter;
+    $formdata = new stdClass();
+    $formdata->fctextfilter = $fctxtfilter;
+}
+$fctxtfilter = optional_param('fctextfilter', '', PARAM_TEXT);
 
 if (!has_capability('mod/flashcards:view', $context)) {
     echo $OUTPUT->heading(get_string('errornotallowedonpage', 'flashcards'));
@@ -120,8 +136,10 @@ if ($added == 0) {
     $importedfcs[] = -1;
 }
 
+$sqlfctextwhere = " (q.name LIKE '%" . $fctxtfilter . "%'
+                    OR q.questiontext LIKE '%" . $fctxtfilter . "%') ";
 list($sqlwhereifcs, $importedfcids) = $DB->get_in_or_equal($importedfcs, SQL_PARAMS_NAMED, 'p', $equalparam, true);
-$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND q.id $sqlwhereifcs
+$sqlwhere = "fcid =:fcid AND qtype = 'flashcard' AND " . $sqlfctextwhere ." AND q.id $sqlwhereifcs
              AND qv.version = (SELECT MAX(v.version)
              FROM {question_versions} v
              WHERE qv.questionbankentryid = v.questionbankentryid)";
@@ -139,6 +157,10 @@ $table->set_sql("q.id, name, fsr.currentbox, q.questiontext, qv.version, q.creat
     JOIN {flashcards_question} fcs on qv.questionbankentryid = fcs.qbankentryid
     LEFT JOIN {flashcards_q_stud_rel} fsr ON fsr.fqid = fcs.id AND fsr.studentid = $USER->id",
     $sqlwhere, ['fcid' => $flashcards->id] + $importedfcids);
+
+$tablesql = $table->sql;
+$counttablesql = 'SELECT COUNT(q.id) FROM ' . $tablesql->from . ' WHERE ' . $tablesql->where;
+$searchedquestioncount = $DB->count_records_sql($counttablesql, ['fcid' => $flashcards->id] + $importedfcids);
 
 $table->define_baseurl($PAGE->url);
 
@@ -197,10 +219,16 @@ $optionsinfo = [
     'actionurl' => $PAGE->url,
     'tab' => $tab,
     'selected' . $perpage => true,
+    'actionurl2' => $PAGE->url,
+    'fctxtfilter' => $fctxtfilter,
 ];
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
+$fctextsearchform->display();
+if (!empty($fctxtfilter)) {
+    echo "<b>" . get_string('searchedquestionsresult', 'mod_flashcards') . $searchedquestioncount . " </b>";
+}
 $table->out($perpage, false);
 echo $renderer->render_from_template('mod_flashcards/optionssection', $optionsinfo);
 echo $OUTPUT->footer();

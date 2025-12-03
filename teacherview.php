@@ -30,10 +30,10 @@ global $PAGE, $OUTPUT, $DB, $CFG;
 
 $cmid = required_param('cmid', PARAM_INT);
 $fqid = optional_param('fcid', null, PARAM_INT);
-$deleteselected = optional_param('deleteselected', null, PARAM_INT);
 $confirm = optional_param('confirm', null, PARAM_ALPHANUM);
 $perpage = optional_param('perpage', DEFAULT_PAGE_SIZE, PARAM_INT);
 $filter = optional_param('fcfilter', 1, PARAM_INT);
+$fctxtfilter = optional_param('fctextfilter', '', PARAM_TEXT);
 
 if (!in_array($perpage, [10, 20, 50, 100, 5000], true)) {
     $perpage = DEFAULT_PAGE_SIZE;
@@ -47,14 +47,24 @@ $params = [
 if ($filter != 1) {
     $params['fcfilter'] = $filter;
 }
+if ($fctxtfilter) {
+    $params['fctxtfilter'] = $fctxtfilter;
+}
 
-list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
-$context = context_module::instance($cm->id);
+list($thispageurl, $contexts, $cmid, $cm, $fc, $pagevars) =
+    question_edit_setup('editq', '/mod/flashcards/teacherview.php');
+$actionurl = new moodle_url($thispageurl);
+$context = $contexts->lowest();
+
+//list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'flashcards');
+//$context = context_module::instance($cm->id);
+$course = get_course($fc->course);
 require_login($course, false, $cm);
 
 $pageurl = new moodle_url("/mod/flashcards/teacherview.php", $params);
 
-$PAGE->set_url($pageurl);
+//$PAGE->set_url($pageurl);
+$PAGE->set_url($thispageurl);
 $node = $PAGE->settingsnav->find('mod_flashcards_teacherview', navigation_node::TYPE_SETTING);
 if ($node) {
     $node->make_active();
@@ -70,6 +80,15 @@ $activityheader->set_attrs([
     'hidecompletion' => true,
 ]);
 
+$fctextsearchform = new \mod_flashcards\form\fctextsearchform($pageurl, $fctxtfilter);
+$fctxtfilter = "";
+if ($fromform = $fctextsearchform->get_data()) {
+    $fctxtfilter = $fromform->fctextfilter;
+    $formdata = new stdClass();
+    $formdata->fctextfilter = $fctxtfilter;
+}
+$fctxtfilter = optional_param('fctextfilter', '', PARAM_TEXT);
+
 if (!has_capability('mod/flashcards:teacherview', $context)) {
     if (has_capability('mod/flashcards:view', $context) ) {
         redirect(new moodle_url('/mod/flashcards/studentview.php', ['id' => $cmid]));
@@ -81,10 +100,7 @@ if (!has_capability('mod/flashcards:teacherview', $context)) {
     die();
 }
 
-list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
-    question_edit_setup('editq', '/mod/flashcards/teacherview.php');
-
-if ($deleteselected) {
+if (($deleteselected = optional_param('deleteselected', null, PARAM_INT))) {
     if (!$DB->record_exists('question', ['id' => $deleteselected])) {
         redirect($PAGE->url);
     }
@@ -112,21 +128,47 @@ if ($deleteselected) {
     }
 }
 
-$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
+if (has_capability('mod/flashcards:editallquestions', $context)) {
+    if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
+        $rawdata = (array) data_submitted();
+        foreach ($rawdata as $key => $value) {
+            if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
+                $key = $matches[1];
+                mod_flashcards_add_question($key, $fc->id);
+            }
+        }
+        redirect($actionurl);
+    }
 
-if (!$DB->record_exists("question_categories", ['id' => $flashcards->categoryid])) {
-    $editpage = new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 0, 'sr' => 0, 'missingcategory' => 1]);
+    if (optional_param('addsingle', false, PARAM_BOOL) && confirm_sesskey()) {
+        $qid = optional_param('addquestion', 0, PARAM_INT);
+        mod_flashcards_add_question($qid, $fc->id);
+        redirect($actionurl);
+    }
+}
+
+$flashcards = $DB->get_record('flashcards', ['id' => $cm->instance]);
+if (!$DB->record_exists('question_categories', ['id' => $flashcards->categoryid])) {
+    $editpage = new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 0, 'missingcategory' => 1, 'sr' => 0]);
     redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
 }
+// if (!$DB->record_exists('question_categories', ['id' => $flashcards->categoryid])) {
+//     $editpage = new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 0, 'sr' => 0, 'missingcategory' => 1]);
+//     redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
+// }
 
 $teacherarchs = explode(',', get_config('flashcards', 'authordisplay_group_teacherroles'));
 $archs = implode(",", $teacherarchs);
 $archstr = "IN (" . $archs . ")";
 
-$sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard'
-AND qv.version = (SELECT MAX(v.version)
+$sqlfctextwhere = " AND (q.name LIKE '%" . $fctxtfilter . "%'
+                    OR q.questiontext LIKE '%" . $fctxtfilter . "%') ";
+
+$sqlwhere = "fcid = " . $flashcards->id . " AND qtype = 'flashcard' " . $sqlfctextwhere .
+"AND qv.version = (SELECT MAX(v.version)
     FROM {question_versions} v
     WHERE qv.questionbankentryid = v.questionbankentryid) ";
+
 
 $sqlv1createdby = "(SELECT q.createdby
                       FROM {question} q
@@ -207,6 +249,10 @@ $table->set_sql("q.id, name, q.questiontext, qv.version, q.createdby, q.modified
         JOIN {question_versions} qv ON qv.questionid = q.id
         JOIN {flashcards_question} fcs on qv.questionbankentryid = fcs.qbankentryid", $sqlwhere);
 
+$tablesql = $table->sql;
+$counttablesql = 'SELECT COUNT(q.id) FROM ' . $tablesql->from . ' WHERE ' . $tablesql->where;
+$searchedquestioncount = $DB->count_records_sql($counttablesql);
+
 $table->define_baseurl($PAGE->url);
 
 $params = ['action' => 'create', 'cmid' => $cm->id, 'courseid' => $course->id, 'origin' => $PAGE->url, 'fcid' => $flashcards->id];
@@ -222,39 +268,27 @@ $templateinfo = [
     'actionurl' => $PAGE->url,
     'filter' => true,
     'filtervalues' => $filtervalues,
+    'actionurl2' => $PAGE->url,
+    'fctxtfilter' => $fctxtfilter,
     'selected' . $perpage => true,
 ];
 
 $pagevars = ['createlinkparams' => $params];
-
-if (has_capability('mod/flashcards:editallquestions', $context)) {
-    if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
-        $rawdata = (array) data_submitted();
-        foreach ($rawdata as $key => $value) {
-            if (preg_match('!^q([0-9]+)$!', $key, $matches)) {
-                $key = $matches[1];
-                mod_flashcards_add_question($key, $flashcards->id);
-            }
-        }
-        redirect($pageurl);
-    }
-
-    if (optional_param('addsingle', false, PARAM_BOOL) && confirm_sesskey()) {
-        $qid = optional_param('addquestion', 0, PARAM_INT);
-        mod_flashcards_add_question($qid, $flashcards->id);
-        redirect($pageurl);
-    }
-}
 
 $sql = "SELECT count(q.id)
               FROM {question} q,
                    {flashcards_question} s
              WHERE q.id = s.questionid
                AND fcid = :fcid";
-$templateinfo['questioncount'] = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
+$questioncount = $DB->count_records_sql($sql, ['fcid' => $flashcards->id]);
+$templateinfo['questioncount'] = $questioncount;
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/teacherview', $templateinfo);
+//$fctextsearchform->display();
+if (!empty($fctxtfilter)) {
+    echo "<b>" . get_string('searchedquestionsresult', 'mod_flashcards') . $searchedquestioncount . " </b>";
+}
 $output = $PAGE->get_renderer('mod_flashcards', 'edit');
 echo $output->edit_flashcards($pageurl, $contexts, $pagevars, $cmid);
 $table->out($perpage, false);

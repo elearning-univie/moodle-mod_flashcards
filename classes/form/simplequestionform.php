@@ -35,7 +35,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class simplequestionform extends \moodleform {
-
     /**
      * Question object with options and answers
      * @var object
@@ -76,12 +75,18 @@ class simplequestionform extends \moodleform {
 
         if ($action == 'edit') {
             $record = $DB->get_record('question_categories',
-                    ['id' => $question->questioncategoryid], 'contextid');
+                ['id' => $question->questioncategoryid],
+                'contextid'
+            );
         }
+
         if ($action == 'create') {
             $record = $DB->get_record('question_categories',
-                ['id' => $question->category], 'contextid');
+                ['id' => $question->category],
+                'contextid'
+            );
         }
+
         $this->context = \context::instance_by_id($record->contextid);
 
         $this->editoroptions = [
@@ -111,10 +116,12 @@ class simplequestionform extends \moodleform {
 
         if (!$this->question->formoptions->canaddwithcat) {
             $mform->addElement('hidden', 'category', get_string('category', 'question'),
-                    ['size' => 512]);
+                    ['size' => 512]
+            );
         } else {
             $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
-                    ['size' => 512, 'contexts' => [$this->categorycontext]]);
+                    ['size' => 512, 'contexts' => [$this->categorycontext]]
+            );
         }
 
         $mform->setType('category', PARAM_RAW);
@@ -164,7 +171,7 @@ class simplequestionform extends \moodleform {
         }
 
         $this->add_hidden_fields();
-        $this->add_action_buttons(true, get_string('savechanges'));
+        $this->add_action_buttons(true);
     }
 
     /**
@@ -289,4 +296,44 @@ class simplequestionform extends \moodleform {
 
         return $question;
     }
+
+    /**
+     * Overriding formslib's add_action_buttons() method, to add an extra submit "save changes and return" button.
+     *
+     * @param bool $cancel show cancel button
+     * @param string $submitlabel null means default, false means none, string is label text
+     * @param string $submit2label  null means default, false means none, string is label text
+     * @return void
+     */
+    /*function add_action_buttons($cancel=true, $submitlabel=null, $submit2label=null) {
+        if (is_null($submitlabel)) {
+            $submitlabel = get_string('savechanges');
+        }
+
+        if (is_null($submit2label)) {
+            $submit2label = get_string('saveandcreate', 'mod_flashcards');
+        }
+
+        $mform = $this->_form;
+
+        // elements in a row need a group
+        $buttonarray = array();
+
+        // Label for the submit button to return to the course.
+        // Ignore this button in single activity format because it is confusing.
+        if ($submitlabel !== false) {
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
+        }
+        
+        if ($submit2label !== false) {
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton2', $submit2label);
+        }
+        
+        if ($cancel) {
+            $buttonarray[] = &$mform->createElement('cancel');
+        }
+
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->setType('buttonar', PARAM_RAW);
+    }*/
 }

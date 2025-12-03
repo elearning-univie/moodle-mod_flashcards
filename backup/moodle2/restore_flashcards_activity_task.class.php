@@ -38,7 +38,6 @@ require_once(__DIR__ . '/restore_flashcards_stepslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_flashcards_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */
@@ -76,7 +75,6 @@ class restore_flashcards_activity_task extends restore_activity_task {
         $rules[] = new restore_decode_rule('FLASHCARDSINDEX', '/mod/flashcards/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**
