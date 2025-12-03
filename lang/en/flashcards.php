@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['actions'] = 'Actions';
 $string['addedby'] = 'Added by';
 $string['addfcstudent'] = 'Allow students to add flashcards';
 $string['addfcstudent_help'] = 'Flashcards created by students will be stored in a special question subcategory.';
@@ -142,10 +143,10 @@ The goal is to end up with all flashcards in box 5. Alternatively, flashcards ca
 <li>With <strong>peer review</strong>, flashcards can be voted (like/dislike), which can guide students in compiling their own flashcards.
 <li>As a teacher the <strong>student preview</strong> enables you to test the entire process from a student\'s point of view, as well as to use it parallel with the flashcards app on your smartphone.</li></ul></p></details>';
 $string['overviewnq'] = 'New flashcards/teacher check necessary';
-$string['overviewsaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a> / <a href="{$a->linkadded}">{$a->valueadded}</a>';
+$string['overviewsaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a>';
 $string['overviewslink'] = '<a href="{$a->linkst}">{$a->valuest}</a>';
 $string['overviewsq'] = 'Flashcards created by students';
-$string['overviewsqadd'] = 'Flashcards created/added by students';
+$string['overviewsqadd'] = 'Flashcards created by students';
 $string['overviewtaddlinks'] = '<a href="{$a->linkcreated}">{$a->valuecreated}</a> / <a href="{$a->linkadded}">{$a->valueadded}</a>';
 $string['overviewtlink'] = '<a href="{$a->linkt}">{$a->valuet}</a>';
 $string['overviewtnqlink'] = '<a href="{$a->linknq}">{$a->valuenq}</a>';
@@ -199,8 +200,9 @@ $string['progressknowncards'] = 'Learned: {$a}';
 $string['progressunknowncards'] = 'Still to learn: {$a}';
 $string['proposecardsexplained'] = 'Use peer review to vote for flashcards or to create your own personal flashcard based on this information.';
 $string['qbank'] = 'Question bank';
-$string['question'] = 'Question title';
+$string['question'] = 'Flashcard';
 $string['questioncount'] = 'Number of flashcards';
+$string['questiontext'] = 'Question';
 $string['removeflashcadcheck'] = 'Are you absolutely sure you want to remove the following flashcards from this flashcard activity?';
 $string['removeflashcard'] = 'Remove';
 $string['removeflashcardbutton'] = 'Remove flashcard(s)';
@@ -210,6 +212,9 @@ $string['removeflashcardsdonemessage'] = 'Flashcards have been removed from your
 $string['report'] = 'Report';
 $string['reporttext'] = 'Is the flashcard obviously wrong or problematic?';
 $string['save'] = 'Save';
+$string['saveandcreate'] = 'Save and create another flashcard';
+$string['searchedquestionsresult'] = 'Search results: ';
+$string['searchplaceholder'] = 'Enter your search term';
 $string['selectall'] = 'Select all';
 $string['settingappstoreappledesc'] = 'URL for the flashcards mobile app for iOS devices.';
 $string['settingappstoreappletitle'] = 'Apple App Store';

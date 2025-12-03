@@ -261,7 +261,7 @@ class provider implements
                 continue;
             }
 
-            do_delete($context->instanceid, $userid);
+            self::do_delete($context->instanceid, $userid);
         }
     }
 
@@ -277,20 +277,23 @@ class provider implements
         $userids = $userlist->get_userids();
 
         foreach ($userids as $userid) {
-            do_delete($context->instanceid, $userid);
+            self::do_delete($context->instanceid, $userid);
         }
     }
 
     /**
      * Deletes the records from the db
      *
-     * @param int $flashcardsid
+     * @param int $contextinstanceid
      * @param int $userid
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function do_delete($flashcardsid, $userid) {
+    private static function do_delete(int $contextinstanceid, int $userid) {
         global $DB;
+
+        $cm = get_coursemodule_from_id('flashcards', $contextinstanceid);
+        $flashcardsid = $cm->instance;
 
         $questions = $DB->get_records('flashcards_question', ['fcid' => $flashcardsid], '', 'id');
 
@@ -298,33 +301,17 @@ class provider implements
             $questionids = array_keys($questions);
             list($insql, $params) = $DB->get_in_or_equal($questionids, SQL_PARAMS_NAMED);
             $params['studentid'] = $userid;
-            $DB->delete_records_select('flashcards_q_stud_rel',
-                "fqid $insql AND studentid = :studentid", $params);
+            $DB->delete_records_select(
+                'flashcards_q_stud_rel',
+                "fqid $insql AND studentid = :studentid",
+                $params
+            );
         }
 
-        $DB->delete_records('flashcards_stud_xp_events', ['flashcardsid' => $flashcardsid, 'studentid' => $userid]);
-
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-        $contextparams['createdby'] = $contextlist->get_user()->id;
-        $DB->set_field_select(
-            'question',
-            'createdby',
-            0,
-            "category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-         AND createdby = :createdby AND qtype = 'flashcard'",
-            $contextparams
-        );
-
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
-        $contextparams['modifiedby'] = $contextlist->get_user()->id;
-        $DB->set_field_select(
-            'question',
-            'modifiedby',
-            0,
-            "category IN (SELECT id FROM {question_categories} WHERE contextid {$contextsql})
-         AND modifiedby = :modifiedby AND qtype = 'flashcard'",
-            $contextparams
-        );
+        $DB->delete_records('flashcards_stud_xp_events', [
+            'fcid' => $flashcardsid,
+            'studentid' => $userid
+        ]);
     }
 }
 

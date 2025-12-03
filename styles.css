@@ -25,17 +25,22 @@ th.flashcards_teacherview_dr {
 
 th.flashcards_studentview_ec,
 th.flashcards_teacherview_ec {
+    /*width: 7%;*/
     width: 2%;
     text-align: center;
 }
 
 th.flashcards_studentview_tc,
 th.flashcards_teacherview_tc {
-    width: 6%;
+    width: 4%;
     white-space: nowrap;
     text-align: center;
 }
 
+th.flashcards_questiontext {
+    width: 20%;
+    text-align: left;
+}
 #page-mod-flashcards-teacherview .generaltable th.flashcards_up,
 #page-mod-flashcards-studentquestioninit .generaltable th.flashcards_up,
 #page-mod-flashcards-teacherview .generaltable td.flashcards_up,
@@ -76,13 +81,19 @@ td.flashcards_teacherview_dr {
 
 td.flashcards_studentview_tc,
 td.flashcards_teacherview_tc {
-    width: 6%;
+    width: 4%;
     white-space: nowrap;
     text-align: center;
 }
 
+td.flashcards_questiontext {
+    width: 20%;
+    text-align: left;
+}
+
 td.flashcards_studentview_ec,
 td.flashcards_teacherview_ec {
+    /*width: 7%;*/
     width: 2%;
     text-align: center;
 }
@@ -150,6 +161,7 @@ img.mod-flashcards-appstore-badge {
 }
 
 .path-mod-flashcards .color-pending {
+    /*color: #444444;*/
     color: orange;
 }
 

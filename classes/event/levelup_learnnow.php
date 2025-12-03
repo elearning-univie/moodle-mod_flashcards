@@ -27,7 +27,6 @@ namespace mod_flashcards\event;
  * Event for mod_flashcards.
  */
 class levelup_learnnow extends \core\event\base {
-
     /**
      * Init method.
      */

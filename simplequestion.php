@@ -36,6 +36,7 @@ $categoryid = optional_param('category', 0, PARAM_INT);
 $origin = required_param('origin', PARAM_URL);
 $action = required_param('action', PARAM_ALPHA);
 $fcid = required_param('fcid', PARAM_INT);
+$submitbutton2 = optional_param('submitbutton2', '', PARAM_ALPHA);
 
 $url = new moodle_url('/mod/flashcards/simplequestion.php',
     ['cmid' => $cmid, 'origin' => $origin, 'action' => $action, 'fcid' => $fcid]);
@@ -66,6 +67,13 @@ if (has_capability('mod/flashcards:editallquestions', $context)) {
     }
 
     $categoryid = $module->studentsubcat;
+}
+
+$flashcards = $DB->get_record('flashcards', ['id' => $fcid]);
+
+if (!$DB->record_exists('question_categories', ['id' => $flashcards->categoryid])) {
+    $editpage = new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 0, 'missingcategory' => 1, 'sr' => 0]);
+    redirect($editpage, get_string('categorymissing', 'flashcards'), null, \core\output\notification::NOTIFY_WARNING);
 }
 
 $qtype = 'flashcard';
@@ -101,11 +109,16 @@ if (isset($question->categoryobject)) {
 
 $question->formoptions = new stdClass();
 $question->contextid = $category->contextid;
-$question->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
+
+$context = context::instance_by_id($question->contextid);
+$question->formoptions->canaddwithcat = has_capability('mod/flashcards:editallquestions', $context);
+
+//$question->formoptions->canaddwithcat = question_has_capability_on($question, 'add');
 
 $formeditable = true;
 
 $PAGE->set_pagetype('question-type-flashcard');
+
 $mform = new \mod_flashcards\form\simplequestionform($url, $question, $category, $action, $formeditable);
 
 $questioncopy = fullclone($question);
@@ -145,12 +158,12 @@ if ($mform->is_cancelled()) {
     $event->trigger();
     question_bank::notify_question_edited($question->id);
 
-    if (strpos($origin, '?id=')) {
-        $origin = new moodle_url('/mod/flashcards/flashcardpreview.php',
-            ['id' => $question->id, 'cmid' => $context->instanceid, 'flashcardsid' => $fcid]);
-    }
     if ($qtypeobj->finished_edit_wizard($fromform)) {
-        redirect($origin);
+        if ($submitbutton2) {
+            redirect($url);
+        } else {
+            redirect($origin);
+        }
     }
 }
 

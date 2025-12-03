@@ -128,10 +128,10 @@ export default class ModalFlashcardsQuestionBank extends Modal {
         // directly then we need to intercept the click in order to adjust the
         // href and include the correct add on page id before the page is
         // redirected.
-        const href = new URL(anchorElement.attr('href'));
+        const href = new URL(anchorElement.getAttribute('href'));
         href.searchParams.set('addonpage', this.getAddOnPageId());
         href.searchParams.set('cmid', this.quizCmId);
-        anchorElement.attr('href', href);
+        anchorElement.setAttribute('href', href);
     }
 
     /**

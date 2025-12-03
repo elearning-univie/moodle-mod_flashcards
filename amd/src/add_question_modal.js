@@ -119,7 +119,7 @@ export default class AddQuestionModal extends Modal {
 
         this.setBody(
             Fragment.loadFragment(
-                'mod_quiz',
+                'mod_flashcards',
                 'switch_question_bank',
                 this.getContextId(),
                 {

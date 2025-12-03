@@ -27,7 +27,6 @@ namespace mod_flashcards\event;
  * Event for mod_flashcards.
  */
 class simplequestion_created extends \core\event\base {
-
     /**
      * Init method.
      */
@@ -45,5 +44,4 @@ class simplequestion_created extends \core\event\base {
     public static function get_name() {
         return get_string('eventsimplequestioncreated', 'mod_flashcards');
     }
-
 }
