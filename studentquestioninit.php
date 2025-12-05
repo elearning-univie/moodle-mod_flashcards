@@ -225,7 +225,7 @@ $optionsinfo = [
 
 echo $OUTPUT->header();
 echo $renderer->render_from_template('mod_flashcards/studentinitboxview', $templateinfo);
-//$fctextsearchform->display();
+$fctextsearchform->display();
 if (!empty($fctxtfilter)) {
     echo "<b>" . get_string('searchedquestionsresult', 'mod_flashcards') . $searchedquestioncount . " </b>";
 }
