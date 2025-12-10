@@ -123,9 +123,8 @@ class teacherviewtable extends table_sql {
         ];
         $this->define_headers($headers);
 
-
         // Define the titles of columns to show in header.
-        $headers = array(
+        $headers = [
             get_string('question', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
@@ -138,11 +137,12 @@ class teacherviewtable extends table_sql {
             get_string('version', 'mod_flashcards'),
             get_string('fcview', 'mod_flashcards'),
             get_string('edit'),
-            get_string('removeflashcard', 'mod_flashcards'));
+            get_string('removeflashcard', 'mod_flashcards'),
+        ];
         $this->define_headers($headers);
 
         // Define help for columns teachercheck and peer review.
-        $helpforheaders = array(
+        $helpforheaders = [
             null,
             new \help_icon('teachercheck', 'mod_flashcards'),
             null,
@@ -153,7 +153,10 @@ class teacherviewtable extends table_sql {
             null,
             null,
             null,
-            new \help_icon('removeflashcardinfo', 'mod_flashcards'));
+            null,
+            null,
+            new \help_icon('removeflashcardinfo', 'mod_flashcards'),
+        ];
         $this->define_help_for_headers($helpforheaders);
 
         $this->collapsible(false);
