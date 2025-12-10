@@ -95,11 +95,10 @@ class studentviewtable extends table_sql {
         $this->previewicontext = get_string('fcview', 'mod_flashcards');
         $this->context = context_module::instance($cmid);
 
-        $columns = ['select', 'name', /*'questiontext',*/ 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'v1createdby',
-            'modifiedby', 'timemodified', 'version', 'actions'];
+        $columns = ['select', 'name', 'teachercheck', 'currentbox',  'upvotes', 'sep', 'downvotes', 'v1createdby',
+            'modifiedby', 'timemodified', 'version', 'preview', 'edit', 'delete'];
 
         $this->define_columns($columns);
-        //$this->column_class('questiontext', 'flashcards_questiontext');
         $this->column_class('currentbox', 'flashcards_studentview_tc');
         $this->column_class('select', 'flashcards_teacherview_ec');
         $this->column_class('teachercheck', 'flashcards_studentview_tc');
@@ -110,7 +109,9 @@ class studentviewtable extends table_sql {
         $this->column_class('modifiedby', 'flashcards_studentview_tc');
         $this->column_class('timemodified', 'flashcards_studentview_tc');
         $this->column_class('version', 'flashcards_studentview_dr');
-        $this->column_class('actions', 'flashcards_teacherview_ec');
+        $this->column_class('edit', 'flashcards_teacherview_ec');
+        $this->column_class('preview', 'flashcards_teacherview_ec');
+        $this->column_class('delete', 'flashcards_teacherview_dr');
 
         $thumbsup = '<i class="icon fa fa-thumbs-up fa-fw " title="Yes" aria-label="Yes"></i>';
         $thumbsdown = '<i class="icon fa fa-thumbs-down fa-fw " title="No" aria-label="No"></i>';
@@ -119,7 +120,6 @@ class studentviewtable extends table_sql {
         $headers = [
             '<input type="checkbox" name="selectall" onClick="window.modFlashcardsSelectAll(this)"/>',
             get_string('question', 'mod_flashcards'),
-            //get_string('questiontext', 'mod_flashcards'),
             get_string('teachercheck', 'mod_flashcards'),
             get_string('box', 'mod_flashcards'),
             get_string('peerreviewtableheaderup', 'mod_flashcards', ['thumbsup' => $thumbsup]),
@@ -129,14 +129,15 @@ class studentviewtable extends table_sql {
             get_string('modifiedby', 'mod_flashcards'),
             get_string('timemodified', 'mod_flashcards'),
             get_string('version', 'mod_flashcards'),
-            get_string('actions', 'mod_flashcards'),
+            get_string('fcview', 'mod_flashcards'),
+            get_string('edit'),
+            get_string('delete'),
         ];
 
         // Define help for columns teachercheck and peer review.
         $helpforheaders = [
             null,
             null,
-            //null,
             new \help_icon('teachercheck', 'mod_flashcards'),
             null,
             null,
@@ -170,8 +171,10 @@ class studentviewtable extends table_sql {
         $this->no_sorting('version');
         $this->no_sorting('select');
         $this->no_sorting('peerreview');
-        $this->no_sorting('actions');
+        $this->no_sorting('edit');
         $this->no_sorting('sep');
+        $this->no_sorting('preview');
+        $this->no_sorting('delete');
     }
 
     /**
@@ -184,8 +187,6 @@ class studentviewtable extends table_sql {
         return html_writer::div($values->name, null,
             ['title' => mod_flashcards_get_preview_questiontext($this->context, $values->id, $values->questiontext),
                 'class' => 'qtitle_tooltip']);
-
-        //return html_writer::div($values->name, null);
     }
     
     /**
@@ -309,40 +310,59 @@ class studentviewtable extends table_sql {
     }
 
     /**
-     * Prepares column actions for display
+     * Prepares column edit for display
      *
      * @param object $values
      * @return string
      */
-    public function col_actions($values) {
+    public function col_edit($values) {
+        global $OUTPUT;
+
+        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id, $values->v1createdby)) {
+            return null;
+        }
+
+        $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
+            ['action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid,
+                'fcid' => $values->fqid, 'origin' => $this->returnurl]);
+
+        return html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext),
+            ['class' => 'mod_flashcards_questioneditlink']);
+    }
+
+    /**
+     * Prepares column preview for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_preview($values) {
         global $OUTPUT;
 
         $qurl = new moodle_url('/mod/flashcards/flashcardpreview.php',
             ['id' => $values->id, 'cmid' => $this->cmid, 'flashcardsid' => $values->flashcardsid]);
-        $html = html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
+
+        return html_writer::link($qurl, $OUTPUT->pix_icon('viewfc', $this->previewicontext, 'mod_flashcards'),
             ['class' => 'mod_flashcards_questionpreviewlink', 'target' => 'questionpreview']);
+    }
+
+    /**
+     * Prepares column delete for display
+     *
+     * @param object $values
+     * @return string
+     */
+    public function col_delete($values) {
+        global $OUTPUT;
 
         if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id, $values->v1createdby)) {
-             $html .= " ";
-        } else {
-            $eurl = new moodle_url('/mod/flashcards/simplequestion.php',
-                ['action' => 'edit', 'id' => $values->id, 'cmid' => $this->cmid,
-                    'fcid' => $values->flashcardsid, 'origin' => $this->returnurl]);
-
-            $html .= html_writer::link($eurl, $OUTPUT->pix_icon('i/settings', $this->editicontext),
-                    ['class' => 'mod_flashcards_questioneditlink']);
+            return null;
         }
 
-        if (!mod_flashcards_has_delete_rights($this->context, $this->fcobj, $values->id, $values->v1createdby)) {
-            $html .= " ";
-        } else {
-            $durl = new moodle_url('/mod/flashcards/studentquestioninit.php',
-                ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]);
-                    
-            $html .= html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext),
-                ['class' => 'mod_flashcards_studentview_delete']);
-        }
+        $durl = new moodle_url('/mod/flashcards/studentquestioninit.php',
+            ['id' => $this->cmid, 'deleteselected' => $values->id, 'sesskey' => sesskey()]);
 
-        return $html;
+        return html_writer::link($durl, $OUTPUT->pix_icon('t/delete', $this->deleteicontext),
+            ['class' => 'mod_flashcards_studentview_delete']);
     }
 }
