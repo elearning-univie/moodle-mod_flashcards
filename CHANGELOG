@@ -1,0 +1,23 @@
+CHANGELOG
+===================
+
+v5.0-r2
+* [FIX] Students can't view a flashcard question directly after creating it
+* [FIX] Students can't view pictures included in flashcard questions
+* [FIX] Add single questions from question bank is not possible
+* [FIX] Missing default category for flashcards module after upgrade on Moodle 5.0 (due to the new question bank)
+* [FIX] Deleting a user's data of flashcards via data request for privacy API is not successful
+* [FIX] Format of date in the overview table in the flashcards collection
+* [FIX] Behaviour of the options area in the flashcards collection
+* [FIX] Update German langstring for propper use on the activities page
+* [FEATURE] Set the default category in the new flashcards question bank
+* [FEATURE] Update the CSS of the window to add questions from the question bank
+* [FEATURE] Remove not needed filter "Flashcards added by students"
+
+v5.0-r1
+-----------
+* Moodle 5.0 compatible version
+* [FIX] Filter in the flashcards collection is reset when switching to another page of the collection
+* [FIX] No information to flashcards is included in the exported data of a data request for privacy API
+* [FIX] Pagination in the flashcards collection not available for students
+* [FEATURE] Update to the question renderer
